@@ -1,0 +1,10 @@
+name: MCMEPVP
+main: co.mcme.pvp.MCMEPVP
+version: 1.0.0
+commands:
+   pvp:
+      description: PVP
+      usage: /<command> [join|start|set|stop]
+   shout:
+      description: Shout a message to Everyone!
+      usage: /<command> [msg]
