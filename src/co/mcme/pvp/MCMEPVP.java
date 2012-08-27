@@ -16,6 +16,7 @@ import co.mcme.pvp.listeners.chatListener;
 import co.mcme.pvp.listeners.damageListener;
 import co.mcme.pvp.listeners.inventoryListener;
 import co.mcme.pvp.listeners.playerListener;
+import co.mcme.pvp.util.SpectatorTools;
 
 public class MCMEPVP extends JavaPlugin {
 
@@ -166,6 +167,12 @@ public class MCMEPVP extends JavaPlugin {
         PlayerStatus.put(player.getName(), status);
         player.setPlayerListName(NameColor + player.getName());
         player.setDisplayName(NameColor + player.getName());
+        if (status.equalsIgnoreCase("spectator")) {
+            SpectatorTools.hide(player);
+        }
+        if (!(status.equalsIgnoreCase("spectator"))) {
+            SpectatorTools.show(player);
+        }
     }
 
     public static String getPlayerStatus(Player player) {
