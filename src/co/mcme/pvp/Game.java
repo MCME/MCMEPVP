@@ -1,4 +1,4 @@
-package co.mcme.pvp.games;
+package co.mcme.pvp;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -8,10 +8,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class Game {
 
-    public GameType GameType;
-
-    protected Game(GameType gt) {
-        GameType = gt;
+    protected Game() {
         //TODO: Code on Game Start
     }
 

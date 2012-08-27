@@ -1,7 +1,5 @@
 package co.mcme.pvp;
 
-import co.mcme.pvp.games.Game;
-import co.mcme.pvp.games.GameType;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
@@ -11,25 +9,36 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.Vector;
 
-import co.mcme.pvp.games.gametypes.TDMGame;
-import co.mcme.pvp.util.SpectatorTools;
-import org.bukkit.configuration.Configuration;
+import co.mcme.pvp.gametypes.TDMGame;
+import co.mcme.pvp.listeners.chatListener;
+import co.mcme.pvp.listeners.damageListener;
+import co.mcme.pvp.listeners.inventoryListener;
+import co.mcme.pvp.listeners.playerListener;
 
 public class MCMEPVP extends JavaPlugin {
 
     public static Game CurrentGame;
     public static HashMap<String, String> PlayerStatus;
     public static int GameStatus;
-    public static GameType[] GameTypes = GameType.values();
+    public static int Participants;
     public static World PVPWorld;
-    public static Configuration config;
+    public static String PVPMap;
+    public static String GT;
+    public static HashMap<String, Vector> Spawns;
 
     @Override
     public void onEnable() {
         //registering Listener
-        getServer().getPluginManager().registerEvents(new MCMEPVPListener(this), this);
-        config  = this.getConfig();
+        registerEvents();
+        PVPMap = (String) this.getConfig().get("general.defaultMap");
+        GT = (String) this.getConfig().get("general.defaultGameType");
+        PVPWorld = Bukkit.getWorld((String) this.getConfig().get("general.defaultWorld"));
+        resetGame();
+        Spawns.put("blue", (Vector) this.getConfig().get("spawns.spectator"));
+        Spawns.put("red", (Vector) this.getConfig().get("spawns.red"));
+        Spawns.put("spectator", (Vector) this.getConfig().get("spawns.spectator"));
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -43,12 +52,13 @@ public class MCMEPVP extends JavaPlugin {
                 if (method.equalsIgnoreCase("join")) {
                     if (GameStatus == 0) {
                         //Check if player is participating already
-                        if (!(PlayerStatus.get(player.getName()).equals("spectator"))) {
+                        if (!(getPlayerStatus(player).equals("spectator"))) {
                             player.sendMessage(ChatColor.DARK_RED
                                     + "You are already participating in the next Game!");
                             return true;
                         } else {
                             //queuePlayer
+                            Participants++;
                             setPlayerStatus(player, "participant", ChatColor.GREEN);
                             player.sendMessage(ChatColor.YELLOW + "You are participating! Wait for the next Game to start!");
                             return true;
@@ -63,15 +73,8 @@ public class MCMEPVP extends JavaPlugin {
                 if (method.equalsIgnoreCase("start")) {
                     if (player.hasPermission("mcmepvp.admin")) {
                         if (GameStatus == 0) {
-                            int check = 0;
-                            for (Player cplayer : getServer().getOnlinePlayers()) {
-                                if (PlayerStatus.get(cplayer.toString()).equals("spectator")) {
-                                    check++;
-                                }
-                            }
-                            if (check >= 2) {
-                                startGame(args[1]);
-                                MCMEPVP.PVPWorld = player.getWorld();
+                            if (Participants >= 2) {
+                                startGame();
                                 return true;
                             } else {
                                 player.sendMessage(ChatColor.DARK_RED
@@ -93,7 +96,28 @@ public class MCMEPVP extends JavaPlugin {
                 if (method.equalsIgnoreCase("set")) {
                     if (player.hasPermission("mcmepvp.admin")) {
                         if (args.length > 1) {
-                            CurrentGame.onAdminset(args);
+                            Vector loc = player.getLocation().toVector();
+                            if (args[1].equalsIgnoreCase("blue")) {
+                                Spawns.put("blue", loc);
+                                this.getConfig().set("spawns.blue", loc);
+                                this.saveConfig();
+                                player.sendMessage(ChatColor.YELLOW + "Saved your Location as Team Blue's Spawn!");
+                                return true;
+                            }
+                            if (args[1].equalsIgnoreCase("red")) {
+                                Spawns.put("red", loc);
+                                this.getConfig().set("spawns.red", loc);
+                                this.saveConfig();
+                                player.sendMessage(ChatColor.YELLOW + "Saved your Location as Team Red's Spawn!");
+                                return true;
+                            }
+                            if (args[1].equalsIgnoreCase("spectator")) {
+                                Spawns.put("spectator", loc);
+                                this.getConfig().set("spawns.spectator", loc);
+                                this.saveConfig();
+                                player.sendMessage(ChatColor.YELLOW + "Saved your Location as Spectator's Spawn!");
+                                return true;
+                            }
                         } else {
                             player.sendMessage("/pvp set [blue|red|spectator|class]");
                             return true;
@@ -102,9 +126,6 @@ public class MCMEPVP extends JavaPlugin {
                         player.sendMessage(ChatColor.DARK_RED + "You're not an Admin!");
                         return true;
                     }
-                }
-                if(method.equalsIgnoreCase("loadout")){
-                    this.getConfig().set("loadouts." + args[1], player.getInventory());
                 }
                 //STOP
                 if (method.equalsIgnoreCase("stop")) {
@@ -122,16 +143,21 @@ public class MCMEPVP extends JavaPlugin {
         return false;
     }
 
-    static void resetGame() {
-        PlayerStatus.clear();
-        //TODO
+    public static void resetGame() {
+        Participants = 0;
+        GameStatus = 0;
+        PlayerStatus = new HashMap<String, String>();
+        Spawns = new HashMap<String, Vector>();
+        for (Player currentplayer : Bukkit.getOnlinePlayers()) {
+            setPlayerStatus(currentplayer, "spectator", ChatColor.WHITE);
+        }
     }
 
-    void startGame(String gt) {
-        if (gt.equals("TDM")) {
-            CurrentGame = new TDMGame(GameType.TDM);
-        } else {
-        }
+    void startGame() {
+        Spawns.put("blue", (Vector) this.getConfig().get("spawns.spectator"));
+        Spawns.put("red", (Vector) this.getConfig().get("spawns.red"));
+        Spawns.put("spectator", (Vector) this.getConfig().get("spawns.spectator"));
+        CurrentGame = new TDMGame();
     }
 
     public static void setPlayerStatus(Player player, String status, ChatColor NameColor) {
@@ -140,17 +166,17 @@ public class MCMEPVP extends JavaPlugin {
         PlayerStatus.put(player.getName(), status);
         player.setPlayerListName(NameColor + player.getName());
         player.setDisplayName(NameColor + player.getName());
-        if (status.equalsIgnoreCase("spectator")) {
-            SpectatorTools.hide(player);
-        }
-        if (!(status.equalsIgnoreCase("spectator"))) {
-            SpectatorTools.show(player);
-        }
-
     }
 
     public static String getPlayerStatus(Player player) {
         String status = PlayerStatus.get(player.getName());
         return status;
+    }
+
+    private void registerEvents() {
+        getServer().getPluginManager().registerEvents(new chatListener(this), this);
+        getServer().getPluginManager().registerEvents(new damageListener(this), this);
+        getServer().getPluginManager().registerEvents(new inventoryListener(this), this);
+        getServer().getPluginManager().registerEvents(new playerListener(this), this);
     }
 }
