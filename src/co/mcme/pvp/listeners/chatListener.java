@@ -16,28 +16,28 @@ public class chatListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    void onPlayerChat(final AsyncPlayerChatEvent event) {
+    void onPlayerChat(AsyncPlayerChatEvent event) {
         event.setCancelled(true);
         if (event.getMessage().startsWith("u00a")) {
             //player has WorldEdit CUI
         } else {
             for (Player player : Bukkit.getOnlinePlayers()) {
-                String Status = MCMEPVP.PlayerStatus.get(event.getPlayer().getName());
-                String PlayerTeam = MCMEPVP.PlayerStatus.get(player.getName());
-                String label = "[Jerk] ";
-                if (Status.equals("red")) {
-                    label = ChatColor.RED + "[Team Red] ";
+                String SenderStatus = MCMEPVP.PlayerStatus.get(event.getPlayer().getName());
+                String ReceiverStatus = MCMEPVP.PlayerStatus.get(player.getName());
+                String label = "";
+                if (SenderStatus.equals("fighter")) {
+                    label = ChatColor.DARK_GREEN + "Fighter ";
                 }
-                if (Status.equals("blue")) {
-                    label = ChatColor.BLUE + "[Team Blue] ";
+                if (SenderStatus.equals("red")) {
+                    label = ChatColor.RED + "Team Red ";
                 }
-                if (Status.equals("spectator")) {
-                    label = "[Spectator] ";
+                if (SenderStatus.equals("blue")) {
+                    label = ChatColor.BLUE + "Team Blue ";
                 }
-                if (Status.equals("participant")) {
-                    label = ChatColor.GREEN + "[Participant] ";
+                if (SenderStatus.equals("participant")) {
+                    label = ChatColor.GREEN + "Participant ";
                 }
-                if (Status.equals("spectator") || Status.equals("participant") || PlayerTeam.equals(Status)) {
+                if (ReceiverStatus.equals("spectator") || ReceiverStatus.equals("participant") || ReceiverStatus.equals("fighter") || ReceiverStatus.equals(SenderStatus)) {
                     player.sendMessage(label + event.getPlayer().getName() + ": " + ChatColor.WHITE + event.getMessage());
                 }
             }

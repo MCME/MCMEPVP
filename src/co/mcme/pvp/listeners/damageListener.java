@@ -1,6 +1,7 @@
 package co.mcme.pvp.listeners;
 
 import co.mcme.pvp.MCMEPVP;
+import org.bukkit.ChatColor;
 
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -30,7 +31,7 @@ public class damageListener implements Listener {
     void onPlayerDamageByEntity(final EntityDamageByEntityEvent event) {
         if (event.getEntity().getType().equals(EntityType.PLAYER)) {
             Player Victim = (Player) event.getEntity();
-            if (MCMEPVP.getPlayerStatus(Victim).equals("spectator")) {
+            if (MCMEPVP.getPlayerStatus(Victim).equals("spectator") || MCMEPVP.getPlayerStatus(Victim).equals("participant")) {
                 event.setCancelled(true);
             }
             if (event.getDamager().getType().equals(EntityType.PLAYER)) {
@@ -47,7 +48,7 @@ public class damageListener implements Listener {
     void onPlayerDamage(final EntityDamageEvent event) {
         if (event.getEntity().getType().equals(EntityType.PLAYER)) {
             Player Victim = (Player) event.getEntity();
-            if (MCMEPVP.getPlayerStatus(Victim).equals("spectator")) {
+            if (MCMEPVP.getPlayerStatus(Victim).equals("spectator") || MCMEPVP.getPlayerStatus(Victim).equals("participant")) {
                 event.setCancelled(true);
             }
         }

@@ -20,9 +20,7 @@ public class playerListener implements Listener {
     void onPlayerJoin(final PlayerLoginEvent event) {
         MCMEPVP.setPlayerStatus(event.getPlayer(), "spectator", ChatColor.WHITE);
         if (MCMEPVP.GameStatus == 0) {
-            Vector vec = MCMEPVP.Spawns.get("spectator");
-            Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY(), vec.getZ());
-            event.getPlayer().teleport(loc);
+            event.getPlayer().teleport(MCMEPVP.Spawn);
         } else {
             MCMEPVP.CurrentGame.onPlayerjoinServer(event);
         }

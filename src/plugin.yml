@@ -4,7 +4,10 @@ version: 1.0.0
 commands:
    pvp:
       description: PVP
-      usage: /<command> [join|start|set|stop]
+      usage: /<command> [join|start|map|gt|set|stop]
    shout:
       description: Shout a message to Everyone!
+      usage: /<command> [msg]
+   a:
+      description: Chat only for Admins!
       usage: /<command> [msg]

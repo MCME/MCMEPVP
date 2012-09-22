@@ -25,7 +25,8 @@ public class TDMGame extends Game{
     public TDMGame() {
         MCMEPVP.GameStatus = 1;
         //Broadcast
-	Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "The next Game starts in a few seconds! GameType is TDM!");
+	Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "The next Game starts in a few seconds!");
+	Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "GameType is "+ChatColor.DARK_PURPLE+"Team Deathmatch"+ChatColor.GREEN+" on Map "+ChatColor.DARK_PURPLE+MCMEPVP.PVPMap+"!");
 	Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "All Participants will be assigned to a team and teleported to their spawn!");
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Bukkit.getPluginManager().getPlugin("MCMEPVP"), new Runnable() {
         public void run() {
@@ -59,7 +60,7 @@ public class TDMGame extends Game{
                     inv.addItem(new ItemStack(261),new ItemStack(262, 32));//Bow + Arrows
                 }
                 //Teleport User
-                Vector vec = MCMEPVP.Spawns.get(MCMEPVP.PlayerStatus.get(user.getName()));
+                Vector vec = MCMEPVP.Spawns.get(MCMEPVP.getPlayerStatus(user));
                 Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY(), vec.getZ());
                 user.teleport(loc);
             }
@@ -69,13 +70,14 @@ public class TDMGame extends Game{
     }
 
 	protected void addTeam(Player player, String Team) {
-		player.sendMessage(ChatColor.YELLOW + "You're now in Team " + Team.toUpperCase() + "!");
 		if(Team.equals("red")){
+                        player.sendMessage(ChatColor.YELLOW + "You're now in Team "+ChatColor.RED+"RED"+ChatColor.YELLOW+"!");
 			RedMates++;
 			MCMEPVP.setPlayerStatus(player, Team, ChatColor.RED);
 			player.getInventory().setHelmet(new ItemStack(35, 1, (short) 0, (byte) 14));
 		}else{
 			if(Team.equals("blue")){
+                                player.sendMessage(ChatColor.YELLOW + "You're now in Team "+ChatColor.BLUE+"BLUE"+ChatColor.YELLOW+"!");
 				BlueMates++;
 				MCMEPVP.setPlayerStatus(player, Team, ChatColor.BLUE);
 				player.getInventory().setHelmet(new ItemStack(35, 1, (short) 0, (byte) 11));
@@ -84,8 +86,9 @@ public class TDMGame extends Game{
 	}
 
 	public void onPlayerjoinServer(PlayerLoginEvent event) {
-		// TODO Auto-generated method stub
-		
+                Vector vec = MCMEPVP.Spawns.get("spectator");
+                Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY(), vec.getZ());
+                event.getPlayer().teleport(loc);		
 	}
 
 	public void onPlayerleaveServer(PlayerQuitEvent event) {
@@ -123,18 +126,17 @@ public class TDMGame extends Game{
 	}
 
 	public void onPlayerhit(EntityDamageByEntityEvent event) {
-            // TODO Auto-generated method stub
-		
 	} 
 
     private void checkGameEnd() {
             if(BlueMates == 0){
-		Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "Team " + ChatColor.RED + "Red" + ChatColor.GREEN + " wins!");
+		Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "Team "
+                        + ChatColor.RED + "Red" + ChatColor.GREEN + " wins!");
 		MCMEPVP.resetGame();
             }else if(RedMates == 0){
-		Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "Team " + ChatColor.BLUE + "Blue" + ChatColor.GREEN + " wins!");
+		Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "Team "
+                        + ChatColor.BLUE + "Blue" + ChatColor.GREEN + " wins!");
 		MCMEPVP.resetGame();
             }
     }
-    
 }
