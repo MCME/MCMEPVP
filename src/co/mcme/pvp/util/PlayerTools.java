@@ -14,7 +14,7 @@ public class PlayerTools{
         return team;
     }
 
-    public boolean getDead(Player player) {
+    public boolean isDead(Player player) {
         if (MCMEPVP.PlayerStatus.get(player.getName()).equals("spectator")) {
             return true;
         } else {
