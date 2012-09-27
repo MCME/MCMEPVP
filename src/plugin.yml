@@ -1,6 +1,6 @@
 name: MCMEPVP
 main: co.mcme.pvp.MCMEPVP
-version: 1.0.0
+version: 1.0.3
 commands:
    pvp:
       description: PVP
