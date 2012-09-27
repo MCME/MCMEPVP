@@ -60,9 +60,11 @@ public class TDMGame extends Game{
                     inv.addItem(new ItemStack(261),new ItemStack(262, 32));//Bow + Arrows
                 }
                 //Teleport User
-                Vector vec = MCMEPVP.Spawns.get(MCMEPVP.getPlayerStatus(user));
-                Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY(), vec.getZ());
-                user.teleport(loc);
+                if (!MCMEPVP.getPlayerStatus(user).equals("builder")){
+                    Vector vec = MCMEPVP.Spawns.get(MCMEPVP.getPlayerStatus(user));
+                    Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY(), vec.getZ());
+                    user.teleport(loc);
+                }
             }
             //Broadcast
             Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "The Fight begins!");
@@ -108,9 +110,6 @@ public class TDMGame extends Game{
 	public void onPlayerdie(PlayerDeathEvent event) {
             Player player = event.getEntity();
             String Status = MCMEPVP.getPlayerStatus(player);
-            if(Status.equals("spectator")){
-                event.setDeathMessage(ChatColor.YELLOW + "Spectator " + player.getName() + " was tired watching this fight!");
-            }
             if(Status.equals("red")){
                 RedMates--;
 		event.setDeathMessage(ChatColor.RED + "Team Red " + ChatColor.YELLOW + "lost " + player.getName());

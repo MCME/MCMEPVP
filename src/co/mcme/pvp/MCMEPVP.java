@@ -62,7 +62,7 @@ public class MCMEPVP extends JavaPlugin {
                     if (player.hasPermission("mcmepvp.join")) {
                         if (GameStatus == 0) {
                             //Check if player is participating already
-                            if (!(getPlayerStatus(player).equals("spectator"))) {
+                            if ((getPlayerStatus(player).equals("participant"))) {
                                 player.sendMessage(ChatColor.DARK_RED
                                         + "You are already participating in the next Game!");
                                 return true;
@@ -77,6 +77,47 @@ public class MCMEPVP extends JavaPlugin {
                         } else {
                             player.sendMessage(ChatColor.DARK_RED
                                     + "You can't join a running Game!");
+                            return true;
+                        }
+                    }
+                }
+                //LEAVE
+                if (method.equalsIgnoreCase("leave")) {
+                    if (player.hasPermission("mcmepvp.join")) {
+                        if (GameStatus == 0) {
+                            //Check if player is participating already
+                            if (!(getPlayerStatus(player).equals("participant"))) {
+                                player.sendMessage(ChatColor.DARK_RED
+                                        + "You are not participating in the Game!");
+                                return true;
+                            } else {
+                                //unqueuePlayer
+                                Participants--;
+                                setPlayerStatus(player, "spectator", ChatColor.WHITE);
+                                player.sendMessage(ChatColor.YELLOW
+                                        + "You are not participating any longer!");
+                                return true;
+                            }
+                        } else {
+                            player.sendMessage(ChatColor.DARK_RED
+                                    + "You can't leave a running Game!");
+                            return true;
+                        }
+                    }
+                }
+                if (method.equalsIgnoreCase("build")) {
+                    if (player.hasPermission("mcmepvp.build")) {
+                        if ((getPlayerStatus(player).equals("builder"))) {
+                            //remove builder
+                            setPlayerStatus(player, "spectator", ChatColor.WHITE);
+                            player.sendMessage(ChatColor.YELLOW
+                                    + "You are not longer in Building Mode!");
+                            return true;
+                        }else{
+                            //set builder
+                            setPlayerStatus(player, "builder", ChatColor.AQUA);
+                            player.sendMessage(ChatColor.YELLOW
+                                    + "You are now in Building Mode!");
                             return true;
                         }
                     }
@@ -110,28 +151,28 @@ public class MCMEPVP extends JavaPlugin {
                         if (args.length > 1) {
                             Vector loc = player.getLocation().toVector();
                             if (args[1].equalsIgnoreCase("blue")) {
-                                this.getConfig().set(PVPMap.toLowerCase() + ".blue", loc);
+                                this.getConfig().set(PVPMap + ".blue", loc);
                                 this.saveConfig();
                                 player.sendMessage(ChatColor.YELLOW
                                         + "Saved your Location as Team Blue's Spawn for Map '" + PVPMap + "'!");
                                 return true;
                             }
                             if (args[1].equalsIgnoreCase("red")) {
-                                this.getConfig().set(PVPMap.toLowerCase() + ".red", loc);
+                                this.getConfig().set(PVPMap + ".red", loc);
                                 this.saveConfig();
                                 player.sendMessage(ChatColor.YELLOW
                                         + "Saved your Location as Team Red's Spawn for Map '" + PVPMap + "'!");
                                 return true;
                             }
                             if (args[1].equalsIgnoreCase("spectator")) {
-                                this.getConfig().set(PVPMap.toLowerCase() + ".spectator", loc);
+                                this.getConfig().set(PVPMap + ".spectator", loc);
                                 this.saveConfig();
                                 player.sendMessage(ChatColor.YELLOW
                                         + "Saved your Location as Spectator's Spawn for Map '" + PVPMap + "'!");
                                 return true;
                             }
                             if (args[1].equalsIgnoreCase("fighter")) {
-                                this.getConfig().set(PVPMap.toLowerCase() + ".fighter", loc);
+                                this.getConfig().set(PVPMap + ".fighter", loc);
                                 this.saveConfig();
                                 player.sendMessage(ChatColor.YELLOW
                                         + "Saved your Location as Fighter's Spawn for Map '" + PVPMap + "'!");
@@ -196,7 +237,7 @@ public class MCMEPVP extends JavaPlugin {
                                     return true;
                                 } else {
                                     player.sendMessage(ChatColor.DARK_RED
-                                            + "'" + args[1] + "' is not a valid Map!");
+                                            + "'" + args[1] + "' is not a valid GameType!");
                                     return true;
                                 }
                             } else {
@@ -205,7 +246,7 @@ public class MCMEPVP extends JavaPlugin {
                                 return true;
                             }
                         } else {
-                            player.sendMessage("Current GameType: '" + PVPGT + "'");
+                            player.sendMessage(ChatColor.YELLOW + "Current GameType: '" + PVPGT + "'");
                             return true;
                         }
                     } else {
@@ -274,7 +315,9 @@ public class MCMEPVP extends JavaPlugin {
         PlayerStatus = new HashMap<String, String>();
         for (Player currentplayer : Bukkit.getOnlinePlayers()) {
             setPlayerStatus(currentplayer, "spectator", ChatColor.WHITE);
-            currentplayer.teleport(Spawn);
+            if (!MCMEPVP.getPlayerStatus(currentplayer).equals("builder")){
+                currentplayer.teleport(Spawn);
+            }
         }
     }
 
@@ -283,11 +326,16 @@ public class MCMEPVP extends JavaPlugin {
         Spawns.put("blue", (Vector) this.getConfig().get(PVPMap + ".blue"));
         Spawns.put("red", (Vector) this.getConfig().get(PVPMap + ".red"));
         Spawns.put("spectator", (Vector) this.getConfig().get(PVPMap + ".spectator"));
-        if(PVPGT == "TDM"){
+        Spawns.put("fighter", (Vector) this.getConfig().get(PVPMap + ".fighter"));
+        if(PVPGT.equals("TDM")){
             CurrentGame = new TDMGame();
-        }
-        if(PVPGT == "LMS"){
-            CurrentGame = new LMSGame();
+        }else{
+            if(PVPGT.equals("LMS")){
+                CurrentGame = new LMSGame();
+            }else{
+                //Error
+                System.out.print("i don't want to start a game of >"+PVPGT+"<");
+            }
         }
     }
 
