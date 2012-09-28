@@ -37,10 +37,7 @@ public class chatListener implements Listener {
                 if (SenderStatus.equals("participant")) {
                     label = ChatColor.GREEN + "Participant ";
                 }
-                if (SenderStatus.equals("builder")) {
-                    label = ChatColor.AQUA + "Builder ";
-                }
-                if (ReceiverStatus.equals("builder") || ReceiverStatus.equals("spectator") || ReceiverStatus.equals("participant") || ReceiverStatus.equals("fighter") || ReceiverStatus.equals(SenderStatus)) {
+                if (ReceiverStatus.equals("spectator") || ReceiverStatus.equals("participant") || ReceiverStatus.equals("fighter") || ReceiverStatus.equals(SenderStatus)) {
                     player.sendMessage(label + event.getPlayer().getName() + ": " + ChatColor.WHITE + event.getMessage());
                 }
             }

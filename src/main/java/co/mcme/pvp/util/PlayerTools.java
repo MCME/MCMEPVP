@@ -9,13 +9,13 @@ import org.bukkit.entity.Player;
  */
 public class PlayerTools{
 
-    public String getTeam(Player p) {
-        String team = MCMEPVP.PlayerStatus.get(p.getName());
+    public String getTeam(Player player) {
+        String team = MCMEPVP.PlayerStatus.get(player.getName());
         return team;
     }
 
-    public boolean isDead(Player p) {
-        if (MCMEPVP.PlayerStatus.get(p.getName()).equals("spectator")) {
+    public boolean getDead(Player player) {
+        if (MCMEPVP.PlayerStatus.get(player.getName()).equals("spectator")) {
             return true;
         } else {
             return false;

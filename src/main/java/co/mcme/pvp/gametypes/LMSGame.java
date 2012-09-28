@@ -16,16 +16,14 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
 import co.mcme.pvp.Game;
-import java.util.ArrayList;
 
 public class LMSGame extends Game{
-        public ArrayList<String> Fighters;
+	private int Fighters = 0;
         public Plugin plugin;
         public int Protection;
 
     public LMSGame() {
         MCMEPVP.GameStatus = 1;
-        Fighters = new ArrayList();
         Protection = 1;
         //Broadcast
 	Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "The next Game starts in a few seconds!");
@@ -34,9 +32,9 @@ public class LMSGame extends Game{
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Bukkit.getPluginManager().getPlugin("MCMEPVP"), new Runnable() {
         public void run() {
             for (Player user : Bukkit.getOnlinePlayers()) {
+                Fighters++;
                 if (MCMEPVP.getPlayerStatus(user).equals("participant")){
-                    MCMEPVP.setPlayerStatus(user, "fighter", ChatColor.DARK_GREEN);
-                    Fighters.add(user.getName());
+                    MCMEPVP.setPlayerStatus(user, "Fighter", ChatColor.DARK_GREEN);
                     //heal
                     user.setHealth(20);
                     user.setFoodLevel(20);
@@ -50,18 +48,16 @@ public class LMSGame extends Game{
                     inv.addItem(new ItemStack(261),new ItemStack(262, 32));//Bow + Arrows
                 }
                 //Teleport User
-                if (!MCMEPVP.getPlayerStatus(user).equals("builder")){
-                    Vector vec = MCMEPVP.Spawns.get(MCMEPVP.getPlayerStatus(user));
-                    Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY(), vec.getZ());
-                    user.teleport(loc);
-                }
+                Vector vec = MCMEPVP.Spawns.get("fighter");
+                Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY(), vec.getZ());
+                user.teleport(loc);
             }
             //Broadcast
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Bukkit.getPluginManager().getPlugin("MCMEPVP"), new Runnable() {
             public void run() {
                 Protection = 0;
                 Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "Protection is now off! The Fight begins!");
-            }}, 300L);
+            }}, 100L);
         }}, 100L);
     }
 
@@ -72,31 +68,29 @@ public class LMSGame extends Game{
 	}
 
 	public void onPlayerleaveServer(PlayerQuitEvent event) {
-		Fighters.remove(event.getPlayer().getName());
+		Fighters--;
                 checkGameEnd();
 	}
 
 	public void onPlayerdie(PlayerDeathEvent event) {
             Player player = event.getEntity();
-            Fighters.remove(player.getName());
-            event.setDeathMessage(ChatColor.DARK_GREEN + player.getName() + ChatColor.YELLOW + " is out of the Game!");
+            String Status = MCMEPVP.getPlayerStatus(player);
+            event.setDeathMessage(ChatColor.DARK_GREEN + player.getName() + " is out of the Game!");
             event.getDrops().add(new ItemStack(364, 1));
             MCMEPVP.setPlayerStatus(event.getEntity(),"spectator", ChatColor.WHITE);
             checkGameEnd();		
 	}
 
 	public void onPlayerhit(EntityDamageByEntityEvent event) {
-            if(Protection == 1){
-                event.setCancelled(true);
-                Player Damager = (Player) event.getDamager();
-                Damager.sendMessage(ChatColor.DARK_RED + "Protection is still active!");
-            }
 	} 
 
     private void checkGameEnd() {
-        if(Fighters.size() == 1){
-            Bukkit.getServer().broadcastMessage(ChatColor.DARK_GREEN + Fighters.get(0)
-                    + ChatColor.YELLOW + " won the fight as last man standing!");
+        if(Fighters == 1){
+            for (Player user : Bukkit.getOnlinePlayers()) {
+                if(MCMEPVP.getPlayerStatus(user).equals("fighter")){
+                    Bukkit.getServer().broadcastMessage(ChatColor.DARK_GREEN + user.getName() + ChatColor.GREEN + " wins the Fight as last man standing!");
+                }
+            }
             MCMEPVP.resetGame();
         }
     }
