@@ -20,7 +20,7 @@ public class SpectatorTools implements Listener {
 
     public static void hide(Player p) {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!(p.equals(player)) && !MCMEPVP.getPlayerStatus(p).equals("spectator")) {
+            if (!(player.equals(p)) && !(MCMEPVP.getPlayerStatus(player).equals("spectator"))) {
                 player.hidePlayer(p);
             }
             p.setAllowFlight(true);
@@ -29,7 +29,7 @@ public class SpectatorTools implements Listener {
 
     public static void show(Player p) {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!(p.equals(player)) && !(MCMEPVP.getPlayerStatus(p).equals("spectator"))) {
+            if (!(player.equals(p))) {
                 player.showPlayer(p);
             }
             p.setAllowFlight(false);

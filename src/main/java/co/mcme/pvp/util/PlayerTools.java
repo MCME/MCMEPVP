@@ -13,7 +13,13 @@ public class PlayerTools{
         String team = MCMEPVP.PlayerStatus.get(player.getName());
         return team;
     }
-
+    
+    public void giveGear(Player player) {
+        String team = MCMEPVP.getPlayerStatus(player);
+        if (team.equals("blue")){
+            
+        }
+    }
     public boolean getDead(Player player) {
         if (MCMEPVP.PlayerStatus.get(player.getName()).equals("spectator")) {
             return true;
