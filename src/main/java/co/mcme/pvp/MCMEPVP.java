@@ -1,6 +1,7 @@
 package co.mcme.pvp;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,16 +11,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
+import org.bukkit.Location;
 
 import co.mcme.pvp.gametypes.TDMGame;
 import co.mcme.pvp.gametypes.LMSGame;
 import co.mcme.pvp.listeners.chatListener;
 import co.mcme.pvp.listeners.damageListener;
-import co.mcme.pvp.listeners.inventoryListener;
 import co.mcme.pvp.listeners.playerListener;
 import co.mcme.pvp.util.SpectatorTools;
-import java.util.List;
-import org.bukkit.Location;
 
 public class MCMEPVP extends JavaPlugin {
 
@@ -37,9 +36,10 @@ public class MCMEPVP extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        //registering Listener
+        //registering Listeners
         registerEvents();
         PlayerStatus = new HashMap<String, String>();
+        this.getConfig().options().copyDefaults(true);
         Maps = this.getConfig().getStringList("maps");
         GameTypes = this.getConfig().getStringList("gametypes");
         PVPMap = (String) this.getConfig().get("general.defaultMap");
@@ -297,11 +297,6 @@ public class MCMEPVP extends JavaPlugin {
         PlayerStatus.put(player.getName(), status);
         player.setPlayerListName(NameColor + player.getName());
         player.setDisplayName(NameColor + player.getName());
-        if (status.equalsIgnoreCase("spectator")) {
-            SpectatorTools.hide(player);
-        } else {
-            SpectatorTools.show(player);
-        }
     }
 
     public static String getPlayerStatus(Player player) {
@@ -312,7 +307,6 @@ public class MCMEPVP extends JavaPlugin {
     private void registerEvents() {
         getServer().getPluginManager().registerEvents(new chatListener(this), this);
         getServer().getPluginManager().registerEvents(new damageListener(this), this);
-        getServer().getPluginManager().registerEvents(new inventoryListener(this), this);
         getServer().getPluginManager().registerEvents(new playerListener(this), this);
     }
 }

@@ -1,6 +1,38 @@
 name: MCMEPVP
 main: co.mcme.pvp.MCMEPVP
 version: 1.0.0
+permissions:
+  mcmepvp.user:
+    default: true
+    children:
+      mcmepvp.join: true
+      mcmepvp.shout: true
+  mcmepvp.admin:
+    default: op
+    children:
+      mcmepvp.user: true
+      mcmepvp.start: true
+      mcmepvp.set: true
+      mcmepvp.stop: true
+      mcmepvp.map: true
+      mcmepvp.gt: true
+      mcmepvp.adminchat: true
+  mcmepvp.join:
+    default: true
+  mcmepvp.shout:
+    default: true
+  mcmepvp.start:
+    default: op
+  mcmepvp.set:
+    default: op
+  mcmepvp.stop:
+    default: op
+  mcmepvp.map:
+    default: op
+  mcmepvp.gt:
+    default: op
+  mcmepvp.adminchat:
+    default: op
 commands:
    pvp:
       description: PVP

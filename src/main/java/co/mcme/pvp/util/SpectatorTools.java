@@ -11,6 +11,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 /**
  *
@@ -19,21 +21,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class SpectatorTools implements Listener {
 
     public static void hide(Player p) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!(player.equals(p)) && !(MCMEPVP.getPlayerStatus(player).equals("spectator"))) {
-                player.hidePlayer(p);
-            }
-            p.setAllowFlight(true);
-        }
+        p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 9999, 0));
     }
 
     public static void show(Player p) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (!(player.equals(p))) {
-                player.showPlayer(p);
-            }
-            p.setAllowFlight(false);
-        }
+        p.removePotionEffect(PotionEffectType.INVISIBILITY);
     }
 
     @EventHandler(priority = EventPriority.HIGH)

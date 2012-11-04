@@ -1,0 +1,79 @@
+general:
+  defaultWorld: world
+  defaultGameType: TDM
+  defaultMap: Tharbad
+  spawn:
+    ==: Vector
+    x: -165.0
+    y: 98.0
+    z: 1824.0
+maps:
+- Tharbad
+- Annuminas
+- Aldburg
+gametypes:
+- TDM
+- LMS
+Tharbad:
+  blue:
+    ==: Vector
+    x: 4865.963028523552
+    y: 20.0
+    z: -2286.6782568496574
+  red:
+    ==: Vector
+    x: 4838.951983668314
+    y: 20.0
+    z: -2635.0370746641643
+  spectator:
+    ==: Vector
+    x: 4856.421024121704
+    y: 91.0
+    z: -2447.6187252458244
+  fighter:
+    ==: Vector
+    x: 4867.492634603496
+    y: 21.0
+    z: -2472.424754434086
+Annuminas:
+  blue:
+    ==: Vector
+    x: -3184.703695227299
+    y: 88.0
+    z: 1370.0083531992557
+  red:
+    ==: Vector
+    x: -3185.500334557128
+    y: 91.0
+    z: 1276.8956860447638
+  spectator:
+    ==: Vector
+    x: -3237.3288101392104
+    y: 75.0
+    z: 1323.767448607034
+  fighter:
+    ==: Vector
+    x: -3188.594836648035
+    y: 75.0
+    z: 1324.161300157647
+Aldburg:
+  fighter:
+    ==: Vector
+    x: 13461.0
+    y: 64.0
+    z: -13652.0
+  blue:
+    ==: Vector
+    x: 13360.276108746286
+    y: 44.0
+    z: -13582.655378668022
+  red:
+    ==: Vector
+    x: 13589.629983436242
+    y: 59.0
+    z: -13613.019055962666
+  spectator:
+    ==: Vector
+    x: 13463.376629419288
+    y: 99.0
+    z: -13628.963996921471

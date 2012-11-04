@@ -1,13 +1,14 @@
 package co.mcme.pvp.listeners;
 
 import co.mcme.pvp.MCMEPVP;
-import org.bukkit.ChatColor;
+import org.bukkit.entity.Entity;
 
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -51,6 +52,27 @@ public class damageListener implements Listener {
             if (MCMEPVP.getPlayerStatus(Victim).equals("spectator") || MCMEPVP.getPlayerStatus(Victim).equals("participant")) {
                 event.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    void arrowDetect(EntityDamageByEntityEvent event) {
+        if (event.getDamager() instanceof Projectile) {
+            arrowDamage(event);
+            return;
+        }
+    }
+
+    void arrowDamage(EntityDamageByEntityEvent event) {
+        Entity defender = event.getEntity();
+        Entity attacker = ((Projectile) event.getDamager()).getShooter();
+
+        if (defender instanceof Player) {
+            if (MCMEPVP.getPlayerStatus((Player) defender).equals(MCMEPVP.getPlayerStatus((Player) attacker))) {
+                event.setDamage(0);
+
+            }
+
         }
     }
 }
