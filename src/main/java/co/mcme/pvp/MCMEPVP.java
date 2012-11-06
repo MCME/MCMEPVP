@@ -18,7 +18,6 @@ import co.mcme.pvp.gametypes.LMSGame;
 import co.mcme.pvp.listeners.chatListener;
 import co.mcme.pvp.listeners.damageListener;
 import co.mcme.pvp.listeners.playerListener;
-import co.mcme.pvp.util.SpectatorTools;
 
 public class MCMEPVP extends JavaPlugin {
 

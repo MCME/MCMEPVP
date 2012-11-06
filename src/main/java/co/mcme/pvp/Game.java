@@ -27,6 +27,10 @@ public class Game {
     public void onPlayerhit(EntityDamageByEntityEvent event) {
         // TODO Auto-generated method stub
     }
+    
+    public void onPlayerShoot(EntityDamageByEntityEvent event) {
+        // TODO Auto-generated method stub
+    }
 
     public void onPlayerjoinGame(Player player) {
         // TODO Auto-generated method stub

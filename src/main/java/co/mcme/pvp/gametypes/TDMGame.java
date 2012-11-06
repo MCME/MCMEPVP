@@ -71,13 +71,13 @@ public class TDMGame extends Game {
             RedMates++;
             MCMEPVP.setPlayerStatus(player, Team, ChatColor.RED);
             GearGiver.giveArmor(player, "red");
-            GearGiver.giveWeapons(player, "red");
+            GearGiver.giveWeapons(player, "red", "swordbow");
         } else if (Team.equals("blue")) {
             player.sendMessage(ChatColor.YELLOW + "You're now in Team " + ChatColor.BLUE + "BLUE" + ChatColor.YELLOW + "!");
             BlueMates++;
             MCMEPVP.setPlayerStatus(player, Team, ChatColor.BLUE);
             GearGiver.giveArmor(player, "blue");
-            GearGiver.giveWeapons(player, "blue");
+            GearGiver.giveWeapons(player, "blue", "swordbow");
         }
     }
 
@@ -122,6 +122,21 @@ public class TDMGame extends Game {
     }
 
     public void onPlayerhit(EntityDamageByEntityEvent event) {
+        Player defender = (Player) event.getEntity();
+        Player attacker = (Player) event.getDamager();
+        boolean isFriendlyFire = MCMEPVP.getPlayerStatus(attacker).equals(MCMEPVP.getPlayerStatus(defender));
+        boolean isSpectatorDamage = (MCMEPVP.getPlayerStatus(defender).equals("spectator") || MCMEPVP.getPlayerStatus(defender).equals("participant"));
+        if (isFriendlyFire || isSpectatorDamage) {
+            event.setCancelled(true);
+        }
+    }
+
+    public void onPlayerShoot(EntityDamageByEntityEvent event) {
+        Player defender = (Player) event.getEntity();
+        Player attacker = (Player) event.getDamager();
+        if (MCMEPVP.getPlayerStatus(defender).equals(MCMEPVP.getPlayerStatus(attacker))) {
+            event.setDamage(0);
+        }
     }
 
     private void checkGameEnd() {

@@ -2,6 +2,7 @@ package co.mcme.pvp.util;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 /**
  *
@@ -10,35 +11,45 @@ import org.bukkit.inventory.ItemStack;
 public class GearGiver {
 
     public static void giveArmor(Player player, String team) {
+        PlayerInventory target = player.getInventory();
         if (team.equals("red")) {
-            player.getInventory().setHelmet(ColorArmor.setColor(new ItemStack(298, 1, (short) 40000), 0xff0000));
-            player.getInventory().setChestplate(ColorArmor.setColor(new ItemStack(299, 1, (short) 40000), 0xff0000));
-            player.getInventory().setLeggings(ColorArmor.setColor(new ItemStack(300, 1, (short) 40000), 0xff0000));
-            player.getInventory().setBoots(ColorArmor.setColor(new ItemStack(301, 1, (short) 40000), 0xff0000));
+            target.setHelmet(ColorArmor.setColor(new ItemStack(298, 1, (short) 40000), 0xff0000));
+            target.setChestplate(ColorArmor.setColor(new ItemStack(299, 1, (short) 40000), 0xff0000));
+            target.setLeggings(ColorArmor.setColor(new ItemStack(300, 1, (short) 40000), 0xff0000));
+            target.setBoots(ColorArmor.setColor(new ItemStack(301, 1, (short) 40000), 0xff0000));
         }
         if (team.equals("blue")) {
-            player.getInventory().setHelmet(ColorArmor.setColor(new ItemStack(298, 1, (short) 40000), 0x003cff));
-            player.getInventory().setChestplate(ColorArmor.setColor(new ItemStack(299, 1, (short) 40000), 0x003cff));
-            player.getInventory().setLeggings(ColorArmor.setColor(new ItemStack(300, 1, (short) 40000), 0x003cff));
-            player.getInventory().setBoots(ColorArmor.setColor(new ItemStack(301, 1, (short) 40000), 0x003cff));
+            target.setHelmet(ColorArmor.setColor(new ItemStack(298, 1, (short) 40000), 0x003cff));
+            target.setChestplate(ColorArmor.setColor(new ItemStack(299, 1, (short) 40000), 0x003cff));
+            target.setLeggings(ColorArmor.setColor(new ItemStack(300, 1, (short) 40000), 0x003cff));
+            target.setBoots(ColorArmor.setColor(new ItemStack(301, 1, (short) 40000), 0x003cff));
         }
         if (team.equals("green")) {
-            player.getInventory().setHelmet(ColorArmor.setColor(new ItemStack(298, 1, (short) 40000), 0x00ff36));
-            player.getInventory().setChestplate(ColorArmor.setColor(new ItemStack(299, 1, (short) 40000), 0x00ff36));
-            player.getInventory().setLeggings(ColorArmor.setColor(new ItemStack(300, 1, (short) 40000), 0x00ff36));
-            player.getInventory().setBoots(ColorArmor.setColor(new ItemStack(301, 1, (short) 40000), 0x00ff36));
+            target.setHelmet(ColorArmor.setColor(new ItemStack(298, 1, (short) 40000), 0x00ff36));
+            target.setChestplate(ColorArmor.setColor(new ItemStack(299, 1, (short) 40000), 0x00ff36));
+            target.setLeggings(ColorArmor.setColor(new ItemStack(300, 1, (short) 40000), 0x00ff36));
+            target.setBoots(ColorArmor.setColor(new ItemStack(301, 1, (short) 40000), 0x00ff36));
         }
         if (team.equals("yellow")) {
-            player.getInventory().setHelmet(ColorArmor.setColor(new ItemStack(298, 1, (short) 40000), 0xf6ff00));
-            player.getInventory().setChestplate(ColorArmor.setColor(new ItemStack(299, 1, (short) 40000), 0xf6ff00));
-            player.getInventory().setLeggings(ColorArmor.setColor(new ItemStack(300, 1, (short) 40000), 0xf6ff00));
-            player.getInventory().setBoots(ColorArmor.setColor(new ItemStack(301, 1, (short) 40000), 0xf6ff00));
+            target.setHelmet(ColorArmor.setColor(new ItemStack(298, 1, (short) 40000), 0xf6ff00));
+            target.setChestplate(ColorArmor.setColor(new ItemStack(299, 1, (short) 40000), 0xf6ff00));
+            target.setLeggings(ColorArmor.setColor(new ItemStack(300, 1, (short) 40000), 0xf6ff00));
+            target.setBoots(ColorArmor.setColor(new ItemStack(301, 1, (short) 40000), 0xf6ff00));
+        }
+        if (team.equals("uncolored")) {
+            target.setHelmet(ColorArmor.setColor(new ItemStack(298, 1, (short) 40000), 0x000000));
+            target.setChestplate(ColorArmor.setColor(new ItemStack(299, 1, (short) 40000), 0x000000));
+            target.setLeggings(ColorArmor.setColor(new ItemStack(300, 1, (short) 40000), 0x000000));
+            target.setBoots(ColorArmor.setColor(new ItemStack(301, 1, (short) 40000), 0x000000));
         }
 
     }
 
-    public static void giveWeapons(Player player, String team) {
-        player.getInventory().setItemInHand(new ItemStack(276));//Sword
-        player.getInventory().addItem(new ItemStack(261), new ItemStack(262, 32));//Bow + Arrows
+    public static void giveWeapons(Player player, String team, String loadout) {
+        PlayerInventory target = player.getInventory();
+        if (loadout.equals("swordbow")) {
+            target.setItemInHand(new ItemStack(276));//Sword
+            target.addItem(new ItemStack(261), new ItemStack(262, 32));//Bow + Arrows 
+        }
     }
 }
