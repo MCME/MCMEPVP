@@ -309,4 +309,12 @@ public class MCMEPVP extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new damageListener(this), this);
         getServer().getPluginManager().registerEvents(new playerListener(this), this);
     }
+    public boolean isDead(Player player){
+        if (getPlayerStatus(player).equals("spectator")){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 }
