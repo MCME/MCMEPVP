@@ -32,10 +32,6 @@ public class MCMEPVP extends JavaPlugin {
     public static HashMap<String, Vector> Spawns;
     public static List<String> Maps;
     public static List<String> GameTypes;
-    public static String sqluser;
-    public static String sqlhost;
-    public static String sqlpass;
-    public static String sqlbase;
 
     @Override
     public void onEnable() {
@@ -50,10 +46,6 @@ public class MCMEPVP extends JavaPlugin {
         PVPWorld = Bukkit.getWorld((String) this.getConfig().get("general.defaultWorld"));
         Vector SpawnVec = (Vector) this.getConfig().get("general.spawn");
         Spawn = new Location(PVPWorld, SpawnVec.getX(), SpawnVec.getY(), SpawnVec.getZ());
-        sqluser = this.getConfig().getString("sql.user");
-        sqlhost = this.getConfig().getString("sql.host");
-        sqlpass = this.getConfig().getString("sql.pass");
-        sqlbase = this.getConfig().getString("sql.db");
         resetGame();
     }
 
