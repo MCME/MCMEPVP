@@ -11,7 +11,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
@@ -37,7 +36,7 @@ public class LMSGame extends Game {
                 for (Player user : Bukkit.getOnlinePlayers()) {
                     Fighters++;
                     if (MCMEPVP.getPlayerStatus(user).equals("participant")) {
-                        MCMEPVP.setPlayerStatus(user, "Fighter", ChatColor.DARK_GREEN);
+                        MCMEPVP.setPlayerStatus(user, "fighter", ChatColor.DARK_GREEN);
                         //heal
                         user.setHealth(20);
                         user.setFoodLevel(20);
@@ -63,32 +62,40 @@ public class LMSGame extends Game {
 
     protected void giveGear(Player player) {
         GearGiver.giveArmor(player, "uncolored");
-        GearGiver.giveWeapons(player, "uncolored", "swordbow");
+        GearGiver.giveWeapons(player, "uncolored", "warrior");
     }
 
+    @Override
     public void onPlayerjoinServer(PlayerLoginEvent event) {
         Vector vec = MCMEPVP.Spawns.get("spectator");
         Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY(), vec.getZ());
         event.getPlayer().teleport(loc);
     }
 
+    @Override
     public void onPlayerleaveServer(PlayerQuitEvent event) {
         Fighters--;
         checkGameEnd();
     }
 
+    @Override
     public void onPlayerdie(PlayerDeathEvent event) {
         Player player = event.getEntity();
         String Status = MCMEPVP.getPlayerStatus(player);
-        event.setDeathMessage(ChatColor.DARK_GREEN + player.getName() + " is out of the Game!");
-        event.getDrops().add(new ItemStack(364, 1));
-        MCMEPVP.setPlayerStatus(event.getEntity(), "spectator", ChatColor.WHITE);
-        checkGameEnd();
+        if (Status.equals("fighter")) {
+            event.setDeathMessage(ChatColor.DARK_GREEN + player.getName() + " is out of the Game!");
+            event.getDrops().add(new ItemStack(364, 1));
+            Fighters--;
+            MCMEPVP.setPlayerStatus(player, "spectator", ChatColor.WHITE);
+            checkGameEnd();
+        }
     }
 
+    @Override
     public void onPlayerhit(EntityDamageByEntityEvent event) {
     }
 
+    @Override
     public void onPlayerShoot(EntityDamageByEntityEvent event) {
     }
 

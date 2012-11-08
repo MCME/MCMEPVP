@@ -3,13 +3,11 @@ package co.mcme.pvp.listeners;
 import co.mcme.pvp.MCMEPVP;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.util.Vector;
 
 public class playerListener implements Listener {
 

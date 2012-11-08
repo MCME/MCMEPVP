@@ -71,22 +71,24 @@ public class TDMGame extends Game {
             RedMates++;
             MCMEPVP.setPlayerStatus(player, Team, ChatColor.RED);
             GearGiver.giveArmor(player, "red");
-            GearGiver.giveWeapons(player, "red", "swordbow");
+            GearGiver.giveWeapons(player, "red", "warrior");
         } else if (Team.equals("blue")) {
             player.sendMessage(ChatColor.YELLOW + "You're now in Team " + ChatColor.BLUE + "BLUE" + ChatColor.YELLOW + "!");
             BlueMates++;
             MCMEPVP.setPlayerStatus(player, Team, ChatColor.BLUE);
             GearGiver.giveArmor(player, "blue");
-            GearGiver.giveWeapons(player, "blue", "swordbow");
+            GearGiver.giveWeapons(player, "blue", "warrior");
         }
     }
 
+    @Override
     public void onPlayerjoinServer(PlayerLoginEvent event) {
         Vector vec = MCMEPVP.Spawns.get("spectator");
         Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY(), vec.getZ());
         event.getPlayer().teleport(loc);
     }
 
+    @Override
     public void onPlayerleaveServer(PlayerQuitEvent event) {
         String OldTeam = MCMEPVP.getPlayerStatus(event.getPlayer());
         if (OldTeam.equals("red")) {
@@ -101,6 +103,7 @@ public class TDMGame extends Game {
         checkGameEnd();
     }
 
+    @Override
     public void onPlayerdie(PlayerDeathEvent event) {
         Player player = event.getEntity();
         String Status = MCMEPVP.getPlayerStatus(player);
@@ -121,6 +124,7 @@ public class TDMGame extends Game {
         checkGameEnd();
     }
 
+    @Override
     public void onPlayerhit(EntityDamageByEntityEvent event) {
         Player defender = (Player) event.getEntity();
         Player attacker = (Player) event.getDamager();
@@ -131,6 +135,7 @@ public class TDMGame extends Game {
         }
     }
 
+    @Override
     public void onPlayerShoot(EntityDamageByEntityEvent event) {
         Player defender = (Player) event.getEntity();
         Player attacker = (Player) event.getDamager();
