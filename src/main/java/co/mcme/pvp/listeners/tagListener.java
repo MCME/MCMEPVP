@@ -29,5 +29,8 @@ public class tagListener {
         if (MCMEPVP.getPlayerStatus(target).equalsIgnoreCase("red")){
             event.setTag(ChatColor.RED + newname);
         }
+        else {
+            event.setTag(oldname);
+        }
     }
 }
