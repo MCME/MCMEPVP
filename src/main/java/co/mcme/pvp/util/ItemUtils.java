@@ -2,6 +2,7 @@ package co.mcme.pvp.util;
 
 import net.minecraft.server.NBTTagCompound;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -31,5 +32,11 @@ public class ItemUtils {
         tag.setInt("color", color);
         itemStack.tag.setCompound("display", tag);
         return craftstack;
+    }
+    public static ItemStack setEnchantments(ItemStack item, String ench){
+        if (ench.equalsIgnoreCase("armor")){
+           item.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2); 
+        }      
+        return item;
     }
 }

@@ -16,6 +16,7 @@ import org.bukkit.util.Vector;
 
 import co.mcme.pvp.Game;
 import co.mcme.pvp.util.GearGiver;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Projectile;
 
@@ -74,12 +75,14 @@ public class TDMGame extends Game {
             MCMEPVP.setPlayerStatus(player, Team, ChatColor.RED);
             GearGiver.giveArmor(player, "red");
             GearGiver.giveWeapons(player, "red", "warrior");
+            GearGiver.giveExtras(player, Team, "boating");
         } else if (Team.equals("blue")) {
             player.sendMessage(ChatColor.YELLOW + "You're now in Team " + ChatColor.BLUE + "BLUE" + ChatColor.YELLOW + "!");
             BlueMates++;
             MCMEPVP.setPlayerStatus(player, Team, ChatColor.BLUE);
             GearGiver.giveArmor(player, "blue");
             GearGiver.giveWeapons(player, "blue", "warrior");
+            GearGiver.giveExtras(player, Team, "boating");
         }
     }
 
@@ -130,10 +133,8 @@ public class TDMGame extends Game {
     public void onPlayerhit(EntityDamageByEntityEvent event) {
         Player defender = (Player) event.getEntity();
         Player attacker = (Player) event.getDamager();
-        boolean isFriendlyFire = MCMEPVP.getPlayerStatus(attacker).equals(MCMEPVP.getPlayerStatus(defender));
-        boolean isSpectatorDamage = (MCMEPVP.getPlayerStatus(defender).equals("spectator") || MCMEPVP.getPlayerStatus(defender).equals("participant"));
-        if (isFriendlyFire || isSpectatorDamage) {
-            event.setCancelled(true);
+        if(MCMEPVP.getPlayerStatus(attacker).equals(MCMEPVP.getPlayerStatus(defender))) {
+           event.setCancelled(true);
         }
     }
 
@@ -142,7 +143,9 @@ public class TDMGame extends Game {
         Player defender = (Player) event.getEntity();
         Player attacker = (Player) ((Projectile) event.getDamager()).getShooter();
         if (MCMEPVP.getPlayerStatus(defender).equals(MCMEPVP.getPlayerStatus(attacker))) {
-            event.setDamage(0);
+            event.setCancelled(true);
+            attacker.getWorld().playSound(attacker.getLocation(), Sound.ZOMBIE_REMEDY, (float) 60, (float) 50);
+            attacker.sendMessage(ChatColor.DARK_RED + "You can't shoot your teammates!");
         }
     }
 

@@ -1,6 +1,7 @@
 package co.mcme.pvp.listeners;
 
 import co.mcme.pvp.MCMEPVP;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -27,14 +28,16 @@ public class damageListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    void arrowDetect(EntityDamageByEntityEvent event) {
-        if (event.getDamager() instanceof Projectile) {
+    void entityDetect(EntityDamageByEntityEvent event) {
+        Entity attacker = event.getDamager();
+        if (attacker instanceof Projectile) {
             arrowDamage(event);
             return;
         }
-        Entity attacker = event.getDamager();
+        
         if (attacker instanceof Player) {
             playerDamage(event);
+            return;
         }
     }
 
@@ -61,6 +64,7 @@ public class damageListener implements Listener {
         boolean isSpectatorDamage = (MCMEPVP.getPlayerStatus(defender).equals("spectator") || MCMEPVP.getPlayerStatus(defender).equals("participant"));
         if (isSpectatorDamage) {
             event.setCancelled(true);
+            ((Player) event.getDamager()).sendMessage(ChatColor.DARK_RED + "You aren't allowed to attack spectators!");
         } else {
             MCMEPVP.CurrentGame.onPlayerhit(event);
         }
