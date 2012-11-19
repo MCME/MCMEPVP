@@ -145,7 +145,7 @@
 						<phase>compile</phase>
 						<configuration>
 							<tasks>
-								<copy file="${project.build.directory}/${project.build.finalName}.jar" tofile="${basedir}/dist/${project.build.finalName}.jar" />
+								<copy file="${project.build.directory}/${project.build.finalName}.jar" tofile="/home/pvp/Desktop/pvp/plugins/MCMEPVP.jar" />
 							</tasks>
 						</configuration>
 						<goals>

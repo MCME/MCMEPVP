@@ -16,6 +16,8 @@ import org.bukkit.util.Vector;
 
 import co.mcme.pvp.Game;
 import co.mcme.pvp.util.GearGiver;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Projectile;
 
 public class TDMGame extends Game {
 
@@ -138,7 +140,7 @@ public class TDMGame extends Game {
     @Override
     public void onPlayerShoot(EntityDamageByEntityEvent event) {
         Player defender = (Player) event.getEntity();
-        Player attacker = (Player) event.getDamager();
+        Player attacker = (Player) ((Projectile) event.getDamager()).getShooter();
         if (MCMEPVP.getPlayerStatus(defender).equals(MCMEPVP.getPlayerStatus(attacker))) {
             event.setDamage(0);
         }

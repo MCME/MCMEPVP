@@ -18,6 +18,7 @@ import co.mcme.pvp.gametypes.LMSGame;
 import co.mcme.pvp.listeners.chatListener;
 import co.mcme.pvp.listeners.damageListener;
 import co.mcme.pvp.listeners.playerListener;
+import co.mcme.pvp.listeners.tagListener;
 
 public class MCMEPVP extends JavaPlugin {
 
@@ -275,6 +276,9 @@ public class MCMEPVP extends JavaPlugin {
         for (Player currentplayer : Bukkit.getOnlinePlayers()) {
             setPlayerStatus(currentplayer, "spectator", ChatColor.WHITE);
             currentplayer.teleport(Spawn);
+            currentplayer.getInventory().clear();
+            currentplayer.setHealth(20);
+            currentplayer.setFoodLevel(20);
         }
     }
 
@@ -308,6 +312,7 @@ public class MCMEPVP extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new chatListener(this), this);
         getServer().getPluginManager().registerEvents(new damageListener(this), this);
         getServer().getPluginManager().registerEvents(new playerListener(this), this);
+        getServer().getPluginManager().registerEvents(new tagListener(), this);
     }
     public boolean isDead(Player player){
         if (getPlayerStatus(player).equals("spectator")){

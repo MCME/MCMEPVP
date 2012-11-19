@@ -4,11 +4,13 @@ import co.mcme.pvp.MCMEPVP;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.kitteh.tag.PlayerReceiveNameTagEvent;
 
-public class tagListener {
+public class tagListener implements Listener{
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onNameTag(PlayerReceiveNameTagEvent event) {
         Player target = event.getNamedPlayer();
         String oldname = target.getName();
@@ -29,8 +31,11 @@ public class tagListener {
         if (MCMEPVP.getPlayerStatus(target).equalsIgnoreCase("red")){
             event.setTag(ChatColor.RED + newname);
         }
-        else {
-            event.setTag(oldname);
+        if (MCMEPVP.getPlayerStatus(target).equalsIgnoreCase("participant")){
+            event.setTag(ChatColor.GREEN + newname);
         }
+        if (MCMEPVP.getPlayerStatus(target).equalsIgnoreCase("fighter")){
+            event.setTag(ChatColor.BLACK + newname);
+        }      
     }
 }
