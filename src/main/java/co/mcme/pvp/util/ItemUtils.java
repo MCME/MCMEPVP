@@ -35,7 +35,7 @@ public class ItemUtils {
     }
     public static ItemStack setEnchantments(ItemStack item, String ench){
         if (ench.equalsIgnoreCase("armor")){
-           item.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 2); 
+           item.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
         }      
         return item;
     }

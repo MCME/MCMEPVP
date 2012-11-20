@@ -36,6 +36,7 @@ public class MCMEPVP extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        System.out.print("Any bugs you may encounter refer to meggawatts!");
         //registering Listeners
         registerEvents();
         PlayerStatus = new HashMap<String, String>();
