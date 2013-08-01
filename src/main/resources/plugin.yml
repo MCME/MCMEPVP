@@ -1,7 +1,9 @@
-name: MCMEPVP
+name: ${project.artifactId}
 main: co.mcme.pvp.MCMEPVP
-version: 1.0.9
+version: ${project.version}
+website: ${project.url}
 depend: [TagAPI]
+authors: [meggawatts, daggs]
 permissions:
   mcmepvp.user:
     default: true
