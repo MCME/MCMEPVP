@@ -8,7 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.kitteh.tag.PlayerReceiveNameTagEvent;
 
-public class tagListener implements Listener{
+public class tagListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onNameTag(PlayerReceiveNameTagEvent event) {
@@ -17,25 +17,31 @@ public class tagListener implements Listener{
         String newname = oldname;
         if (oldname.length() == 15) {
             int len = oldname.length();
-            int removechars = len -1;
+            int removechars = len - 1;
             newname = oldname.substring(0, removechars);
         }
         if (oldname.length() == 16) {
             int len = oldname.length();
-            int removechars = len -2;
+            int removechars = len - 2;
             newname = oldname.substring(0, removechars);
         }
-        if (MCMEPVP.getPlayerStatus(target).equalsIgnoreCase("blue")){
+        if (MCMEPVP.getPlayerTeam(target).equalsIgnoreCase("blue")) {
             event.setTag(ChatColor.BLUE + newname);
         }
-        if (MCMEPVP.getPlayerStatus(target).equalsIgnoreCase("red")){
+        if (MCMEPVP.getPlayerTeam(target).equalsIgnoreCase("red")) {
             event.setTag(ChatColor.RED + newname);
         }
-        if (MCMEPVP.getPlayerStatus(target).equalsIgnoreCase("participant")){
+        if (MCMEPVP.getPlayerTeam(target).equalsIgnoreCase("green")) {
+            event.setTag(ChatColor.DARK_GREEN + newname);
+        }
+        if (MCMEPVP.getPlayerTeam(target).equalsIgnoreCase("purple")) {
+            event.setTag(ChatColor.LIGHT_PURPLE + newname);
+        }
+        if (MCMEPVP.getPlayerTeam(target).equalsIgnoreCase("participant")) {
             event.setTag(ChatColor.GREEN + newname);
         }
-        if (MCMEPVP.getPlayerStatus(target).equalsIgnoreCase("fighter")){
+        if (MCMEPVP.getPlayerTeam(target).equalsIgnoreCase("fighter")) {
             event.setTag(ChatColor.BLACK + newname);
-        }      
+        }
     }
 }

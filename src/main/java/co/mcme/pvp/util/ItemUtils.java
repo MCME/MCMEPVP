@@ -1,42 +1,46 @@
 package co.mcme.pvp.util;
 
-import net.minecraft.server.NBTTagCompound;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 /**
  *
  * @author meggawatts <meggawatts@mcme.co>
  */
-public class ItemUtils {
+public class itemUtils {
 
-    public static ItemStack setColor(ItemStack item, int color) {
-        CraftItemStack craftstack = null;
-        net.minecraft.server.ItemStack itemStack = null;
-        if (item instanceof CraftItemStack) {
-            craftstack = (CraftItemStack) item;
-            itemStack = craftstack.getHandle();
-        } else if (item instanceof ItemStack) {
-            craftstack = new CraftItemStack(item);
-            itemStack = craftstack.getHandle();
-        }
-        NBTTagCompound tag = itemStack.tag;
-        if (tag == null) {
-            tag = new NBTTagCompound();
-            tag.setCompound("display", new NBTTagCompound());
-            itemStack.tag = tag;
+    public static ItemStack setColor(ItemStack item, Color color) {
+        LeatherArmorMeta meta;
+        Material type = item.getType();
+        if (type.equals(Material.LEATHER_BOOTS) || type.equals(Material.LEATHER_CHESTPLATE) || type.equals(Material.LEATHER_HELMET) || type.equals(Material.LEATHER_LEGGINGS)) {
+            meta = (LeatherArmorMeta) item.getItemMeta();
+            meta.setColor(color);
+            item.setItemMeta(meta);
+            return item;
+        } else {
+            meta = null;
+            return item;
         }
 
-        tag = itemStack.tag.getCompound("display");
-        tag.setInt("color", color);
-        itemStack.tag.setCompound("display", tag);
-        return craftstack;
     }
-    public static ItemStack setEnchantments(ItemStack item, String ench){
-        if (ench.equalsIgnoreCase("armor")){
-           item.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
-        }      
+
+    public static ItemStack nameItem(ItemStack item, String name, ChatColor color) {
+        ItemMeta meta;
+        meta = item.getItemMeta();
+        meta.setDisplayName(color + name);
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    public static ItemStack setEnchantments(ItemStack item, String ench) {
+        if (ench.equalsIgnoreCase("armor")) {
+            item.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+        }
         return item;
     }
 }

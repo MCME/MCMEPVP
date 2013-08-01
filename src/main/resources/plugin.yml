@@ -1,12 +1,16 @@
 name: MCMEPVP
 main: co.mcme.pvp.MCMEPVP
-version: 1.0.0
+version: 1.0.9
+depend: [TagAPI]
 permissions:
   mcmepvp.user:
     default: true
     children:
       mcmepvp.join: true
+      mcmepvp.leave: true
       mcmepvp.shout: true
+      mcmepvp.list: true
+      mcmepvp.version: true
   mcmepvp.admin:
     default: op
     children:
@@ -15,13 +19,48 @@ permissions:
       mcmepvp.set: true
       mcmepvp.stop: true
       mcmepvp.map: true
+      mcmepvp.derp: true
       mcmepvp.gt: true
+      mcmepvp.add: true
+      mcmepvp.remove: true
+      mcmepvp.list: true
       mcmepvp.adminchat: true
+      mcmepvp.setscore: true
+      mcmepvp.unlock: true
+      mcmepvp.lock: true
+      mcmepvp.ignorelock: true
+      mcmepvp.forcejoin: true
+      mcmepvp.createlootsign: true
+      mcmepvp.remind: true
+      mcmepvp.ignorebuildchecks: true
+      mcmepvp.setdebug: true
+  mcmepvp.version:
+    default: true
   mcmepvp.join:
+    default: true
+  mcmepvp.leave:
     default: true
   mcmepvp.shout:
     default: true
+  mcmepvp.setdebug:
+    default: op
+  mcmepvp.ignorebuildchecks:
+    default: op  
+  mcmepvp.remind:
+    default: op  
+  mcmepvp.createlootsign:
+    default: op
+  mcmepvp.forcejoin:
+    default: op
+  mcmepvp.setscore:
+    default: op
+  mcmepvp.lock:
+    default: op
+  mcmepvp.unlock:
+    default: op
   mcmepvp.start:
+    default: op
+  mcmepvp.derp:
     default: op
   mcmepvp.set:
     default: op
@@ -33,10 +72,18 @@ permissions:
     default: op
   mcmepvp.adminchat:
     default: op
+  mcmepvp.ignorelock:
+    default: op
+  mcmepvp.add:
+    default: op
+  mcmepvp.remove:
+    default: op
+  mcmepvp.list:
+    default: op
 commands:
    pvp:
       description: PVP
-      usage: /<command> [join|start|map|gt|set|stop]
+      usage: /<command> [join|start|map|gt|set|stop|setscore|lock|unlock|forcejoin]
    shout:
       description: Shout a message to Everyone!
       usage: /<command> [msg]
