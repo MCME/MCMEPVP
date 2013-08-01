@@ -1,0 +1,195 @@
+general:
+  announcedelay: 60
+  debug: false
+  defaultWorld: world
+  defaultGameType: TSL
+  defaultMap: Tharbad
+  spawn:
+    ==: Vector
+    x: -165.0
+    y: 98.0
+    z: 1824.0
+score:
+  TSL: 30
+  TCQ: 20
+infection:
+  time: 10
+  zombiehealth: 12
+sql:
+  user: root
+  password: 
+  database: minecraft
+  host: localhost
+  port: 3306
+  playertable: pvp_players
+  killtable: pvp_kills
+  wintable: pvp_wins
+  gametable: pvp_games
+  logdelay: 2
+textures:
+  eriador: http://mcme.co/texturepacks/eriador/MCME-Eriador-Pack-v1.01.zip
+  rohan: http://mcme.co/texturepacks/rohan/MCME-Rohan-Pack-v0.72.zip
+  lothlorien: http://mcme.co/texturepacks/lothorien/MCME-Loth-Pack-v0.74.zip
+maps:
+- Tharbad
+- Annuminas
+- Aldburg
+- Moria2
+- Rivendell
+- Test
+- Ost-in-Edhil
+- Fornost1
+- Fornost2
+- Fornost3
+loot:
+  
+gametypes:
+- TDM
+- TSL
+- TCQ
+- RBR
+- INF
+tharbad:
+  blue:
+    ==: Vector
+    x: 4865.963028523552
+    y: 21.0
+    z: -2286.6782568496574
+  red:
+    ==: Vector
+    x: 4838.951983668314
+    y: 21.0
+    z: -2635.0370746641643
+  spectator:
+    ==: Vector
+    x: 4856.421024121704
+    y: 91.0
+    z: -2447.6187252458244
+annuminas:
+  blue:
+    ==: Vector
+    x: -3184.703695227299
+    y: 88.0
+    z: 1370.0083531992557
+  red:
+    ==: Vector
+    x: -3185.500334557128
+    y: 91.0
+    z: 1276.8956860447638
+  spectator:
+    ==: Vector
+    x: -3237.3288101392104
+    y: 75.0
+    z: 1323.767448607034
+aldburg:
+  blue:
+    ==: Vector
+    x: 13360.276108746286
+    y: 44.0
+    z: -13582.655378668022
+  red:
+    ==: Vector
+    x: 13589.629983436242
+    y: 59.0
+    z: -13613.019055962666
+  spectator:
+    ==: Vector
+    x: 13463.376629419288
+    y: 99.0
+    z: -13628.963996921471
+tharbad:
+  blue:
+    ==: Vector
+    x: 4865.963028523552
+    y: 21.0
+    z: -2286.6782568496574
+  red:
+    ==: Vector
+    x: 4838.951983668314
+    y: 21.0
+    z: -2635.0370746641643
+  spectator:
+    ==: Vector
+    x: 4856.421024121704
+    y: 91.0
+    z: -2447.6187252458244
+annuminas:
+  blue:
+    ==: Vector
+    x: -3184.703695227299
+    y: 88.0
+    z: 1370.0083531992557
+  red:
+    ==: Vector
+    x: -3185.500334557128
+    y: 91.0
+    z: 1276.8956860447638
+  spectator:
+    ==: Vector
+    x: -3237.3288101392104
+    y: 75.0
+    z: 1323.767448607034
+aldburg:
+  blue:
+    ==: Vector
+    x: 13360.276108746286
+    y: 44.0
+    z: -13582.655378668022
+  red:
+    ==: Vector
+    x: 13589.629983436242
+    y: 59.0
+    z: -13613.019055962666
+  spectator:
+    ==: Vector
+    x: 13463.376629419288
+    y: 99.0
+    z: -13628.963996921471
+moria2:
+  red:
+    ==: Vector
+    x: 3982.4087806308034
+    y: 67.0
+    z: -7703.843341615506
+  spectator:
+    ==: Vector
+    x: 4092.100097904912
+    y: 78.0
+    z: -7744.417741157768
+  blue:
+    ==: Vector
+    x: 4138.396302596901
+    y: 43.0
+    z: -7860.196306552926
+rivendell:
+  blue:
+    ==: Vector
+    x: 982.9545076881176
+    y: 98.42819998052119
+    z: -6360.80614869982
+  red:
+    ==: Vector
+    x: 857.343305421057
+    y: 107.67499999999998
+    z: -6303.698474517085
+  spectator:
+    ==: Vector
+    x: 918.2318786415996
+    y: 127.64499998688697
+    z: -6435.504159054314
+ost-in-edhil:
+  red:
+    ==: Vector
+    x: 4566.313341711012
+    y: 69.0
+    z: -4301.656136961178
+  blue:
+    ==: Vector
+    x: 4566.310879699579
+    y: 94.0
+    z: -4438.773382789146
+  spectator:
+    ==: Vector
+    x: 4566.649544734771
+    y: 145.0
+    z: -4400.298974488407
