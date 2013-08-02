@@ -80,6 +80,11 @@ public class pvpCommands implements CommandExecutor {
                             player.sendMessage(MCMEPVP.primarycolor + "Currently running version: " + MCMEPVP.highlightcolor + Bukkit.getServer().getPluginManager().getPlugin("MCMEPVP").getDescription().getVersion());
                         }
                     }
+                    if (method.equalsIgnoreCase("pitchyaw")) {
+                        if (player.hasPermission("mcmepvp.checkpitchyaw")){
+                            player.sendMessage("Pitch: " + player.getLocation().getPitch() + ", Yaw: " + player.getLocation().getYaw());
+                        }
+                    }
                     if (method.equalsIgnoreCase("remind")) {
                         if (player.hasPermission("mcmepvp.remind")) {
                             if (args[1] != null) {
