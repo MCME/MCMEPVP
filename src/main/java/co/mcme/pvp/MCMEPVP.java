@@ -161,6 +161,12 @@ public class MCMEPVP extends JavaPlugin {
             repairExplosions();
             CurrentGame.clearBoard();
         }
+        ArrayList<EntityType> removing = new ArrayList<EntityType>();
+        removing.add(EntityType.ARROW);
+        removing.add(EntityType.DROPPED_ITEM);
+        removing.add(EntityType.HORSE);
+        int removed = worldUtils.removeEntities(removing);
+        util.debug("Removed " + removed + " entities from the world.");
         Participants = 0;
         GameStatus = 0;
         PlayerStatus = new HashMap<String, String>();
@@ -209,12 +215,6 @@ public class MCMEPVP extends JavaPlugin {
             ringBearers.clear();
         }
         Bukkit.getServer().getPluginManager().enablePlugin(voxel);
-        ArrayList<EntityType> removing = new ArrayList<EntityType>();
-        removing.add(EntityType.ARROW);
-        removing.add(EntityType.DROPPED_ITEM);
-        removing.add(EntityType.HORSE);
-        int removed = worldUtils.removeEntities(removing);
-        util.debug("Removed " + removed + " entities from the world.");
     }
 
     public static void logKill(PlayerDeathEvent event) {
