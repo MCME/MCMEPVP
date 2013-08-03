@@ -40,8 +40,8 @@ import co.mcme.pvp.util.textureSwitcher;
 import co.mcme.pvp.util.util;
 
 public class ringBearerGame extends gameType {
-	
-	public static int taskId;
+
+    public static int taskId;
     private int RedMates = 0;
     private int BlueMates = 0;
     private int m = 5;
@@ -101,7 +101,7 @@ public class ringBearerGame extends gameType {
                 MCMEPVP.queue.drainTo(queued);
                 Collections.shuffle(queued);
                 for (Player p : queued) {
-                	textureSwitcher.switchTP(p);
+                    textureSwitcher.switchTP(p);
                     if (p.isOnline()) {
                         if (BlueMates > RedMates) {
                             if (!redHasBearer) {
@@ -206,7 +206,7 @@ public class ringBearerGame extends gameType {
         gearGiver.loadout(player, true, isTharbad, true, "warrior", col,
                 "boating", Team);
         if (ringBearers.containsKey(player)) {
-        	player.getInventory().setItem(4, gearGiver.magicItem(false, 0, 1));
+            player.getInventory().setItem(4, gearGiver.magicItem(false, 0, 1));
         }
         playing.put(player, Team);
         Location loc = getSpawn(player, MCMEPVP.getPlayerTeam(player));
@@ -224,9 +224,9 @@ public class ringBearerGame extends gameType {
             if (Team.equals("blue")) {
                 addTeam(player, "blue");
             }
-            if (Team.equals("spectator")){
-           	 spectatorUtil.setSpectator(player);
-           }
+            if (Team.equals("spectator")) {
+                spectatorUtil.setSpectator(player);
+            }
             Vector vec = MCMEPVP.Spawns.get(MCMEPVP.getPlayerTeam(player));
             Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
                     vec.getY() + 0.5, vec.getZ());
@@ -424,7 +424,7 @@ public class ringBearerGame extends gameType {
             }
             teamCount();
         } else {
-        	setSpectator(player);
+            setSpectator(player);
             Vector vec = MCMEPVP.Spawns.get(MCMEPVP.getPlayerTeam(player));
             Location spawnloc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY() + 0.5, vec.getZ());
             event.setRespawnLocation(spawnloc);
@@ -469,51 +469,51 @@ public class ringBearerGame extends gameType {
             teamCount();
         }
     }
-    
+
     public void CountdownTimer() {
-		ringBearerGame.taskId = Bukkit
-				.getServer()
-				.getScheduler()
-				.scheduleSyncRepeatingTask(
-						Bukkit.getPluginManager().getPlugin("MCMEPVP"),
-						new Runnable() {
-							@Override
-							public void run() {
-								Bukkit.broadcastMessage("TIMER");
-								if(m > 0){
-									m--;
-								}
-								if(m == 1){
-									Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE+"Team spawns switching in 1 minute!");
-								}
-								if(m == 0){
-									Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE+"Team spawns have now switched!");
-									if(spawnSwitch){
-							    		spawnSwitch = false;
-							    	}else{
-							    		spawnSwitch = true;
-							    	}
-									m = 5;
-								}
-							}
-						}, 1200L, 1200L);
-	}
-    
-    public static void stopTimer(){
-    	Bukkit.getScheduler().cancelTask(ringBearerGame.taskId);
+        ringBearerGame.taskId = Bukkit
+                .getServer()
+                .getScheduler()
+                .scheduleSyncRepeatingTask(
+                Bukkit.getPluginManager().getPlugin("MCMEPVP"),
+                new Runnable() {
+            @Override
+            public void run() {
+                Bukkit.broadcastMessage("TIMER");
+                if (m > 0) {
+                    m--;
+                }
+                if (m == 1) {
+                    Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "Team spawns switching in 1 minute!");
+                }
+                if (m == 0) {
+                    Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "Team spawns have now switched!");
+                    if (spawnSwitch) {
+                        spawnSwitch = false;
+                    } else {
+                        spawnSwitch = true;
+                    }
+                    m = 5;
+                }
+            }
+        }, 1200L, 1200L);
     }
-    
-    public Location getSpawn(Player p, String s){
-    	String team = s;
-    	if(spawnSwitch){
-    		if(s.equals("red")){
-    			team = "blue";
-    		}
-    		if(s.equals("blue")){
-    			team = "red";
-    		}
-    	}
-    	Vector vec = MCMEPVP.Spawns.get(team);
+
+    public static void stopTimer() {
+        Bukkit.getScheduler().cancelTask(ringBearerGame.taskId);
+    }
+
+    public Location getSpawn(Player p, String s) {
+        String team = s;
+        if (spawnSwitch) {
+            if (s.equals("red")) {
+                team = "blue";
+            }
+            if (s.equals("blue")) {
+                team = "red";
+            }
+        }
+        Vector vec = MCMEPVP.Spawns.get(team);
         Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY() + 0.5, vec.getZ());
         return loc;
     }
@@ -638,7 +638,7 @@ public class ringBearerGame extends gameType {
     public void onPlayerLogin(PlayerLoginEvent event) {
         // Do nothing
     }
-    
+
     @Override
     public boolean allowBlockBreak() {
         return false;
@@ -654,9 +654,14 @@ public class ringBearerGame extends gameType {
         return false;
     }
 
-	@Override
-	public boolean allowExplosionLogging() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean allowExplosionLogging() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public Objective getObjective() {
+        return objective;
+    }
 }

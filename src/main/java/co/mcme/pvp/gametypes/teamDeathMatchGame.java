@@ -76,7 +76,7 @@ public class teamDeathMatchGame extends gameType {
                 MCMEPVP.queue.drainTo(queued);
                 Collections.shuffle(queued);
                 for (Player p : queued) {
-                	textureSwitcher.switchTP(p);
+                    textureSwitcher.switchTP(p);
                     if (p.isOnline()) {
                         if (BlueMates > RedMates) {
                             addTeam(p, "red");
@@ -145,17 +145,17 @@ public class teamDeathMatchGame extends gameType {
 
     @Override
     public void onPlayerJoin(PlayerJoinEvent event) {
-    	if (MCMEPVP.GameStatus == 1) {
+        if (MCMEPVP.GameStatus == 1) {
             Player player = event.getPlayer();
             String Team = MCMEPVP.getPlayerTeam(player);
-            if (Team.equals("spectator")){
-           	 spectatorUtil.setSpectator(player);
-           }
+            if (Team.equals("spectator")) {
+                spectatorUtil.setSpectator(player);
+            }
             Vector vec = MCMEPVP.Spawns.get(MCMEPVP.getPlayerTeam(player));
             Location loc = vec.toLocation(MCMEPVP.PVPWorld);
             player.teleport(loc);
             displayBoard();
-    	}
+        }
     }
 
     @Override
@@ -247,7 +247,7 @@ public class teamDeathMatchGame extends gameType {
                 }
             }
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Team " + ChatColor.RED + "Red" + MCMEPVP.positivecolor + " wins "
-            +RedMates+":"+BlueMates+"!");
+                    + RedMates + ":" + BlueMates + "!");
             MCMEPVP.resetGame();
         } else if (RedMates <= 0) {
             MCMEPVP.logGame("blue", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
@@ -262,7 +262,7 @@ public class teamDeathMatchGame extends gameType {
                 }
             }
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Team " + ChatColor.BLUE + "Blue" + MCMEPVP.positivecolor + " wins "
-            +BlueMates+":"+RedMates+"!");
+                    + BlueMates + ":" + RedMates + "!");
             MCMEPVP.resetGame();
         }
     }
@@ -325,7 +325,7 @@ public class teamDeathMatchGame extends gameType {
     public void onPlayerLogin(PlayerLoginEvent event) {
         // Do nothing
     }
-    
+
     @Override
     public boolean allowBlockBreak() {
         return false;
@@ -341,9 +341,14 @@ public class teamDeathMatchGame extends gameType {
         return false;
     }
 
-	@Override
-	public boolean allowExplosionLogging() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean allowExplosionLogging() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public Objective getObjective() {
+        return objective;
+    }
 }

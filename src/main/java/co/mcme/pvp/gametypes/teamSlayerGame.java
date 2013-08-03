@@ -444,4 +444,9 @@ public class teamSlayerGame extends gameType {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+    @Override
+    public Objective getObjective() {
+        return objective;
+    }
 }

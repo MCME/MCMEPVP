@@ -103,7 +103,7 @@ public class infectionGame extends gameType {
                 MCMEPVP.queue.drainTo(queued);
                 Collections.shuffle(queued);
                 for (Player user : queued) {
-                	textureSwitcher.switchTP(user);
+                    textureSwitcher.switchTP(user);
                     if (user.isOnline()) {
                         if (MCMEPVP.getPlayerTeam(user).equals(
                                 "participant")) {
@@ -142,9 +142,9 @@ public class infectionGame extends gameType {
         }, 100L);
         spectatorUtil.startingSpectators();
         displayBoard();
-        m --;
+        m--;
         CountdownTimer();
-        objective.setDisplayName("Time: " + m + ":"+s);
+        objective.setDisplayName("Time: " + m + ":" + s);
     }
 
     public void determineTeamCounts() {
@@ -230,17 +230,17 @@ public class infectionGame extends gameType {
                 addTeam(player, "zombie");
             }
             if (Team.equals("blue")) {
-            	if(m > 5){
-            		addTeam(player, "survivor");
-            		teamCount();
-            	}else{
-            		MCMEPVP.setPlayerTeam(player, "red");
-            		addTeam(player, "zommbie");
-            		teamCount();
-            	}
+                if (m > 5) {
+                    addTeam(player, "survivor");
+                    teamCount();
+                } else {
+                    MCMEPVP.setPlayerTeam(player, "red");
+                    addTeam(player, "zommbie");
+                    teamCount();
+                }
             }
-            if (Team.equals("spectator")){
-           	 spectatorUtil.setSpectator(player);
+            if (Team.equals("spectator")) {
+                spectatorUtil.setSpectator(player);
             }
             Vector vec = MCMEPVP.Spawns.get(MCMEPVP.getPlayerTeam(player));
             Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
@@ -327,7 +327,7 @@ public class infectionGame extends gameType {
         if (attackerteam.equals(defenderteam)) {
             event.setCancelled(true);
         } else if (defenderteam.equals("red")) {
-            if ( defender.getHealth() > ZombieHealth) {
+            if (defender.getHealth() > ZombieHealth) {
                 defender.setHealth(ZombieHealth);
             }
             World w = defender.getWorld();
@@ -354,7 +354,7 @@ public class infectionGame extends gameType {
 
     @Override
     public void onRespawn(PlayerRespawnEvent event) {
-    	Player player = event.getPlayer();
+        Player player = event.getPlayer();
         MCMEPVP.setPlayerTeam(player, "red");
         addTeam(player, "zombie");
         Vector vec = extraSpawns();
@@ -365,7 +365,7 @@ public class infectionGame extends gameType {
     }
 
     public void checkGameEnd() {
-        if (survivorscore.getScore()==0) {
+        if (survivorscore.getScore() == 0) {
             MCMEPVP.logGame("red", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
             for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus.entrySet()) {
                 String key = entry.getKey();
@@ -377,8 +377,8 @@ public class infectionGame extends gameType {
                     MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, false);
                 }
             }
-            Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "The " + ChatColor.DARK_PURPLE + "Infected" 
-            + MCMEPVP.positivecolor + " win with "+ChatColor.DARK_PURPLE+m+"m"+s+"s"+MCMEPVP.positivecolor+" remaining!");
+            Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "The " + ChatColor.DARK_PURPLE + "Infected"
+                    + MCMEPVP.positivecolor + " win with " + ChatColor.DARK_PURPLE + m + "m" + s + "s" + MCMEPVP.positivecolor + " remaining!");
             MCMEPVP.resetGame();
         }
         if (zombiescore.getScore() <= 0) {
@@ -396,7 +396,7 @@ public class infectionGame extends gameType {
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "The " + ChatColor.BLUE + "Survivors" + MCMEPVP.positivecolor + " win by default!");
             MCMEPVP.resetGame();
         }
-        if (m== 0 && s == 0) {
+        if (m == 0 && s == 0) {
             MCMEPVP.logGame("blue", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
             for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus.entrySet()) {
                 String key = entry.getKey();
@@ -408,8 +408,8 @@ public class infectionGame extends gameType {
                     MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, false);
                 }
             }
-            Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "The " + ChatColor.BLUE + "Survivors" 
-            + MCMEPVP.positivecolor + " win with "+ChatColor.BLUE+survivorcount+ " survivors"+MCMEPVP.positivecolor+" remaining!");
+            Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "The " + ChatColor.BLUE + "Survivors"
+                    + MCMEPVP.positivecolor + " win with " + ChatColor.BLUE + survivorcount + " survivors" + MCMEPVP.positivecolor + " remaining!");
             MCMEPVP.resetGame();
         }
     }
@@ -425,34 +425,34 @@ public class infectionGame extends gameType {
             public void run() {
                 if (s > 0) {
                     s--;
-                    if(s < 10){
-                    	objective.setDisplayName("Time: " + m + ":0" + s);
-                    }else{
-                    	objective.setDisplayName("Time: " + m + ":" + s);
+                    if (s < 10) {
+                        objective.setDisplayName("Time: " + m + ":0" + s);
+                    } else {
+                        objective.setDisplayName("Time: " + m + ":" + s);
                     }
-                }else{
-                	if(m == 0 && s == 0){
-                		checkGameEnd();
-                	}
-                	if(m > 0 && s == 0){
-                    	m --;
-                    	s = 59;
-                    	objective.setDisplayName("Time: " + m + ":" + s);
-                    	if(m < 8 && ZombieHealth<=20){
-                    		ZombieHealth++;
-                    	}
+                } else {
+                    if (m == 0 && s == 0) {
+                        checkGameEnd();
+                    }
+                    if (m > 0 && s == 0) {
+                        m--;
+                        s = 59;
+                        objective.setDisplayName("Time: " + m + ":" + s);
+                        if (m < 8 && ZombieHealth <= 20) {
+                            ZombieHealth++;
+                        }
                     }
                 }
             }
         }, 0L, 20L);
     }
-    
-    public static void stopTimer(){
-    	Bukkit.getScheduler().cancelTask(infectionGame.taskId);
+
+    public static void stopTimer() {
+        Bukkit.getScheduler().cancelTask(infectionGame.taskId);
     }
-    
+
     private void teamCount() {
-    	zombiecount = zombieteam.getSize();
+        zombiecount = zombieteam.getSize();
         survivorcount = survivorteam.getSize();
         zombiescore.setScore(zombiecount);
         survivorscore.setScore(survivorcount);
@@ -490,8 +490,8 @@ public class infectionGame extends gameType {
 
     @Override
     public void clearBoard() {
-    	board.clearSlot(DisplaySlot.SIDEBAR);
-    	zombieteam.unregister();
+        board.clearSlot(DisplaySlot.SIDEBAR);
+        zombieteam.unregister();
         survivorteam.unregister();
     }
 
@@ -543,9 +543,14 @@ public class infectionGame extends gameType {
         return false;
     }
 
-	@Override
-	public boolean allowExplosionLogging() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean allowExplosionLogging() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public Objective getObjective() {
+        return objective;
+    }
 }

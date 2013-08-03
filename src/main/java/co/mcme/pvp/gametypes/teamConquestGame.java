@@ -117,7 +117,7 @@ public class teamConquestGame extends gameType {
                 MCMEPVP.queue.drainTo(queued);
                 Collections.shuffle(queued);
                 for (Player p : queued) {
-                	textureSwitcher.switchTP(p);
+                    textureSwitcher.switchTP(p);
                     if (p.isOnline()) {
                         if (BlueMates > RedMates) {
                             addTeam(p, "red");
@@ -248,7 +248,7 @@ public class teamConquestGame extends gameType {
                 addTeam(player, "blue");
                 BlueMates++;
             } else {
-           	 	spectatorUtil.setSpectator(player);
+                spectatorUtil.setSpectator(player);
             }
             Vector vec = MCMEPVP.Spawns.get(MCMEPVP.getPlayerTeam(player));
             Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
@@ -428,8 +428,8 @@ public class teamConquestGame extends gameType {
                 }
             }
             Bukkit.getServer().broadcastMessage(
-            		MCMEPVP.positivecolor + "Team " + ChatColor.BLUE + "Blue"
-                    + MCMEPVP.positivecolor + " wins by "+ChatColor.BLUE+BlueMates+MCMEPVP.positivecolor+" lives!");
+                    MCMEPVP.positivecolor + "Team " + ChatColor.BLUE + "Blue"
+                    + MCMEPVP.positivecolor + " wins by " + ChatColor.BLUE + BlueMates + MCMEPVP.positivecolor + " lives!");
             MCMEPVP.resetGame();
         }
         if (BlueMates < 1) {
@@ -447,7 +447,7 @@ public class teamConquestGame extends gameType {
             }
             Bukkit.getServer().broadcastMessage(
                     MCMEPVP.positivecolor + "Team " + ChatColor.RED + "Red"
-                    + MCMEPVP.positivecolor + " wins by "+ChatColor.RED+RedMates+MCMEPVP.positivecolor+" lives!");
+                    + MCMEPVP.positivecolor + " wins by " + ChatColor.RED + RedMates + MCMEPVP.positivecolor + " lives!");
             MCMEPVP.resetGame();
         }
         if (BlueScore <= 0) {
@@ -530,7 +530,7 @@ public class teamConquestGame extends gameType {
     }
 
     @Override
-    public HashMap<String,String> getPlaying() {
+    public HashMap<String, String> getPlaying() {
         return playing;
     }
 
@@ -543,7 +543,7 @@ public class teamConquestGame extends gameType {
     public void onPlayerLogin(PlayerLoginEvent event) {
         // Do nothing
     }
-    
+
     @Override
     public boolean allowBlockBreak() {
         return false;
@@ -559,9 +559,14 @@ public class teamConquestGame extends gameType {
         return false;
     }
 
-	@Override
-	public boolean allowExplosionLogging() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean allowExplosionLogging() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public Objective getObjective() {
+        return objective;
+    }
 }

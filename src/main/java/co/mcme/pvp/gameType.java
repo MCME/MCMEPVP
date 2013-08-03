@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
 public abstract class gameType {
@@ -47,6 +48,8 @@ public abstract class gameType {
     public abstract String team2();
 
     public abstract Scoreboard getBoard();
+    
+    public abstract Objective getObjective();
 
     public abstract void clearBoard();
 

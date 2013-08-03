@@ -426,17 +426,20 @@ public class pvpCommands implements CommandExecutor {
                     if (method.equalsIgnoreCase("setscore")) {
                         if (player.hasPermission("mcmepvp.setscore")) {
                             if (args[1] != null) {
+                                boolean gameon = false;
                                 String desiredgt = args[1].toUpperCase();
                                 if (args[2] != null) {
                                     int desiredscore = Integer.valueOf(args[2]);
                                     if (GameStatus == 1
                                             && PVPGT.equalsIgnoreCase(desiredgt)) {
+                                        
                                         Bukkit.broadcastMessage(MCMEPVP.positivecolor
                                                 + "To win, you must now score "
                                                 + MCMEPVP.highlightcolor
                                                 + desiredscore
                                                 + MCMEPVP.positivecolor
                                                 + " points.");
+                                        gameon = true;
                                     }
                                     switch (desiredgt) {
                                         case "TSL": {
@@ -449,6 +452,9 @@ public class pvpCommands implements CommandExecutor {
                                             p.saveConfig();
                                             util.notifyAdmin(player.getName(),
                                                     5, msg);
+                                            if (gameon){
+                                                MCMEPVP.CurrentGame.getObjective().setDisplayName("Score: "+config.TSLscore);
+                                            }
                                             return true;
                                         }
                                         case "TCQ": {
