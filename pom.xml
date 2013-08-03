@@ -42,6 +42,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <finalName>${project.artifactId}</finalName>
                             <relocations>
                                 <relocation>
                                     <pattern>com.google.gson</pattern>
