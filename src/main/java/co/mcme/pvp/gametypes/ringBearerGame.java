@@ -71,7 +71,7 @@ public class ringBearerGame extends gameType {
         redteam.setPrefix(ChatColor.RED.toString());
         blueteam = board.registerNewTeam("Blue Team");
         blueteam.setPrefix(ChatColor.BLUE.toString());
-        objective = board.registerNewObjective("Score", "dummy");
+        objective = board.registerNewObjective("Players Left", "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         redscore = objective.getScore(dummyred);
         bluescore = objective.getScore(dummyblue);
