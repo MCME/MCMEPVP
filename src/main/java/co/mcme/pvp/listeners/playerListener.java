@@ -62,7 +62,7 @@ public class playerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void zanBlock(PlayerJoinEvent event) {
-        event.getPlayer().sendMessage("§3 §6 §3 §6 §3 §6 §e");
+    	event.getPlayer().sendMessage("§3 §6 §3 §6 §3 §6 §e");
     }
     
     @EventHandler(priority = EventPriority.HIGH)

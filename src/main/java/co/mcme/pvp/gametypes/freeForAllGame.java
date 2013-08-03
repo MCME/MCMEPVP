@@ -112,6 +112,9 @@ public class freeForAllGame extends gameType {
                 Collections.shuffle(queued);
                 for (Player p : queued) {
                     textureSwitcher.switchTP(p);
+                    if(p.getName().length() > 10){
+                    	p.setPlayerListName(p.getName().substring(0, 10));
+                    }
                     if (p.isOnline()) {
                         if (MCMEPVP.getPlayerTeam(p).equals(
                                 "participant")) {

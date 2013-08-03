@@ -171,6 +171,7 @@ public class MCMEPVP extends JavaPlugin {
         GameStatus = 0;
         PlayerStatus = new HashMap<String, String>();
         for (Player currentplayer : Bukkit.getOnlinePlayers()) {
+        	currentplayer.setPlayerListName(currentplayer.getName());
         	if(currentplayer.isInsideVehicle()){
             	currentplayer.getVehicle().remove();
             }
