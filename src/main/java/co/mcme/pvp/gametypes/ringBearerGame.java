@@ -423,7 +423,14 @@ public class ringBearerGame extends gameType {
                 event.setRespawnLocation(loc);
             }
             teamCount();
-        } else {
+        } else { 
+        	if(team.equals("red")){
+        		redteam.removePlayer(player);
+        	}
+        	if (team.equals("blue")){
+        		blueteam.removePlayer(player);
+        	}
+        	checkGameEnd();
             setSpectator(player);
             Vector vec = MCMEPVP.Spawns.get(MCMEPVP.getPlayerTeam(player));
             Location spawnloc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY() + 0.5, vec.getZ());
