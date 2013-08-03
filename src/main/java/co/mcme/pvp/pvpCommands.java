@@ -15,6 +15,7 @@ import static co.mcme.pvp.MCMEPVP.resetGame;
 import static co.mcme.pvp.MCMEPVP.unQueuePlayer;
 import co.mcme.pvp.util.config;
 import co.mcme.pvp.util.util;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -82,7 +83,7 @@ public class pvpCommands implements CommandExecutor {
                     }
                     if (method.equalsIgnoreCase("pitchyaw")) {
                         if (player.hasPermission("mcmepvp.checkpitchyaw")){
-                            player.sendMessage("Pitch: " + player.getLocation().getPitch() + ", Yaw: " + player.getLocation().getYaw());
+                            player.sendMessage("Pitch: " + round(player.getLocation().getPitch(), 2) + ", Yaw: " + round(player.getLocation().getYaw(), 2));
                         }
                     }
                     if (method.equalsIgnoreCase("remind")) {
@@ -656,5 +657,11 @@ public class pvpCommands implements CommandExecutor {
             i = 75;
         }
         return i;
+    }
+    
+    public static float round(float d, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(Float.toString(d));
+        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+        return bd.floatValue();
     }
 }
