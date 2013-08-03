@@ -20,6 +20,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -103,8 +104,16 @@ public class horseListener implements Listener{
 					arrow.setBounce(false);
 				}
 			}
+		}	
+	}
+	
+	@EventHandler(priority = EventPriority.HIGH)
+    public void horseDrops(EntityDeathEvent event){
+		if(event.getEntity() instanceof Horse){
+			Horse h = (Horse) event.getEntity();
+			h.getInventory().clear();
+			event.getDrops().clear();
 		}
-		
 	}
 	
 	private void removeLeash(PlayerInteractEvent event) {

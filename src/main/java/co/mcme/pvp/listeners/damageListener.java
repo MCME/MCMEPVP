@@ -31,6 +31,9 @@ public class damageListener implements Listener {
             //TODO General code when no Game is running
         } else {
             MCMEPVP.CurrentGame.onPlayerdie(event);
+            if(event.getEntity().isInsideVehicle()){
+            	event.getEntity().getVehicle().remove();
+            }
         }
     }
 
