@@ -22,6 +22,7 @@ import co.mcme.pvp.MCMEPVP;
 import co.mcme.pvp.util.spectatorUtil;
 import co.mcme.pvp.util.textureSwitcher;
 import org.bukkit.Sound;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 
 public class playerListener implements Listener {
 
@@ -103,6 +104,13 @@ public class playerListener implements Listener {
             MCMEPVP.unQueuePlayer(event.getPlayer());
         } else {
             MCMEPVP.CurrentGame.onPlayerleaveServer(event);
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.HIGH)
+    void onGamemodeChange(PlayerGameModeChangeEvent event){
+        if (MCMEPVP.getPlayerTeam(event.getPlayer()).equalsIgnoreCase("spectator")){
+            event.getPlayer().setAllowFlight(true);
         }
     }
 }
