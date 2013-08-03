@@ -82,7 +82,7 @@ public class pvpCommands implements CommandExecutor {
                         }
                     }
                     if (method.equalsIgnoreCase("pitchyaw")) {
-                        if (player.hasPermission("mcmepvp.checkpitchyaw")){
+                        if (player.hasPermission("mcmepvp.checkpitchyaw")) {
                             player.sendMessage("Pitch: " + round(player.getLocation().getPitch(), 2) + ", Yaw: " + round(player.getLocation().getYaw(), 2));
                         }
                     }
@@ -104,7 +104,7 @@ public class pvpCommands implements CommandExecutor {
                                         }
                                     }
                                     StringBuilder out = new StringBuilder();
-                                    for (String name : notjoined){
+                                    for (String name : notjoined) {
                                         out.append(ChatColor.RED).append(name).append("\n");
                                     }
                                     player.playSound(player.getLocation(), Sound.BURP, 100, 100);
@@ -159,6 +159,9 @@ public class pvpCommands implements CommandExecutor {
                                         int i = setScore(MCMEPVP.queue.size());
                                         config.TSLscore = i;
                                         p.saveConfig();
+                                        if (MCMEPVP.GameStatus == 1) {
+                                            MCMEPVP.CurrentGame.getObjective().setDisplayName("Score: " + config.TSLscore);
+                                        }
                                         String[] msg = new String[2];
                                         msg[0] = "TSL";
                                         msg[1] = String.valueOf(i);
@@ -433,7 +436,7 @@ public class pvpCommands implements CommandExecutor {
                                     int desiredscore = Integer.valueOf(args[2]);
                                     if (GameStatus == 1
                                             && PVPGT.equalsIgnoreCase(desiredgt)) {
-                                        
+
                                         Bukkit.broadcastMessage(MCMEPVP.positivecolor
                                                 + "To win, you must now score "
                                                 + MCMEPVP.highlightcolor
@@ -453,8 +456,8 @@ public class pvpCommands implements CommandExecutor {
                                             p.saveConfig();
                                             util.notifyAdmin(player.getName(),
                                                     5, msg);
-                                            if (gameon){
-                                                MCMEPVP.CurrentGame.getObjective().setDisplayName("Score: "+config.TSLscore);
+                                            if (gameon) {
+                                                MCMEPVP.CurrentGame.getObjective().setDisplayName("Score: " + config.TSLscore);
                                             }
                                             return true;
                                         }
@@ -658,7 +661,7 @@ public class pvpCommands implements CommandExecutor {
         }
         return i;
     }
-    
+
     public static float round(float d, int decimalPlace) {
         BigDecimal bd = new BigDecimal(Float.toString(d));
         bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
