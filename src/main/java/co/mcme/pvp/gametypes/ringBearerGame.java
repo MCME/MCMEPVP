@@ -479,7 +479,6 @@ public class ringBearerGame extends gameType {
                 new Runnable() {
             @Override
             public void run() {
-                Bukkit.broadcastMessage("TIMER");
                 if (m > 0) {
                     m--;
                 }
