@@ -41,6 +41,7 @@ import co.mcme.pvp.util.armorColor;
 import co.mcme.pvp.util.config;
 import co.mcme.pvp.util.gearGiver;
 import co.mcme.pvp.util.spectatorUtil;
+import co.mcme.pvp.util.teamUtil;
 import co.mcme.pvp.util.textureSwitcher;
 import co.mcme.pvp.util.util;
 
@@ -116,7 +117,7 @@ public class freeForAllGame extends gameType {
                     	p.setPlayerListName(p.getName().substring(0, 10));
                     }
                     if (p.isOnline()) {
-                        if (MCMEPVP.getPlayerTeam(p).equals(
+                        if (teamUtil.getPlayerTeam(p).equals(
                                 "participant")) {
                             addTeam(p, "red");
                             p.setHealth(20);
@@ -168,12 +169,12 @@ public class freeForAllGame extends gameType {
     @Override
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player p = event.getPlayer();
-        if (MCMEPVP.getPlayerTeam(p).equals("red")) {
+        if (teamUtil.getPlayerTeam(p).equals("red")) {
             addTeam(p, "red");
         } else {
             spectatorUtil.setSpectator(p);
         }
-        Vector vec = MCMEPVP.Spawns.get(MCMEPVP.getPlayerTeam(p));
+        Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(p));
         Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
                 vec.getY() + 0.5, vec.getZ());
         p.teleport(loc);
@@ -188,7 +189,7 @@ public class freeForAllGame extends gameType {
     public void onPlayerdie(PlayerDeathEvent event) {
         MCMEPVP.logKill(event);
         Player victim = event.getEntity().getPlayer();
-        String team = MCMEPVP.getPlayerTeam(victim);
+        String team = teamUtil.getPlayerTeam(victim);
         if (victim.getKiller() instanceof Player) {
             if (team.equals("spectator")) {
                 event.setDeathMessage(MCMEPVP.primarycolor + "Spectator "
@@ -220,9 +221,9 @@ public class freeForAllGame extends gameType {
     @Override
     public void addTeam(Player p, String Team) {
         Color col = armorColor.WHITE;
-        MCMEPVP.setPlayerTeam(p, Team);
+        teamUtil.setPlayerTeam(p, Team);
         p.getInventory().clear();
-        MCMEPVP.setPlayerTeam(p, "red");
+        teamUtil.setPlayerTeam(p, "red");
         reds.addPlayer(p);
         p.setGameMode(GameMode.ADVENTURE);
         col = randomColor();

@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.util.Vector;
 
 import co.mcme.pvp.MCMEPVP;
+import co.mcme.pvp.util.teamUtil;
 
 public class damageListener implements Listener {
 
@@ -72,8 +73,8 @@ public class damageListener implements Listener {
             Entity defender = event.getEntity();
             Entity attacker = arrow.getShooter();
             
-            String attackstatus = MCMEPVP.getPlayerTeam((Player) attacker);
-            String defendstatus = MCMEPVP.getPlayerTeam((Player) defender);
+            String attackstatus = teamUtil.getPlayerTeam((Player) attacker);
+            String defendstatus = teamUtil.getPlayerTeam((Player) defender);
             
             Vector velocity = arrow.getVelocity();
             
@@ -113,8 +114,8 @@ public class damageListener implements Listener {
         	if(event.getEntity() instanceof Player){
         		Player defender = (Player) event.getEntity();
                 Player attacker = (Player) event.getDamager();
-                String attackstatus = MCMEPVP.getPlayerTeam(attacker);
-                String defendstatus = MCMEPVP.getPlayerTeam(defender);
+                String attackstatus = teamUtil.getPlayerTeam(attacker);
+                String defendstatus = teamUtil.getPlayerTeam(defender);
                 boolean isSpectatorReceivingDamage = (defendstatus.equals("spectator") || defendstatus.equals("participant"));
                 boolean isSpectatorCausingDamge = (attackstatus.equals("spectator") || attackstatus.equals("participant"));
                 if (isSpectatorReceivingDamage || isSpectatorCausingDamge) {

@@ -1,6 +1,7 @@
 package co.mcme.pvp.listeners;
 
 import co.mcme.pvp.MCMEPVP;
+import co.mcme.pvp.util.teamUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,22 +26,22 @@ public class tagListener implements Listener {
             int removechars = len - 2;
             newname = oldname.substring(0, removechars);
         }
-        if (MCMEPVP.getPlayerTeam(target).equalsIgnoreCase("blue")) {
+        if (teamUtil.getPlayerTeam(target).equalsIgnoreCase("blue")) {
             event.setTag(ChatColor.BLUE + newname);
         }
-        if (MCMEPVP.getPlayerTeam(target).equalsIgnoreCase("red")) {
+        if (teamUtil.getPlayerTeam(target).equalsIgnoreCase("red")) {
             event.setTag(ChatColor.RED + newname);
         }
-        if (MCMEPVP.getPlayerTeam(target).equalsIgnoreCase("green")) {
+        if (teamUtil.getPlayerTeam(target).equalsIgnoreCase("green")) {
             event.setTag(ChatColor.DARK_GREEN + newname);
         }
-        if (MCMEPVP.getPlayerTeam(target).equalsIgnoreCase("purple")) {
+        if (teamUtil.getPlayerTeam(target).equalsIgnoreCase("purple")) {
             event.setTag(ChatColor.LIGHT_PURPLE + newname);
         }
-        if (MCMEPVP.getPlayerTeam(target).equalsIgnoreCase("participant")) {
+        if (teamUtil.getPlayerTeam(target).equalsIgnoreCase("participant")) {
             event.setTag(ChatColor.GREEN + newname);
         }
-        if (MCMEPVP.getPlayerTeam(target).equalsIgnoreCase("fighter")) {
+        if (teamUtil.getPlayerTeam(target).equalsIgnoreCase("fighter")) {
             event.setTag(ChatColor.BLACK + newname);
         }
     }

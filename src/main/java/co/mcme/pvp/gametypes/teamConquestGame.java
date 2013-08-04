@@ -45,6 +45,7 @@ import co.mcme.pvp.util.armorColor;
 import co.mcme.pvp.util.config;
 import co.mcme.pvp.util.gearGiver;
 import co.mcme.pvp.util.spectatorUtil;
+import co.mcme.pvp.util.teamUtil;
 import co.mcme.pvp.util.textureSwitcher;
 import co.mcme.pvp.util.util;
 
@@ -205,7 +206,7 @@ public class teamConquestGame extends gameType {
                 player.sendMessage(MCMEPVP.primarycolor + "You're now in Team "
                         + ChatColor.RED + "RED" + MCMEPVP.primarycolor + "!");
                 RedMates++;
-                MCMEPVP.setPlayerTeam(player, Team);
+                teamUtil.setPlayerTeam(player, Team);
                 redteam.addPlayer(player);
                 player.setGameMode(GameMode.ADVENTURE);
                 col = armorColor.RED;
@@ -215,7 +216,7 @@ public class teamConquestGame extends gameType {
                 player.sendMessage(MCMEPVP.primarycolor + "You're now in Team "
                         + ChatColor.BLUE + "BLUE" + MCMEPVP.primarycolor + "!");
                 BlueMates++;
-                MCMEPVP.setPlayerTeam(player, Team);
+                teamUtil.setPlayerTeam(player, Team);
                 blueteam.addPlayer(player);
                 player.setGameMode(GameMode.ADVENTURE);
                 col = armorColor.BLUE;
@@ -229,7 +230,7 @@ public class teamConquestGame extends gameType {
         gearGiver.loadout(player, true, isTharbad, true, "warrior", col,
                 "boating", Team);
         playing.put(player.getName(), Team);
-        Vector vec = MCMEPVP.Spawns.get(MCMEPVP.getPlayerTeam(player));
+        Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
         Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY() + 0.5,
                 vec.getZ());
         player.teleport(loc);
@@ -239,7 +240,7 @@ public class teamConquestGame extends gameType {
     public void onPlayerJoin(PlayerJoinEvent event) {
         if (MCMEPVP.GameStatus == 1) {
             Player player = event.getPlayer();
-            String Team = MCMEPVP.getPlayerTeam(player);
+            String Team = teamUtil.getPlayerTeam(player);
             if (Team.equals("red")) {
                 addTeam(player, "red");
                 RedMates++;
@@ -250,7 +251,7 @@ public class teamConquestGame extends gameType {
             } else {
                 spectatorUtil.setSpectator(player);
             }
-            Vector vec = MCMEPVP.Spawns.get(MCMEPVP.getPlayerTeam(player));
+            Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
             Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
                     vec.getY() + 0.5, vec.getZ());
             player.teleport(loc);
@@ -260,7 +261,7 @@ public class teamConquestGame extends gameType {
 
     @Override
     public void onPlayerleaveServer(PlayerQuitEvent event) {
-        String Team = MCMEPVP.getPlayerTeam(event.getPlayer());
+        String Team = teamUtil.getPlayerTeam(event.getPlayer());
         if (Team.equals("red")) {
             RedMates--;
         }
@@ -283,7 +284,7 @@ public class teamConquestGame extends gameType {
     public void onPlayerdie(PlayerDeathEvent event) {
         MCMEPVP.logKill(event);
         Player player = event.getEntity();
-        String Status = MCMEPVP.getPlayerTeam(player);
+        String Status = teamUtil.getPlayerTeam(player);
         Color col;
         if (player.getKiller() instanceof Player) {
             if (Status.equals("spectator")) {
@@ -365,8 +366,8 @@ public class teamConquestGame extends gameType {
     public void onPlayerhit(EntityDamageByEntityEvent event) {
         Player defender = (Player) event.getEntity();
         Player attacker = (Player) event.getDamager();
-        String attackerteam = MCMEPVP.getPlayerTeam(attacker);
-        String defenderteam = MCMEPVP.getPlayerTeam(defender);
+        String attackerteam = teamUtil.getPlayerTeam(attacker);
+        String defenderteam = teamUtil.getPlayerTeam(defender);
         if (attackerteam.equals(defenderteam)) {
             event.setCancelled(true);
         }
@@ -377,8 +378,8 @@ public class teamConquestGame extends gameType {
         Player defender = (Player) event.getEntity();
         Player attacker = (Player) ((Projectile) event.getDamager())
                 .getShooter();
-        String attackerteam = MCMEPVP.getPlayerTeam(attacker);
-        String defenderteam = MCMEPVP.getPlayerTeam(defender);
+        String attackerteam = teamUtil.getPlayerTeam(attacker);
+        String defenderteam = teamUtil.getPlayerTeam(defender);
         if (attackerteam.equals(defenderteam)) {
             event.setCancelled(true);
         } else if (!attackerteam.equals(defenderteam)) {
@@ -390,13 +391,13 @@ public class teamConquestGame extends gameType {
     @Override
     public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        String Status = MCMEPVP.getPlayerTeam(player);
+        String Status = teamUtil.getPlayerTeam(player);
         Color col;
         if (Status.equals("red")) {
             col = armorColor.RED;
             gearGiver.loadout(player, true, isTharbad, true, "warrior", col,
                     "boating", Status);
-            Vector vec = MCMEPVP.Spawns.get(MCMEPVP.getPlayerTeam(player));
+            Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
             Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
                     vec.getY() + 0.5, vec.getZ());
             event.setRespawnLocation(loc);
@@ -405,7 +406,7 @@ public class teamConquestGame extends gameType {
             col = armorColor.BLUE;
             gearGiver.loadout(player, true, isTharbad, true, "warrior", col,
                     "boating", Status);
-            Vector vec = MCMEPVP.Spawns.get(MCMEPVP.getPlayerTeam(player));
+            Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
             Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
                     vec.getY() + 0.5, vec.getZ());
             event.setRespawnLocation(loc);

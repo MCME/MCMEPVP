@@ -23,6 +23,7 @@ import org.bukkit.potion.PotionEffectType;
 import co.mcme.pvp.MCMEPVP;
 import co.mcme.pvp.util.armorColor;
 import co.mcme.pvp.util.gearGiver;
+import co.mcme.pvp.util.teamUtil;
 
 public class magicItemListener implements Listener {
 
@@ -125,11 +126,11 @@ public class magicItemListener implements Listener {
 		p.getWorld().playSound(p.getLocation(), Sound.ENDERMAN_TELEPORT, 1, 1);
 		p.playSound(p.getLocation(), Sound.WITHER_DEATH, 1, 1);
 
-		if (MCMEPVP.getPlayerTeam(p).equals("red")) {
+		if (teamUtil.getPlayerTeam(p).equals("red")) {
 			Color c = armorColor.RED;
 			derp(p, c);
 		}
-		if (MCMEPVP.getPlayerTeam(p).equals("blue")) {
+		if (teamUtil.getPlayerTeam(p).equals("blue")) {
 			Color c = armorColor.BLUE;
 			derp(p, c);
 		}

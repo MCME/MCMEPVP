@@ -26,6 +26,7 @@ import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import co.mcme.pvp.MCMEPVP;
+import co.mcme.pvp.util.teamUtil;
 
 public class horseListener implements Listener{
 	
@@ -33,7 +34,7 @@ public class horseListener implements Listener{
 	public void leadClick(PlayerInteractEvent event) {
 		if((event.getAction().equals(Action.RIGHT_CLICK_AIR)
 				|| event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) ){
-			if(!MCMEPVP.getPlayerTeam(event.getPlayer()).equals("spectator") && event.getPlayer().getItemInHand().getTypeId()==420){
+			if(!teamUtil.getPlayerTeam(event.getPlayer()).equals("spectator") && event.getPlayer().getItemInHand().getTypeId()==420){
 				event.setCancelled(true);
 				Player p = event.getPlayer();
 				
@@ -53,10 +54,10 @@ public class horseListener implements Listener{
 					if(MCMEPVP.PVPGT.equals("FFA")){
 						var.equals(randomVariant());
 					}else{
-						if(MCMEPVP.getPlayerTeam(p).equals("red")){
+						if(teamUtil.getPlayerTeam(p).equals("red")){
 							var = Horse.Variant.SKELETON_HORSE;
 						}
-						if(MCMEPVP.getPlayerTeam(p).equals("blue")){
+						if(teamUtil.getPlayerTeam(p).equals("blue")){
 							var.equals(Horse.Variant.HORSE);
 						} else {
 							var.equals(randomVariant());
@@ -89,8 +90,8 @@ public class horseListener implements Listener{
 			if(damager instanceof Player && victim.getPassenger() instanceof Player){
 				Player att = ((Player) damager).getPlayer();
 				Player rider = (Player) victim.getPassenger();
-				if(MCMEPVP.getPlayerTeam(att).equals(MCMEPVP.getPlayerTeam(rider))
-						|| MCMEPVP.getPlayerTeam(att).equals("spectator")){
+				if(teamUtil.getPlayerTeam(att).equals(teamUtil.getPlayerTeam(rider))
+						|| teamUtil.getPlayerTeam(att).equals("spectator")){
 					event.setCancelled(true);
 				}
 			}
@@ -98,8 +99,8 @@ public class horseListener implements Listener{
 				Arrow arrow = (Arrow) damager; 
 				Player att = (Player) arrow.getShooter();
 				Player rider = (Player) victim.getPassenger();
-				if(MCMEPVP.getPlayerTeam(att).equals(MCMEPVP.getPlayerTeam(rider))
-						|| MCMEPVP.getPlayerTeam(att).equals("spectator")){
+				if(teamUtil.getPlayerTeam(att).equals(teamUtil.getPlayerTeam(rider))
+						|| teamUtil.getPlayerTeam(att).equals("spectator")){
 					event.setCancelled(true);
 					arrow.setBounce(false);
 				}

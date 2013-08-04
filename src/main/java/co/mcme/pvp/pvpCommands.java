@@ -7,13 +7,12 @@ import static co.mcme.pvp.MCMEPVP.Maps;
 import static co.mcme.pvp.MCMEPVP.PVPGT;
 import static co.mcme.pvp.MCMEPVP.PVPMap;
 import static co.mcme.pvp.MCMEPVP.Participants;
-import static co.mcme.pvp.MCMEPVP.getPlayerTeam;
-import static co.mcme.pvp.MCMEPVP.isOnTeam;
 import static co.mcme.pvp.MCMEPVP.locked;
 import static co.mcme.pvp.MCMEPVP.queuePlayer;
 import static co.mcme.pvp.MCMEPVP.resetGame;
 import static co.mcme.pvp.MCMEPVP.unQueuePlayer;
 import co.mcme.pvp.util.config;
+import co.mcme.pvp.util.teamUtil;
 import co.mcme.pvp.util.util;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -66,7 +65,7 @@ public class pvpCommands implements CommandExecutor {
                     }
                     if (method.equalsIgnoreCase("leave")) {
                         if (player.hasPermission("mcmepvp.leave")) {
-                            if (!isOnTeam(player) && GameStatus == 0) {
+                            if (!teamUtil.isOnTeam(player) && GameStatus == 0) {
                                 unQueuePlayer(player);
                                 return true;
                             } else if (GameStatus == 1) {
@@ -97,7 +96,7 @@ public class pvpCommands implements CommandExecutor {
                                 if (args[1].equals("join")) {
                                     ArrayList<String> notjoined = new ArrayList<String>();
                                     for (Player p : Bukkit.getOnlinePlayers()) {
-                                        if (!MCMEPVP.isQueued(p) && !MCMEPVP.isOnTeam(p)) {
+                                        if (!MCMEPVP.isQueued(p) && !teamUtil.isOnTeam(p)) {
                                             p.playSound(p.getLocation(), Sound.ZOMBIE_WOODBREAK, 100, 100);
                                             p.sendMessage(ChatColor.BOLD + "" + ChatColor.DARK_RED + "You have not joined the game yet!");
                                             notjoined.add(p.getName());
@@ -572,7 +571,7 @@ public class pvpCommands implements CommandExecutor {
                                     + MCMEPVP.primarycolor + msg);
                             return true;
                         } else {
-                            if (getPlayerTeam(player).equals("spectator")) {
+                            if (teamUtil.getPlayerTeam(player).equals("spectator")) {
                                 player.sendMessage(MCMEPVP.negativecolor
                                         + "Spectators aren't allowed to shout!");
                                 return true;

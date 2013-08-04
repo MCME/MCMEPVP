@@ -20,6 +20,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import co.mcme.pvp.MCMEPVP;
 import co.mcme.pvp.util.spectatorUtil;
+import co.mcme.pvp.util.teamUtil;
 import co.mcme.pvp.util.textureSwitcher;
 import org.bukkit.Sound;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
@@ -89,8 +90,8 @@ public class playerListener implements Listener {
     
     @EventHandler(priority = EventPriority.HIGH)
     public void itemPickup(PlayerPickupItemEvent event) {
-        if(MCMEPVP.getPlayerTeam(event.getPlayer()).equals("red")
-        		|| MCMEPVP.getPlayerTeam(event.getPlayer()).equals("blue")
+        if(teamUtil.getPlayerTeam(event.getPlayer()).equals("red")
+        		|| teamUtil.getPlayerTeam(event.getPlayer()).equals("blue")
         		|| event.getPlayer().getGameMode().equals(GameMode.CREATIVE)){
         	event.setCancelled(false);
         }else{
@@ -109,7 +110,7 @@ public class playerListener implements Listener {
     
     @EventHandler(priority = EventPriority.HIGH)
     void onGamemodeChange(PlayerGameModeChangeEvent event){
-        if (MCMEPVP.getPlayerTeam(event.getPlayer()).equalsIgnoreCase("spectator")){
+        if (teamUtil.getPlayerTeam(event.getPlayer()).equalsIgnoreCase("spectator")){
             event.getPlayer().setAllowFlight(true);
         }
     }

@@ -1,6 +1,7 @@
 package co.mcme.pvp.listeners;
 
 import co.mcme.pvp.MCMEPVP;
+import co.mcme.pvp.util.teamUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -18,8 +19,8 @@ public class chatListener implements Listener {
     void onPlayerChat(AsyncPlayerChatEvent event) {
         event.setCancelled(true);
         for (Player p : Bukkit.getOnlinePlayers()) {
-            String senderTeam = MCMEPVP.getPlayerTeam(event.getPlayer());
-            String receiverStatus = MCMEPVP.getPlayerTeam(p);
+            String senderTeam = teamUtil.getPlayerTeam(event.getPlayer());
+            String receiverStatus = teamUtil.getPlayerTeam(p);
             String label = "";
             if (senderTeam.equals("fighter")) {
                 label = ChatColor.DARK_GREEN + "Fighter ";

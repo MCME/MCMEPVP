@@ -11,7 +11,7 @@ public class spectatorUtil {
 	
 	public static void setSpectator(Player p){
 		for(Player q : Bukkit.getOnlinePlayers()){
-			String statusq = MCMEPVP.getPlayerTeam(q);
+			String statusq = teamUtil.getPlayerTeam(q);
 			if(!q.equals(p)){
 				if(!statusq.equals("spectator")){
 					q.hidePlayer(p);
@@ -33,7 +33,7 @@ public class spectatorUtil {
 	
 	public static void startingSpectators(){
     	for(Player p : Bukkit.getOnlinePlayers()){
-    		String status = MCMEPVP.getPlayerTeam(p);
+    		String status = teamUtil.getPlayerTeam(p);
     		if(status.equals("spectator")){
     			spectatorUtil.setSpectator(p);
     			Vector vec = MCMEPVP.Spawns.get("spectator");

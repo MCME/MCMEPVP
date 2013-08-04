@@ -42,6 +42,7 @@ import co.mcme.pvp.util.armorColor;
 import co.mcme.pvp.util.config;
 import co.mcme.pvp.util.gearGiver;
 import co.mcme.pvp.util.spectatorUtil;
+import co.mcme.pvp.util.teamUtil;
 import co.mcme.pvp.util.textureSwitcher;
 import co.mcme.pvp.util.util;
 
@@ -105,7 +106,7 @@ public class infectionGame extends gameType {
                 for (Player user : queued) {
                     textureSwitcher.switchTP(user);
                     if (user.isOnline()) {
-                        if (MCMEPVP.getPlayerTeam(user).equals(
+                        if (teamUtil.getPlayerTeam(user).equals(
                                 "participant")) {
                             if (zombiecount < targetzombiecount) {
                                 addTeam(user, "zombie");
@@ -165,7 +166,7 @@ public class infectionGame extends gameType {
                 player.sendMessage(MCMEPVP.primarycolor + "You're now a "
                         + ChatColor.DARK_PURPLE + "ZOMBIE" + MCMEPVP.primarycolor
                         + "!");
-                MCMEPVP.setPlayerTeam(player, "red");
+                teamUtil.setPlayerTeam(player, "red");
                 zombieteam.addPlayer(player);
                 player.setGameMode(GameMode.ADVENTURE);
                 col = armorColor.LIME;
@@ -175,7 +176,7 @@ public class infectionGame extends gameType {
                 player.getInventory().clear();
                 player.sendMessage(MCMEPVP.primarycolor + "You're now a "
                         + ChatColor.AQUA + "SURVIVOR" + MCMEPVP.primarycolor + "!");
-                MCMEPVP.setPlayerTeam(player, "blue");
+                teamUtil.setPlayerTeam(player, "blue");
                 survivorteam.addPlayer(player);
                 player.setGameMode(GameMode.ADVENTURE);
                 col = armorColor.AQUA;
@@ -189,7 +190,7 @@ public class infectionGame extends gameType {
                 "boating", Team);
         playing.put(player.getName(), Team);
 
-        Vector vec = MCMEPVP.Spawns.get(MCMEPVP.getPlayerTeam(player));
+        Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
         Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY() + 0.5,
                 vec.getZ());
         player.teleport(loc);
@@ -225,7 +226,7 @@ public class infectionGame extends gameType {
     public void onPlayerJoin(PlayerJoinEvent event) {
         if (MCMEPVP.GameStatus == 1) {
             Player player = event.getPlayer();
-            String Team = MCMEPVP.getPlayerTeam(player);
+            String Team = teamUtil.getPlayerTeam(player);
             if (Team.equals("red")) {
                 addTeam(player, "zombie");
             }
@@ -234,7 +235,7 @@ public class infectionGame extends gameType {
                     addTeam(player, "survivor");
                     teamCount();
                 } else {
-                    MCMEPVP.setPlayerTeam(player, "red");
+                    teamUtil.setPlayerTeam(player, "red");
                     addTeam(player, "zommbie");
                     teamCount();
                 }
@@ -242,7 +243,7 @@ public class infectionGame extends gameType {
             if (Team.equals("spectator")) {
                 spectatorUtil.setSpectator(player);
             }
-            Vector vec = MCMEPVP.Spawns.get(MCMEPVP.getPlayerTeam(player));
+            Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
             Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
                     vec.getY() + 0.5, vec.getZ());
             player.teleport(loc);
@@ -253,7 +254,7 @@ public class infectionGame extends gameType {
 
     @Override
     public void onPlayerleaveServer(PlayerQuitEvent event) {
-        String Team = MCMEPVP.getPlayerTeam(event.getPlayer());
+        String Team = teamUtil.getPlayerTeam(event.getPlayer());
         if (Team.equals("red")) {
             zombieteam.removePlayer(event.getPlayer());
             teamCount();
@@ -270,7 +271,7 @@ public class infectionGame extends gameType {
         Player p = event.getEntity();
         World w = p.getWorld();
         Location l = p.getLocation();
-        String Status = MCMEPVP.getPlayerTeam(p);
+        String Status = teamUtil.getPlayerTeam(p);
         if (p.getKiller() instanceof Player) {
             if (Status.equals("spectator")) {
                 event.setDeathMessage(MCMEPVP.primarycolor + "Spectator "
@@ -322,8 +323,8 @@ public class infectionGame extends gameType {
     public void onPlayerhit(EntityDamageByEntityEvent event) {
         Player defender = (Player) event.getEntity();
         Player attacker = (Player) event.getDamager();
-        String attackerteam = MCMEPVP.getPlayerTeam(attacker);
-        String defenderteam = MCMEPVP.getPlayerTeam(defender);
+        String attackerteam = teamUtil.getPlayerTeam(attacker);
+        String defenderteam = teamUtil.getPlayerTeam(defender);
         if (attackerteam.equals(defenderteam)) {
             event.setCancelled(true);
         } else if (defenderteam.equals("red")) {
@@ -341,8 +342,8 @@ public class infectionGame extends gameType {
         Player defender = (Player) event.getEntity();
         Player attacker = (Player) ((Projectile) event.getDamager())
                 .getShooter();
-        String attackerteam = MCMEPVP.getPlayerTeam(attacker);
-        String defenderteam = MCMEPVP.getPlayerTeam(defender);
+        String attackerteam = teamUtil.getPlayerTeam(attacker);
+        String defenderteam = teamUtil.getPlayerTeam(defender);
         if (attackerteam.equals(defenderteam)) {
             event.setCancelled(true);
         } else if (defenderteam.equals("red")) {
@@ -355,7 +356,7 @@ public class infectionGame extends gameType {
     @Override
     public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        MCMEPVP.setPlayerTeam(player, "red");
+        teamUtil.setPlayerTeam(player, "red");
         addTeam(player, "zombie");
         Vector vec = extraSpawns();
         Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY() + 0.5,

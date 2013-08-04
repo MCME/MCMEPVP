@@ -36,6 +36,7 @@ import co.mcme.pvp.gameType;
 import co.mcme.pvp.util.armorColor;
 import co.mcme.pvp.util.gearGiver;
 import co.mcme.pvp.util.spectatorUtil;
+import co.mcme.pvp.util.teamUtil;
 import co.mcme.pvp.util.textureSwitcher;
 import co.mcme.pvp.util.util;
 
@@ -183,7 +184,7 @@ public class ringBearerGame extends gameType {
                 player.getInventory().clear();
                 player.sendMessage(MCMEPVP.primarycolor + "You're now in Team "
                         + ChatColor.RED + "RED" + MCMEPVP.primarycolor + "!");
-                MCMEPVP.setPlayerTeam(player, Team);
+                teamUtil.setPlayerTeam(player, Team);
                 redteam.addPlayer(player);
                 teamCount();
                 player.setGameMode(GameMode.ADVENTURE);
@@ -193,7 +194,7 @@ public class ringBearerGame extends gameType {
                 player.getInventory().clear();
                 player.sendMessage(MCMEPVP.primarycolor + "You're now in Team "
                         + ChatColor.BLUE + "BLUE" + MCMEPVP.primarycolor + "!");
-                MCMEPVP.setPlayerTeam(player, Team);
+                teamUtil.setPlayerTeam(player, Team);
                 blueteam.addPlayer(player);
                 teamCount();
                 player.setGameMode(GameMode.ADVENTURE);
@@ -209,7 +210,7 @@ public class ringBearerGame extends gameType {
             player.getInventory().setItem(4, gearGiver.magicItem(false, 0, 1));
         }
         playing.put(player, Team);
-        Location loc = getSpawn(player, MCMEPVP.getPlayerTeam(player));
+        Location loc = getSpawn(player, teamUtil.getPlayerTeam(player));
         player.teleport(loc);
     }
 
@@ -217,7 +218,7 @@ public class ringBearerGame extends gameType {
     public void onPlayerJoin(PlayerJoinEvent event) {
         if (MCMEPVP.GameStatus == 1 && isJoinable) {
             Player player = event.getPlayer();
-            String Team = MCMEPVP.getPlayerTeam(player);
+            String Team = teamUtil.getPlayerTeam(player);
             if (Team.equals("red")) {
                 addTeam(player, "red");
             }
@@ -227,7 +228,7 @@ public class ringBearerGame extends gameType {
             if (Team.equals("spectator")) {
                 spectatorUtil.setSpectator(player);
             }
-            Vector vec = MCMEPVP.Spawns.get(MCMEPVP.getPlayerTeam(player));
+            Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
             Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
                     vec.getY() + 0.5, vec.getZ());
             player.teleport(loc);
@@ -239,7 +240,7 @@ public class ringBearerGame extends gameType {
     @Override
     public void onPlayerleaveServer(PlayerQuitEvent event) {
         Player p = event.getPlayer();
-        String team = MCMEPVP.getPlayerTeam(event.getPlayer());
+        String team = teamUtil.getPlayerTeam(event.getPlayer());
         if (hasRingBearer(team)) {
             if (isRingBearer(p)) {
                 String c = ringBearers.get(p);
@@ -254,7 +255,7 @@ public class ringBearerGame extends gameType {
             }
             teamCount();
         } else {
-            String OldTeam = MCMEPVP.getPlayerTeam(event.getPlayer());
+            String OldTeam = teamUtil.getPlayerTeam(event.getPlayer());
             if (OldTeam.equals("red")) {
                 redteam.removePlayer(p);
                 setSpectator(p);
@@ -274,7 +275,7 @@ public class ringBearerGame extends gameType {
     public void onPlayerdie(PlayerDeathEvent event) {
         MCMEPVP.logKill(event);
         Player player = event.getEntity();
-        String team = MCMEPVP.getPlayerTeam(player);
+        String team = teamUtil.getPlayerTeam(player);
         Color col;
         if (player.getKiller() instanceof Player) {
             if (team.equals("spectator")) {
@@ -384,8 +385,8 @@ public class ringBearerGame extends gameType {
     public void onPlayerhit(EntityDamageByEntityEvent event) {
         Player defender = (Player) event.getEntity();
         Player attacker = (Player) event.getDamager();
-        String attackerteam = MCMEPVP.getPlayerTeam(attacker);
-        String defenderteam = MCMEPVP.getPlayerTeam(defender);
+        String attackerteam = teamUtil.getPlayerTeam(attacker);
+        String defenderteam = teamUtil.getPlayerTeam(defender);
         if (attackerteam.equals(defenderteam)) {
             event.setCancelled(true);
         }
@@ -395,8 +396,8 @@ public class ringBearerGame extends gameType {
     public void onPlayerShoot(EntityDamageByEntityEvent event) {
         Player defender = (Player) event.getEntity();
         Player attacker = (Player) ((Projectile) event.getDamager()).getShooter();
-        String attackerteam = MCMEPVP.getPlayerTeam(attacker);
-        String defenderteam = MCMEPVP.getPlayerTeam(defender);
+        String attackerteam = teamUtil.getPlayerTeam(attacker);
+        String defenderteam = teamUtil.getPlayerTeam(defender);
         if (attackerteam.equals(defenderteam)) {
             event.setCancelled(true);
         } else if (!attackerteam.equals(defenderteam)) {
@@ -407,7 +408,7 @@ public class ringBearerGame extends gameType {
     @Override
     public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        String team = MCMEPVP.getPlayerTeam(player);
+        String team = teamUtil.getPlayerTeam(player);
         Color col;
         if (ringBearers.containsValue(team)) {
             if (team.equals("red") && redHasBearer) {
@@ -432,7 +433,7 @@ public class ringBearerGame extends gameType {
         	}
         	checkGameEnd();
             setSpectator(player);
-            Vector vec = MCMEPVP.Spawns.get(MCMEPVP.getPlayerTeam(player));
+            Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
             Location spawnloc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY() + 0.5, vec.getZ());
             event.setRespawnLocation(spawnloc);
         }
@@ -613,7 +614,7 @@ public class ringBearerGame extends gameType {
 
     private void switchRingBearer(String team) {
         for (Player p : Bukkit.getOnlinePlayers()) {
-            String Status = MCMEPVP.getPlayerTeam(p);
+            String Status = teamUtil.getPlayerTeam(p);
             if (Status.equals(team) && !ringBearers.containsValue(team)) {
                 addRingBearer(p, team);
                 addTeam(p, team);
@@ -623,7 +624,7 @@ public class ringBearerGame extends gameType {
     }
 
     public void setSpectator(Player p) {
-        MCMEPVP.setPlayerTeam(p, "spectator");
+        teamUtil.setPlayerTeam(p, "spectator");
         //TODO invisible spectators using hidePlayer
     }
 

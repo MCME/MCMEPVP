@@ -2,6 +2,7 @@ package co.mcme.pvp.listeners;
 
 import co.mcme.pvp.MCMEPVP;
 import static co.mcme.pvp.MCMEPVP.PVPGT;
+import co.mcme.pvp.util.teamUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +34,7 @@ public class flagListener implements Listener {
                 && event.getClickedBlock().getType() == Material.BEACON) {
 
             Player player = event.getPlayer();
-            String Status = MCMEPVP.getPlayerTeam(player);
+            String Status = teamUtil.getPlayerTeam(player);
             int flagData = event.getClickedBlock().getData();
 
             if (PVPGT.equals("TCQ")) {
@@ -109,7 +110,7 @@ public class flagListener implements Listener {
         int i = 0;
 
         Player player = event.getPlayer();
-        String Status = MCMEPVP.getPlayerTeam(player);
+        String Status = teamUtil.getPlayerTeam(player);
 
         if (Status.equals("red")) {
             i = 14;

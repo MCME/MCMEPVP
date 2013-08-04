@@ -54,6 +54,7 @@ import co.mcme.pvp.stats.entry.JoinEntry;
 import co.mcme.pvp.stats.entry.KillEntry;
 import co.mcme.pvp.util.config;
 import co.mcme.pvp.util.spectatorUtil;
+import co.mcme.pvp.util.teamUtil;
 import co.mcme.pvp.util.textureSwitcher;
 import co.mcme.pvp.util.util;
 import co.mcme.pvp.util.worldUtils;
@@ -175,7 +176,7 @@ public class MCMEPVP extends JavaPlugin {
         	if(currentplayer.isInsideVehicle()){
             	currentplayer.getVehicle().remove();
             }
-            setPlayerTeam(currentplayer, "spectator");
+            teamUtil.setPlayerTeam(currentplayer, "spectator");
             currentplayer.teleport(Spawn);
             currentplayer.getInventory().clear();
             currentplayer.setHealth(20);
@@ -348,35 +349,6 @@ public class MCMEPVP extends JavaPlugin {
     	}
     }
 
-    public static void setPlayerTeam(Player player, String status) {
-        player.getInventory().clear();
-        player.getInventory().setArmorContents(null);
-        PlayerStatus.put(player.getName(), status);
-        if (status.equals("spectator") || status.equals("participant")) {
-            player.setMetadata("god", new FixedMetadataValue(inst(), true));
-        }
-        if (!(status.equals("spectator") || status.equals("participant"))) {
-            player.setMetadata("god", new FixedMetadataValue(inst(), false));
-        }
-        if (player.isOnline()) {
-            TagAPI.refreshPlayer(player);
-        }
-        if(status != "spectator"){
-        	spectatorUtil.setParticipant(player);
-        }
-        if(status == "spectator"){
-        	spectatorUtil.setSpectator(player);
-        }
-    }
-
-    public static String getPlayerTeam(Player player) {
-        String status = "spectator";
-        if (PlayerStatus.containsKey(player.getName())) {
-            status = PlayerStatus.get(player.getName());
-        }
-        return status;
-    }
-
     private void registerEvents() {
         getServer().getPluginManager().registerEvents(new chatListener(this), this);
         getServer().getPluginManager().registerEvents(new damageListener(this), this);
@@ -391,17 +363,17 @@ public class MCMEPVP extends JavaPlugin {
     }
 
     public static void queuePlayer(Player player) {
-        if (!isOnTeam(player)) {
+        if (!teamUtil.isOnTeam(player)) {
             if (GameStatus == 1) {
                 CurrentGame.addPlayerDuringGame(player);
                 return;
             }
-            if (getPlayerTeam(player).equals("participant")) {
+            if (teamUtil.getPlayerTeam(player).equals("participant")) {
                 player.sendMessage(negativecolor + "You are already participating in the next Game!");
             } else {
                 queue.add(player);
                 Participants++;
-                setPlayerTeam(player, "participant");
+                teamUtil.setPlayerTeam(player, "participant");
                 player.sendMessage(positivecolor + "You are participating! Wait for the next Game to start!");
                 if(MCMEPVP.GameStatus==0){
                 	player.teleport(MCMEPVP.Spawn);
@@ -415,7 +387,7 @@ public class MCMEPVP extends JavaPlugin {
         if (queue.contains(player)) {
             queue.remove(player);
             Participants--;
-            setPlayerTeam(player, "spectator");
+            teamUtil.setPlayerTeam(player, "spectator");
             player.sendMessage(negativecolor + "You are no longer participating!");
             TagAPI.refreshPlayer(player);
             util.notifyAdmin(player.getName(), 2, null);
@@ -426,22 +398,6 @@ public class MCMEPVP extends JavaPlugin {
     
     public static boolean isQueued(Player player){
         return queue.contains(player);
-    }
-
-    public static boolean isOnTeam(Player player) {
-        boolean check = true;
-        if (PlayerStatus.containsKey(player.getName())) {
-            String status = getPlayerTeam(player);
-            if (status.equals("spectator")) {
-                check = false;
-            }
-            if (status.equals("participant")) {
-                check = false;
-            }
-        } else {
-            check = false;
-        }
-        return check;
     }
 
     public static void determineSpawn(PlayerRespawnEvent event) {
