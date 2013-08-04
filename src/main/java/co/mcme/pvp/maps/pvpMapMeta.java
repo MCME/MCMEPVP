@@ -1,21 +1,21 @@
 package co.mcme.pvp.maps;
 
-import co.mcme.pvp.MCMEPVP;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 public class pvpMapMeta {
 
     private String name;
-    private HashMap<String, Location> spawns = new HashMap();
+    private File file;
+    private HashMap<String, Spawn> spawns = new HashMap();
     private HashMap<Integer, Vector> flags = new HashMap();
 
-    public pvpMapMeta(JsonArray dat) {
+    public pvpMapMeta(JsonArray dat, File metafile) {
         JsonObject mapObj = dat.get(0).getAsJsonObject();
         name = mapObj.get("name").getAsString();
         // Load flags
@@ -29,22 +29,23 @@ public class pvpMapMeta {
         for (Map.Entry<String, JsonElement> spawn : spawns_.entrySet()) {
             JsonObject spawndat = spawn.getValue().getAsJsonObject();
             String spawnname = spawn.getKey();
-            Location spawnloc = new Location(MCMEPVP.PVPWorld, spawndat.get("x").getAsDouble(),
+            Spawn spawnloc = new Spawn(spawnname, spawndat.get("x").getAsDouble(),
                     spawndat.get("y").getAsDouble(), spawndat.get("z").getAsDouble(),
                     spawndat.get("yaw").getAsFloat(), spawndat.get("pitch").getAsFloat());
             spawns.put(spawnname, spawnloc);
         }
+        file = metafile;
     }
 
     public String getName() {
         return name;
     }
 
-    public HashMap<String, Location> getSpawns() {
+    public HashMap<String, Spawn> getSpawns() {
         return spawns;
     }
 
-    public Location getSpawn(String team) {
+    public Spawn getSpawn(String team) {
         return spawns.get(team);
     }
 
