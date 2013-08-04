@@ -1,9 +1,14 @@
 package co.mcme.pvp.maps;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.util.Vector;
@@ -14,8 +19,10 @@ public class pvpMapMeta {
     private File file;
     private HashMap<String, Spawn> spawns = new HashMap();
     private HashMap<Integer, Vector> flags = new HashMap();
+    JsonArray data;
 
     public pvpMapMeta(JsonArray dat, File metafile) {
+        data = dat;
         JsonObject mapObj = dat.get(0).getAsJsonObject();
         name = mapObj.get("name").getAsString();
         // Load flags
@@ -55,5 +62,24 @@ public class pvpMapMeta {
 
     public Vector getFlagVector(int flagid) {
         return flags.get(flagid);
+    }
+
+    public void writeToFile() {
+        Gson builder = new GsonBuilder().setPrettyPrinting().create();
+        String jsonString = builder.toJson(data);
+        BufferedWriter writer = null;
+        try {
+            file.delete();
+            writer = new BufferedWriter(new FileWriter(file));
+            writer.write(jsonString);
+        } catch (IOException e) {
+        } finally {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException e) {
+            }
+        }
     }
 }
