@@ -102,12 +102,8 @@ public class pvpCommands implements CommandExecutor {
                                             notjoined.add(p.getName());
                                         }
                                     }
-                                    StringBuilder out = new StringBuilder();
-                                    for (String name : notjoined) {
-                                        out.append(ChatColor.RED).append(name).append("\n");
-                                    }
                                     player.playSound(player.getLocation(), Sound.BURP, 100, 100);
-                                    player.sendMessage(out.toString());
+                                    player.sendMessage(prettyPrint(notjoined, "Not Joined:"));
                                 }
                             }
 
