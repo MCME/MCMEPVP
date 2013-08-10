@@ -620,16 +620,9 @@ public class pvpCommands implements CommandExecutor {
 
     private String prettyPrint(List<String> list, String title) {
         StringBuilder out = new StringBuilder();
-        out.append(MCMEPVP.primarycolor).append(title).append("\n");
-        int count = list.size();
-        int i = 0;
+        out.append(MCMEPVP.primarycolor).append(title);
         for (String item : list) {
-            out.append(MCMEPVP.primarycolor).append("- ")
-                    .append(MCMEPVP.highlightcolor).append(item);
-            if (i < count) {
-                out.append("\n");
-            }
-            i++;
+            out.append("\n").append(MCMEPVP.primarycolor).append("- ").append(MCMEPVP.highlightcolor).append(item);
         }
         return out.toString();
     }
