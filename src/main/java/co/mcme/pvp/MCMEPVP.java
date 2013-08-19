@@ -352,7 +352,7 @@ public class MCMEPVP extends JavaPlugin {
     private void registerEvents() {
         getServer().getPluginManager().registerEvents(new chatListener(this), this);
         getServer().getPluginManager().registerEvents(new damageListener(this), this);
-        getServer().getPluginManager().registerEvents(new playerListener(this), this);
+        getServer().getPluginManager().registerEvents(new playerListener(), this);
         getServer().getPluginManager().registerEvents(new tagListener(), this);
         getServer().getPluginManager().registerEvents(new pingListener(), this);
         getServer().getPluginManager().registerEvents(new signListener(), this);
