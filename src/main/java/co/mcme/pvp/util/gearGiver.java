@@ -17,6 +17,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import co.mcme.pvp.MCMEPVP;
+
 /**
  *
  * @author meggawatts <meggawatts@mcme.co>
@@ -39,7 +41,7 @@ public class gearGiver {
 
     public static void giveWeapons(Player player, String team, String loadout) {
         PlayerInventory target = player.getInventory();
-        ItemStack sword = itemUtils.nameItem(new ItemStack(267), player.getName() + "'s Sword", ChatColor.AQUA);
+        ItemStack sword = itemUtils.nameItem(new ItemStack(267), player.getName() + "'s Sword", "none",ChatColor.AQUA);
         ItemStack bow = new ItemStack(261);
         ItemStack arrows = new ItemStack(262, 32);
         ItemStack food = new ItemStack(364);
@@ -48,6 +50,14 @@ public class gearGiver {
             target.setItem(1, bow);
             target.setItem(2, arrows);
             target.setItem(3, food);
+            if (MCMEPVP.horseMode) {
+            	ItemStack leash = magicItem(false, 6, 1);
+            	target.setItem(7, leash);
+            }
+            if(MCMEPVP.CurrentGame.allowCustomAttributes()){
+            	ItemStack book = itemUtils.nameItem(new ItemStack(340, 1), "PVP Attributes", "Read me!", ChatColor.DARK_AQUA);
+            	target.setItem(8, book);
+            }
         }
     }
 
@@ -124,7 +134,7 @@ public class gearGiver {
     	return it;
     }
     
-    private static int getRandom(int lower, int upper) {
+    public static int getRandom(int lower, int upper) {
         Random random = new Random();
         return random.nextInt((upper - lower) + 1) + lower;
     }

@@ -108,6 +108,7 @@ public class teamSlayerGame extends gameType {
                 Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "The Fight begins!");
             }
         }, 100L);
+        MCMEPVP.setWeather();
         redscore.setScore(RedScore);
         bluescore.setScore(BlueScore);
         displayBoard();
@@ -442,7 +443,6 @@ public class teamSlayerGame extends gameType {
 
 	@Override
 	public boolean allowExplosionLogging() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -450,4 +450,9 @@ public class teamSlayerGame extends gameType {
     public Objective getObjective() {
         return objective;
     }
+
+	@Override
+	public boolean allowCustomAttributes() {
+		return true;
+	}
 }

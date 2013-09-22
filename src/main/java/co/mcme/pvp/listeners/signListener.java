@@ -1,23 +1,22 @@
 package co.mcme.pvp.listeners;
 
-import co.mcme.pvp.MCMEPVP;
-import co.mcme.pvp.util.gearGiver;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.Plugin;
 
+import co.mcme.pvp.MCMEPVP;
+import co.mcme.pvp.util.gearGiver;
+
 public class signListener implements Listener {
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    // @EventHandler(priority = EventPriority.NORMAL)
     public void onSignChange(SignChangeEvent event) {
         Player player = event.getPlayer();
         Sign s = (Sign) event.getBlock();
@@ -38,7 +37,7 @@ public class signListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    // @EventHandler(priority = EventPriority.NORMAL)
     public void onInteract(PlayerInteractEvent event) {
         Player p = event.getPlayer();
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {

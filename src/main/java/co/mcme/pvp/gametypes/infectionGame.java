@@ -141,11 +141,13 @@ public class infectionGame extends gameType {
                         + "The Fight begins!");
             }
         }, 100L);
+        MCMEPVP.setWeather();
         spectatorUtil.startingSpectators();
         displayBoard();
         m--;
         CountdownTimer();
         objective.setDisplayName("Time: " + m + ":" + s);
+        
     }
 
     public void determineTeamCounts() {
@@ -554,4 +556,9 @@ public class infectionGame extends gameType {
     public Objective getObjective() {
         return objective;
     }
+
+	@Override
+	public boolean allowCustomAttributes() {
+		return false;
+	}
 }

@@ -24,7 +24,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -47,12 +46,15 @@ import co.mcme.pvp.listeners.magicItemListener;
 import co.mcme.pvp.listeners.pingListener;
 import co.mcme.pvp.listeners.playerListener;
 import co.mcme.pvp.listeners.signListener;
+import co.mcme.pvp.listeners.statsListener;
 import co.mcme.pvp.listeners.tagListener;
+import co.mcme.pvp.listeners.weatherListener;
 import co.mcme.pvp.stats.DataManager;
 import co.mcme.pvp.stats.entry.GameEntry;
 import co.mcme.pvp.stats.entry.JoinEntry;
 import co.mcme.pvp.stats.entry.KillEntry;
 import co.mcme.pvp.util.config;
+import co.mcme.pvp.util.gearGiver;
 import co.mcme.pvp.util.spectatorUtil;
 import co.mcme.pvp.util.teamUtil;
 import co.mcme.pvp.util.textureSwitcher;
@@ -77,6 +79,7 @@ public class MCMEPVP extends JavaPlugin {
     private static Plugin instance;
     public static boolean locked = true;
     public static boolean debug = false;
+    public static boolean horseMode = false;
     public static List loot;
     public Configuration conf;
     public config config;
@@ -130,6 +133,14 @@ public class MCMEPVP extends JavaPlugin {
         getCommand("shout").setExecutor(new pvpCommands(this));
         getCommand("a").setExecutor(new pvpCommands(this));
         
+        getServer().getScheduler().runTask(this, new Runnable() {
+			@Override
+			public void run() {
+				autoUnlock();
+				
+			}
+        });
+        
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
         	public void run() {
                 util.debug("Players reminded of stats!");
@@ -170,6 +181,10 @@ public class MCMEPVP extends JavaPlugin {
         util.debug("Removed " + removed + " entities from the world.");
         Participants = 0;
         GameStatus = 0;
+        
+        horseMode = false;
+        setWeather();
+        
         PlayerStatus = new HashMap<String, String>();
         for (Player currentplayer : Bukkit.getOnlinePlayers()) {
         	currentplayer.setPlayerListName(currentplayer.getName());
@@ -181,6 +196,7 @@ public class MCMEPVP extends JavaPlugin {
             currentplayer.getInventory().clear();
             currentplayer.setHealth(20);
             currentplayer.setFoodLevel(20);
+            statsListener.stripStats(currentplayer);
             textureSwitcher.switchTP(currentplayer);
             spectatorUtil.showAll(currentplayer);
             if(currentplayer.getActivePotionEffects() != null){
@@ -188,6 +204,12 @@ public class MCMEPVP extends JavaPlugin {
             		currentplayer.removePotionEffect(pe.getType());
             	}
             }
+            if(currentplayer.isInsideVehicle()){
+            	currentplayer.getVehicle().eject();
+            }
+        }
+        if (!statsListener.playerStats.isEmpty()) {
+        	statsListener.playerStats.clear();
         }
         if (PVPGT.equals("TCQ")) {
             Flags.clear();
@@ -327,6 +349,31 @@ public class MCMEPVP extends JavaPlugin {
         }
     }
     
+    private static void autoUnlock(){
+    	for (Player p : Bukkit.getOnlinePlayers()) {
+    		if (!p.hasPermission("mcmepvp.admin")) {
+    			locked = false;
+    			break;
+    		}
+    	}
+    }
+    
+    public static void setWeather(){
+    	if (GameStatus == 1) {
+    		int i = gearGiver.getRandom(0, 2);
+    		if (i == 2) {
+    			if (PVPMap.equalsIgnoreCase("HelmsDeep")) {
+            		PVPWorld.setTime(15000);
+            		PVPWorld.setStorm(true);
+            		PVPWorld.setThundering(true);
+            	}
+    		}
+    	} else {
+    		PVPWorld.setStorm(false);
+    		PVPWorld.setThundering(false);
+    	}
+    }
+    
     private static void exploadables(){
     	blockListener.explodeableList.add(44);
     	blockListener.explodeableList.add(45);
@@ -352,7 +399,7 @@ public class MCMEPVP extends JavaPlugin {
     private void registerEvents() {
         getServer().getPluginManager().registerEvents(new chatListener(this), this);
         getServer().getPluginManager().registerEvents(new damageListener(this), this);
-        getServer().getPluginManager().registerEvents(new playerListener(), this);
+        getServer().getPluginManager().registerEvents(new playerListener(this), this);
         getServer().getPluginManager().registerEvents(new tagListener(), this);
         getServer().getPluginManager().registerEvents(new pingListener(), this);
         getServer().getPluginManager().registerEvents(new signListener(), this);
@@ -360,10 +407,13 @@ public class MCMEPVP extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new magicItemListener(), this);
         getServer().getPluginManager().registerEvents(new blockListener(), this);
         getServer().getPluginManager().registerEvents(new horseListener(), this);
+        getServer().getPluginManager().registerEvents(new statsListener(), this);
+        getServer().getPluginManager().registerEvents(new weatherListener(), this);
     }
 
     public static void queuePlayer(Player player) {
         if (!teamUtil.isOnTeam(player)) {
+        	statsListener.stripStats(player);
             if (GameStatus == 1) {
                 CurrentGame.addPlayerDuringGame(player);
                 return;

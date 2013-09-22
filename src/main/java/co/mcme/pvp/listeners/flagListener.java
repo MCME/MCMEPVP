@@ -1,11 +1,11 @@
 package co.mcme.pvp.listeners;
 
-import co.mcme.pvp.MCMEPVP;
 import static co.mcme.pvp.MCMEPVP.PVPGT;
-import co.mcme.pvp.util.teamUtil;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -18,6 +18,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+
+import co.mcme.pvp.util.teamUtil;
 
 public class flagListener implements Listener {
 

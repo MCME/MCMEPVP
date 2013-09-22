@@ -103,6 +103,11 @@ public class magicItemListener implements Listener {
 					cookieEffects(event);
 				}
 			}
+			if (event.hasItem()
+					&& event.getItem().getType().equals(Material.FEATHER)) {
+				event.setCancelled(true);
+				featherEffects(event.getPlayer());
+			}
 		}
 	}
 
@@ -161,9 +166,9 @@ public class magicItemListener implements Listener {
 		}
 		Location l = p.getTargetBlock(null, 2).getLocation();
 		p.playEffect(l, Effect.SMOKE, 1);
-		p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 300,
+		p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 500,
 				0));
-		p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 300, 0));
+		p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 500, 0));
 	}
 
 	private void starEffects(PlayerInteractEvent event) {
@@ -192,7 +197,7 @@ public class magicItemListener implements Listener {
 		}
 		Location l = p.getLocation();
 		p.playEffect(l, Effect.ENDER_SIGNAL, 1);
-		p.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 0));
+		p.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 2, 0));
 	}
 	
 	private void cookieEffects(PlayerInteractEvent event) {
@@ -219,6 +224,19 @@ public class magicItemListener implements Listener {
 		p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 200, 1));
 		p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 200, 3));
 		p.playSound(p.getLocation(), Sound.WITHER_SPAWN, (float) 0.5, 1);
+	}
+	
+	public void featherEffects(Player p){
+		for(Entity e : p.getNearbyEntities(30, 30, 30)){
+			if (e instanceof Player) {
+				if (!teamUtil.getPlayerTeam(((Player) e).getPlayer()).equals("spectator")) {
+					p.teleport(e);
+					e.setPassenger(p);
+					p.sendMessage(MCMEPVP.positivecolor + "Saddled " + ((Player) e).getPlayer().getName());
+					return;
+				}
+			}
+		}
 	}
 
 	public void derp(final Player p, final Color c) {

@@ -113,9 +113,6 @@ public class freeForAllGame extends gameType {
                 Collections.shuffle(queued);
                 for (Player p : queued) {
                     textureSwitcher.switchTP(p);
-                    if(p.getName().length() > 10){
-                    	p.setPlayerListName(p.getName().substring(0, 10));
-                    }
                     if (p.isOnline()) {
                         if (teamUtil.getPlayerTeam(p).equals(
                                 "participant")) {
@@ -263,7 +260,7 @@ public class freeForAllGame extends gameType {
         Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
                 vec.getY() + 0.5, vec.getZ());
         event.setRespawnLocation(loc);
-        p.setNoDamageTicks(140);
+        p.setNoDamageTicks(160);
         p.setScoreboard(board);
     }
 
@@ -291,6 +288,13 @@ public class freeForAllGame extends gameType {
             Bukkit.broadcastMessage(MCMEPVP.positivecolor + "Winner(s):");
             Bukkit.broadcastMessage(ChatColor.RED + winners);
             Bukkit.broadcastMessage(MCMEPVP.primarycolor + "With: " + MCMEPVP.positivecolor + topscore + MCMEPVP.primarycolor + " kills!");
+            for(OfflinePlayer p : reds.getPlayers()){
+            	if(p.isOnline()){
+            		p.getPlayer().setPlayerListName(p.getName());
+            		p.getPlayer().sendMessage(MCMEPVP.positivecolor + "Your Score:");
+            		p.getPlayer().sendMessage(""+MCMEPVP.positivecolor + objective.getScore(p).getScore() + MCMEPVP.primarycolor + " kills!");
+            	}
+            }
             MCMEPVP.resetGame();
         }
     }
@@ -312,6 +316,9 @@ public class freeForAllGame extends gameType {
                     } else {
                         objective1.setDisplayName("Time: " + m
                                 + ":" + s);
+                        if(s == 30){
+                        	updateBoard();
+                        }
                     }
                 } else {
                     if (m == 0 && s == 0) {
@@ -412,8 +419,13 @@ public class freeForAllGame extends gameType {
 
     public void updateBoard() {
         for (Player p : Bukkit.getOnlinePlayers()) {
-            p.setScoreboard(board);
-            kills.setScore(killcount);
+        	p.setScoreboard(board);
+        	kills.setScore(killcount);
+        	if(p.getName().length() > 13){
+        		int i = objective.getScore(p).getScore();
+        		String s = p.getName().substring(0, 9);
+        		p.setPlayerListName(ChatColor.RED + s + " " + ChatColor.YELLOW + i);
+        	}
         }
     }
 
@@ -471,4 +483,9 @@ public class freeForAllGame extends gameType {
     public Objective getObjective() {
         return objective;
     }
+
+	@Override
+	public boolean allowCustomAttributes() {
+		return false;
+	}
 }

@@ -11,10 +11,8 @@ import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -22,7 +20,6 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -37,23 +34,23 @@ import co.mcme.pvp.util.armorColor;
 import co.mcme.pvp.util.gearGiver;
 import co.mcme.pvp.util.spectatorUtil;
 import co.mcme.pvp.util.teamUtil;
-import co.mcme.pvp.util.textureSwitcher;
 import co.mcme.pvp.util.util;
 
-public class ringBearerGame extends gameType {
-
-    public static int taskId;
-    private int RedMates = 0;
-    private int BlueMates = 0;
-    private int m = 5;
-    public Plugin plugin;
-    private HashMap<Player, String> playing = new HashMap<Player, String>();
-    public static HashMap<Player, String> ringBearers = new HashMap<Player, String>();
-    boolean isTharbad = MCMEPVP.PVPMap.equalsIgnoreCase("tharbad");
-    boolean isJoinable = true;
-    boolean redHasBearer;
-    boolean blueHasBearer;
+public class ringBearerGame extends gameType{
+	
+	public static HashMap<Player, String> ringBearers = new HashMap<Player, String>();
+	
+	int blueSize = 0;
+	int redSize = 0;
+	private int m = 5;
+	public static int taskId = 0;
+	
+	boolean isJoinable = true;
+    boolean redHasBearer = false;
+    boolean blueHasBearer = false;
+    
     boolean spawnSwitch = false;
+    
     ScoreboardManager manager;
     Scoreboard board;
     Team redteam;
@@ -63,402 +60,294 @@ public class ringBearerGame extends gameType {
     OfflinePlayer dummyblue = Bukkit.getOfflinePlayer(ChatColor.BLUE + "Blue:");
     Score redscore;
     Score bluescore;
-
-    public ringBearerGame() {
-        MCMEPVP.GameStatus = 1;
+    
+	public ringBearerGame() {
+		MCMEPVP.GameStatus = 1;
         manager = Bukkit.getScoreboardManager();
         board = manager.getNewScoreboard();
+        
         redteam = board.registerNewTeam("Red Team");
-        redteam.setPrefix(ChatColor.RED.toString());
         blueteam = board.registerNewTeam("Blue Team");
+        
+        redteam.setPrefix(ChatColor.RED.toString());
         blueteam.setPrefix(ChatColor.BLUE.toString());
+        
+        redteam.setAllowFriendlyFire(false);
+        blueteam.setAllowFriendlyFire(false);
+        
         objective = board.registerNewObjective("Players Left", "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        redscore = objective.getScore(dummyred);
-        bluescore = objective.getScore(dummyblue);
-        // Broadcast
-        Bukkit.getServer()
-                .broadcastMessage(
-                MCMEPVP.primarycolor
-                + "The next Game starts in a few seconds!");
-        Bukkit.getServer().broadcastMessage(
-                MCMEPVP.primarycolor + "GameType is " + MCMEPVP.highlightcolor
-                + "Ring Bearer" + MCMEPVP.primarycolor + " on Map "
-                + MCMEPVP.highlightcolor + MCMEPVP.PVPMap + "!");
-        Bukkit.getServer().broadcastMessage(
-                MCMEPVP.primarycolor
-                + "Hunt down the enemy's Ring Bearer to prevent them from respawning!");
-        Bukkit.getServer()
-                .broadcastMessage(
-                MCMEPVP.primarycolor
-                + "All Participants will be assigned to a team and teleported to their spawn!");
-        Bukkit.getServer()
-                .getScheduler()
-                .scheduleSyncDelayedTask(
-                Bukkit.getPluginManager().getPlugin("MCMEPVP"),
-                new Runnable() {
-            public void run() {
-                ArrayList<Player> queued = new ArrayList<Player>();
-                MCMEPVP.queue.drainTo(queued);
-                Collections.shuffle(queued);
-                for (Player p : queued) {
-                    textureSwitcher.switchTP(p);
-                    if (p.isOnline()) {
-                        if (BlueMates > RedMates) {
-                            if (!redHasBearer) {
+        
+        //Announce
+        announceGame();
+        
+        //Run after delay
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(
+        		Bukkit.getPluginManager().getPlugin("MCMEPVP"),
+        		new Runnable() {
 
-                                addRingBearer(p, "red");
-                            }
-                            addTeam(p, "red");
-                        } else {
-                            if (BlueMates < RedMates) {
-                                if (!blueHasBearer) {
-                                    addRingBearer(p, "blue");
-                                }
-                                addTeam(p, "blue");
-                            } else {
-                                boolean random = (Math.random() < 0.5);
-                                if (random == true) {
-                                    if (!redHasBearer) {
-                                        addRingBearer(p, "red");
-                                    }
-                                    addTeam(p, "red");
-                                } else {
-                                    if (!blueHasBearer) {
-                                        addRingBearer(p, "blue");
-                                    }
-                                    addTeam(p, "blue");
-                                }
-                            }
-                        }
-                        MCMEPVP.queue.remove(p);
-                    } else {
-                        MCMEPVP.queue.remove(p);
-                        util.debug("Player `" + p.getName()
-                                + "` is not online!");
-                    }
-                }
-                spectatorUtil.startingSpectators();
-                // Broadcast
-                Bukkit.getServer().broadcastMessage(
-                        MCMEPVP.positivecolor
-                        + "The Fight begins!");
-                for (Player rb : ringBearers.keySet()) {
-                    rb.sendMessage(ChatColor.LIGHT_PURPLE
-                            + "You are the Ring Bearer! Stay alive for as long as possible!");
-                }
-            }
-        }, 100L);
+					@Override
+					public void run() {
+						chooseTeams();
+						spectatorUtil.startingSpectators();
+					}
+        			
+        		}, 100L);
         CountdownTimer();
         displayBoard();
-        teamCount();
-    }
-
-    @Override
-    public void addPlayerDuringGame(Player p) {
-        if (isJoinable) {
-            if (BlueMates > RedMates) {
-                addTeam(p, "red");
-            } else {
-                if (BlueMates < RedMates) {
-                    addTeam(p, "blue");
-                } else {
-                    boolean random = (Math.random() < 0.5);
-                    if (random == true) {
-                        addTeam(p, "red");
-                    } else {
-                        addTeam(p, "blue");
-                    }
-                }
-            }
-        } else {
-            p.sendMessage(MCMEPVP.negativecolor + "You can no longer join this game!");
-        }
-    }
-
-    @Override
-    public void addTeam(Player player, String Team) {
-        Color col = armorColor.WHITE;
+        
+	}
+	
+	
+	//HANDLE ADDING/REMOVING OF PLAYERS
+	@Override
+	public void addTeam(Player p, String Team) {
+		boolean isTharbad = false;
+		Color col = armorColor.WHITE;
+			
         switch (Team) {
             case "red":
-                player.getInventory().clear();
-                player.sendMessage(MCMEPVP.primarycolor + "You're now in Team "
+                p.sendMessage(MCMEPVP.primarycolor + "You're now in Team "
                         + ChatColor.RED + "RED" + MCMEPVP.primarycolor + "!");
-                teamUtil.setPlayerTeam(player, Team);
-                redteam.addPlayer(player);
-                teamCount();
-                player.setGameMode(GameMode.ADVENTURE);
+                if (!redteam.hasPlayer(p)) {
+                	redteam.addPlayer(p);
+                }
                 col = armorColor.RED;
                 break;
             case "blue":
-                player.getInventory().clear();
-                player.sendMessage(MCMEPVP.primarycolor + "You're now in Team "
+                p.sendMessage(MCMEPVP.primarycolor + "You're now in Team "
                         + ChatColor.BLUE + "BLUE" + MCMEPVP.primarycolor + "!");
-                teamUtil.setPlayerTeam(player, Team);
-                blueteam.addPlayer(player);
-                teamCount();
-                player.setGameMode(GameMode.ADVENTURE);
+                if (!blueteam.hasPlayer(p)) {
+                	blueteam.addPlayer(p);
+                }
                 col = armorColor.BLUE;
                 break;
         }
-        player.setHealth(20);
-        player.setFoodLevel(20);
-        player.setSaturation((float) 20);
-        gearGiver.loadout(player, true, isTharbad, true, "warrior", col,
-                "boating", Team);
-        if (ringBearers.containsKey(player)) {
-            player.getInventory().setItem(4, gearGiver.magicItem(false, 0, 1));
-        }
-        playing.put(player, Team);
-        Location loc = getSpawn(player, teamUtil.getPlayerTeam(player));
-        player.teleport(loc);
-    }
-
-    @Override
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        if (MCMEPVP.GameStatus == 1 && isJoinable) {
-            Player player = event.getPlayer();
-            String Team = teamUtil.getPlayerTeam(player);
-            if (Team.equals("red")) {
-                addTeam(player, "red");
-            }
-            if (Team.equals("blue")) {
-                addTeam(player, "blue");
-            }
-            if (Team.equals("spectator")) {
-                spectatorUtil.setSpectator(player);
-            }
-            Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
-            Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
-                    vec.getY() + 0.5, vec.getZ());
-            player.teleport(loc);
-        }
-        displayBoard();
         teamCount();
-    }
-
-    @Override
-    public void onPlayerleaveServer(PlayerQuitEvent event) {
-        Player p = event.getPlayer();
-        String team = teamUtil.getPlayerTeam(event.getPlayer());
-        if (hasRingBearer(team)) {
-            if (isRingBearer(p)) {
-                String c = ringBearers.get(p);
-                removeRingBearer(p, c);
-                switchRingBearer(c);
-            }
-            if (team.equals("red")) {
-                redteam.removePlayer(p);
-            }
-            if (team.equals("blue")) {
-                blueteam.removePlayer(p);
-            }
-            teamCount();
-        } else {
-            String OldTeam = teamUtil.getPlayerTeam(event.getPlayer());
-            if (OldTeam.equals("red")) {
-                redteam.removePlayer(p);
-                setSpectator(p);
-            }
-            if (OldTeam.equals("blue")) {
-                blueteam.removePlayer(p);
-                setSpectator(p);
-            } else {
-                util.debug("Player already spectator");
-            }
-            teamCount();
+        teamUtil.setPlayerTeam(p, Team);
+        
+        p.getInventory().clear();
+		p.setGameMode(GameMode.ADVENTURE);
+        p.setHealth(20);
+        p.setFoodLevel(20);
+        p.setSaturation((float) 20);
+        
+        gearGiver.loadout(p, true, isTharbad, true, "warrior", col, "boating", Team);
+        if (ringBearers.containsKey(p)) {
+            p.getInventory().setItem(4, gearGiver.magicItem(false, 0, 1));
         }
-        checkGameEnd();
-    }
+        Location loc = getSpawn(p, Team);
+        p.teleport(loc);
+	}
 
-    @Override
-    public void onPlayerdie(PlayerDeathEvent event) {
-        MCMEPVP.logKill(event);
-        Player player = event.getEntity();
-        String team = teamUtil.getPlayerTeam(player);
-        Color col;
-        if (player.getKiller() instanceof Player) {
-            if (team.equals("spectator")) {
-                event.setDeathMessage(MCMEPVP.primarycolor + "Spectator " + player.getName() + " was tired watching this fight!");
-            }
-            //BONUS DROP FOR RINGBEARER
-            if (ringBearers.containsKey(player.getKiller())) {
-                event.getDrops().add(gearGiver.magicItem(false, 0, 1));
-            }
-            //RingBearer Dies
-            if (isRingBearer(player)) {
-                if (redHasBearer && team.equals("red")) {
-                    Bukkit.broadcastMessage(ChatColor.DARK_RED + "Reds lost their RingBearer!");
-                    removeRingBearer(player, team);
-                }
-                if (blueHasBearer && team.equals("blue")) {
-                    Bukkit.broadcastMessage(ChatColor.DARK_RED + "Blues lost their RingBearer!");
-                    removeRingBearer(player, team);
-                }
-            }
-            //Red Dies
-            if (team.equals("red")) {
-                if (redHasBearer) {
-                    event.setDeathMessage(ChatColor.RED + player.getName() + MCMEPVP.primarycolor + " was killed by " + ChatColor.BLUE + player.getKiller().getName());
-                    event.getDrops().add(new ItemStack(364, 1));
-                    event.getDrops().add(new ItemStack(262, 8));
-                    col = armorColor.RED;
-                    gearGiver.loadout(player, true, isTharbad, true, "warrior", col, "boating", team);
-                } else {
-                    event.setDeathMessage(ChatColor.RED + player.getName() + MCMEPVP.primarycolor + " was killed by " + ChatColor.BLUE + player.getKiller().getName());
-                    event.getDrops().add(new ItemStack(364, 1));
-                    event.getDrops().add(new ItemStack(262, 8));
-                    setSpectator(player);
-                    redteam.removePlayer(player);
-                }
-            }
-            //Blue Dies
-            if (team.equals("blue")) {
-                if (blueHasBearer) {
-                    event.setDeathMessage(ChatColor.BLUE + player.getName() + MCMEPVP.primarycolor + " was killed by " + ChatColor.RED + player.getKiller().getName());
-                    event.getDrops().add(new ItemStack(364, 1));
-                    event.getDrops().add(new ItemStack(262, 8));
-                    col = armorColor.BLUE;
-                    gearGiver.loadout(player, true, isTharbad, true, "warrior", col, "boating", team);
-                } else {
-                    event.setDeathMessage(ChatColor.BLUE + player.getName() + MCMEPVP.primarycolor + " was killed by " + ChatColor.RED + player.getKiller().getName());
-                    event.getDrops().add(new ItemStack(364, 1));
-                    event.getDrops().add(new ItemStack(262, 8));
-                    setSpectator(player);
-                    blueteam.removePlayer(player);
-                }
-            }
-            teamCount();
-        } else {
-            if (team.equals("spectator")) {
-                event.setDeathMessage(MCMEPVP.primarycolor + "Spectator "
-                        + player.getName() + " was tired watching this fight!");
-            }
-            //RingBearer dies to elements
-            if (isRingBearer(player)) {
-                if (isRingBearer(player) && team.equals("red")) {
-                    Bukkit.broadcastMessage(ChatColor.DARK_RED + "Reds lost their RingBearer!");
-                    removeRingBearer(player, team);
-                }
-                if (isRingBearer(player) && team.equals("blue")) {
-                    Bukkit.broadcastMessage(ChatColor.DARK_RED + "Blues lost their RingBearer!");
-                    removeRingBearer(player, team);
-                }
-                setSpectator(player);
-            }
-            //Red dies to elements
-            if (team.equals("red")) {
-                if (redHasBearer) {
-                    event.setDeathMessage(ChatColor.RED + player.getName()
-                            + MCMEPVP.primarycolor + " was lost in battle");
-                    col = armorColor.RED;
-                    gearGiver.loadout(player, true, isTharbad, true, "warrior",
-                            col, "boating", team);
-                } else {
-                    event.setDeathMessage(ChatColor.RED + "Team Red " + MCMEPVP.primarycolor + "lost " + player.getName());
-                    setSpectator(player);
-                }
-                if (!redHasBearer) {
-                    redteam.removePlayer(player);
-                }
-            }
-            //Blue dies to elements
-            if (team.equals("blue")) {
-                if (blueHasBearer) {
-                    event.setDeathMessage(ChatColor.BLUE + player.getName() + MCMEPVP.primarycolor + " was lost in battle");
-                    col = armorColor.BLUE;
-                    gearGiver.loadout(player, true, isTharbad, true, "warrior", col, "boating", team);
-                } else {
-                    event.setDeathMessage(ChatColor.BLUE + "Team Blue " + MCMEPVP.primarycolor + "lost " + player.getName());
-                    setSpectator(player);
-                }
-                if (!blueHasBearer) {
-                    blueteam.removePlayer(player);
-                }
-            }
-            teamCount();
-        }
-        checkGameEnd();
-    }
 
-    @Override
-    public void onPlayerhit(EntityDamageByEntityEvent event) {
-        Player defender = (Player) event.getEntity();
-        Player attacker = (Player) event.getDamager();
-        String attackerteam = teamUtil.getPlayerTeam(attacker);
-        String defenderteam = teamUtil.getPlayerTeam(defender);
-        if (attackerteam.equals(defenderteam)) {
-            event.setCancelled(true);
-        }
-    }
-
-    @Override
-    public void onPlayerShoot(EntityDamageByEntityEvent event) {
-        Player defender = (Player) event.getEntity();
-        Player attacker = (Player) ((Projectile) event.getDamager()).getShooter();
-        String attackerteam = teamUtil.getPlayerTeam(attacker);
-        String defenderteam = teamUtil.getPlayerTeam(defender);
-        if (attackerteam.equals(defenderteam)) {
-            event.setCancelled(true);
-        } else if (!attackerteam.equals(defenderteam)) {
-            attacker.playSound(attacker.getLocation(), Sound.ORB_PICKUP, (float) 20, (float) 50);
-        }
-    }
-
-    @Override
-    public void onRespawn(PlayerRespawnEvent event) {
-        Player player = event.getPlayer();
-        String team = teamUtil.getPlayerTeam(player);
-        Color col;
-        if (ringBearers.containsValue(team)) {
-            if (team.equals("red") && redHasBearer) {
-                col = armorColor.RED;
-                gearGiver.loadout(player, true, isTharbad, true, "warrior", col, "boating", team);
-                Location loc = getSpawn(player, "red");
-                event.setRespawnLocation(loc);
+	@Override
+	public void addPlayerDuringGame(Player p) {
+		if (redHasBearer && blueHasBearer) {
+			if (redSize == blueSize) {
+	    		boolean random = (Math.random() < 0.5);
+	            if (random == true) {
+	                addTeam(p, "red");
+	            } else {
+	                addTeam(p, "blue");
+	            }
+	    	} else {
+	    		if (redSize > blueSize) {
+	        		if (!blueHasBearer) {
+	        			addBearer(p, "blue");
+	        		}
+	        		addTeam(p, "blue");
+	        	}
+	        	if (redSize < blueSize) {
+	        		if (!redHasBearer) {
+	        			addBearer(p, "red");
+	        		}
+	        		addTeam(p, "red");
+	        	}
+	    	}
+		} else {
+			p.sendMessage(MCMEPVP.negativecolor + "This game is no-longer joinable!");
+		}
+	}
+	
+	@Override
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		Player p = event.getPlayer();
+		String team = teamUtil.getPlayerTeam(p);
+		
+		p.getInventory().clear();
+		if (redHasBearer && blueHasBearer) {
+			if (team.equals("red")) {
+				addTeam(p, team);
+			}
+			if (team.equals("blue")) {
+				addTeam(p, team);
+			}
+			if (team.equals("spectator")) {
+                spectatorUtil.setSpectator(p);
             }
-            if (team.equals("blue") && blueHasBearer) {
-                col = armorColor.BLUE;
-                gearGiver.loadout(player, true, isTharbad, true, "warrior", col, "boating", team);
-                Location loc = getSpawn(player, "blue");
-                event.setRespawnLocation(loc);
-            }
-            teamCount();
-        } else { 
-        	if(team.equals("red")){
-        		redteam.removePlayer(player);
-        	}
-        	if (team.equals("blue")){
-        		blueteam.removePlayer(player);
-        	}
-        	checkGameEnd();
-            setSpectator(player);
-            Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
-            Location spawnloc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY() + 0.5, vec.getZ());
-            event.setRespawnLocation(spawnloc);
-        }
-    }
-
-    private void checkGameEnd() {
+			Location l = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(p)).toLocation(MCMEPVP.PVPWorld);
+			p.teleport(l);
+		} else {
+			teamUtil.setPlayerTeam(p, "spectator");
+			spectatorUtil.setSpectator(p);
+		}
+		displayBoard();
         teamCount();
-        if (BlueMates <= 0) {
-            MCMEPVP.logGame("red", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
+	}
+	
+	@Override
+	public void onPlayerleaveServer(PlayerQuitEvent event) {
+		Player p = event.getPlayer();
+		String team = teamUtil.getPlayerTeam(p);
+		
+		if (team.equals("red")) {
+			redteam.removePlayer(p);
+			if (ringBearers.containsKey(p)) {
+				removeBearer(p, team);
+				switchBearer(team);
+			}
+		}
+		if (team.equals("blue")) {
+			blueteam.removePlayer(p);
+			if (ringBearers.containsKey(p)) {
+				removeBearer(p, team);
+				switchBearer(team);
+			}
+		}
+		
+		teamCount();
+		checkEndGame();
+	}
 
-            for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                util.debug("player: " + key + " Team: " + value);
-                if (value.equalsIgnoreCase("red")) {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, true);
-                } else {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, false);
-                }
+	
+	//HANDLE DAMAGE/KILLS
+	@Override
+	public void onPlayerhit(EntityDamageByEntityEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onPlayerShoot(EntityDamageByEntityEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onPlayerdie(PlayerDeathEvent event) {
+		Player victim = event.getEntity();
+		String team = teamUtil.getPlayerTeam(victim);
+		
+		if (team.equals("spectator")) {
+			event.setDeathMessage(MCMEPVP.primarycolor + "Spectator " + victim.getName() + " was tired watching this fight!");
+		} else {
+			if (ringBearers.containsKey(victim)) {
+				String s = ringBearers.get(victim);
+				ChatColor msg = ChatColor.WHITE;
+				
+				if (s.equals("red")) {
+					msg = ChatColor.RED;
+				}
+				if (s.equals("blue")) {
+					msg = ChatColor.BLUE;
+				}
+				Bukkit.broadcastMessage(msg + s.toUpperCase() + " Team " + ChatColor.DARK_RED + "lost their RingBearer!");
+				
+				removeBearer(victim, s);
+			}
+			
+			String deathMessage = "!";
+			
+			if (team.equals("red")) {
+				if (!redHasBearer) {
+					teamUtil.setPlayerTeam(victim, "spectator");
+					redteam.removePlayer(victim);
+				}
+				deathMessage = ChatColor.RED + victim.getName() + MCMEPVP.primarycolor + " was lost in battle!";
+			}
+			
+			if (team.equals("blue")) {
+				if (!blueHasBearer) {
+					teamUtil.setPlayerTeam(victim, "spectator");
+					blueteam.removePlayer(victim);
+				}
+				deathMessage = ChatColor.BLUE + victim.getName() + MCMEPVP.primarycolor + " was lost in battle!";
+			}
+			
+			if (victim.getKiller() instanceof Player) {
+				Player killer = victim.getKiller();
+				String killTeam = teamUtil.getPlayerTeam(killer);
+				if (killTeam.equals("red")) {
+					deathMessage = ChatColor.BLUE + victim.getName() + MCMEPVP.primarycolor + " was killed by " + ChatColor.RED + killer.getName();
+				}
+				if (killTeam.equals("blue")) {
+					deathMessage = ChatColor.RED + victim.getName() + MCMEPVP.primarycolor + " was killed by " + ChatColor.BLUE + killer.getName();
+				}
+				if (ringBearers.containsKey(killer)) {
+					event.getDrops().add(gearGiver.magicItem(false, 0, 1));
+				}
+			}
+			event.getDrops().add(new ItemStack(364, 1));
+            event.getDrops().add(new ItemStack(262, 8)); 
+            event.setDeathMessage(deathMessage);
+            
+            
+            teamCount();
+            checkEndGame();
+		}
+	}
+
+	@Override
+	public void onRespawn(PlayerRespawnEvent event) {
+		Player p = event.getPlayer();
+		String team = teamUtil.getPlayerTeam(p);
+		Location l = MCMEPVP.Spawns.get("spectator").toLocation(MCMEPVP.PVPWorld);
+		
+		if ( (team.equals("red") && redHasBearer) 
+				|| (team.equals("blue") && blueHasBearer)) {
+			l = getSpawn(p, team);
+			event.setRespawnLocation(l);
+			addTeam(p, team);
+		} else {
+			if (team.equals("red")) {
+				if (redteam.hasPlayer(p)) {
+					redteam.removePlayer(p);
+				}
+			}
+			if (team.equals("blue")) {
+				if (blueteam.hasPlayer(p)) {
+					blueteam.removePlayer(p);
+				}
+			}
+			event.setRespawnLocation(l);
+			teamUtil.setPlayerTeam(p, "spectator");
+		}
+		
+		teamCount();
+		checkEndGame();
+	}
+	
+	private Location getSpawn(Player p, String s) {
+		String team = s;
+		if (spawnSwitch) {
+            if (s.equals("red")) {
+                team = "blue";
             }
-
-            Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Team " + ChatColor.RED + "Red" + MCMEPVP.positivecolor + " wins!");
-            MCMEPVP.resetGame();
-        } else if (RedMates <= 0) {
-            MCMEPVP.logGame("blue", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
+            if (s.equals("blue")) {
+                team = "red";
+            }
+        }
+        Vector vec = MCMEPVP.Spawns.get(team);
+        Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY() + 0.5, vec.getZ());
+        return loc;
+	}
+	
+	
+	//CHECK GAME-END SCENARIO
+	private void checkEndGame() {
+		if (redSize <= 0) {
+			MCMEPVP.logGame("blue", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
 
             for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus.entrySet()) {
                 String key = entry.getKey();
@@ -470,205 +359,286 @@ public class ringBearerGame extends gameType {
                     MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, false);
                 }
             }
-
+            
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Team " + ChatColor.BLUE + "Blue" + MCMEPVP.positivecolor + " wins!");
-            MCMEPVP.resetGame();
-        } else {
-            teamCount();
+			stopTimer();
+			MCMEPVP.resetGame();
+		}
+		if (blueSize <= 0) {
+			MCMEPVP.logGame("red", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
+
+            for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                util.debug("player: " + key + " Team: " + value);
+                if (value.equalsIgnoreCase("red")) {
+                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, true);
+                } else {
+                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, false);
+                }
+            }
+            
+            Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Team " + ChatColor.RED + "Red" + MCMEPVP.positivecolor + " wins!");
+			stopTimer();
+			MCMEPVP.resetGame();
+		}
+	}
+	
+	
+	//SCOREBOARD STUFF
+	@Override
+	public void displayBoard() {
+		for (Player p : Bukkit.getOnlinePlayers()) {
+            p.setScoreboard(board);
         }
-    }
+	}
 
-    public void CountdownTimer() {
-        ringBearerGame.taskId = Bukkit
-                .getServer()
-                .getScheduler()
-                .scheduleSyncRepeatingTask(
-                Bukkit.getPluginManager().getPlugin("MCMEPVP"),
-                new Runnable() {
-            @Override
-            public void run() {
-                if (m > 0) {
-                    m--;
-                }
-                if (m == 1) {
-                    Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "Team spawns switching in 1 minute!");
-                }
-                if (m == 0) {
-                    Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "Team spawns have now switched!");
-                    if (spawnSwitch) {
-                        spawnSwitch = false;
-                    } else {
-                        spawnSwitch = true;
-                    }
-                    m = 5;
-                }
-            }
-        }, 1200L, 1200L);
-    }
+	@Override
+	public Scoreboard getBoard() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    public static void stopTimer() {
-        Bukkit.getScheduler().cancelTask(ringBearerGame.taskId);
-    }
+	@Override
+	public Objective getObjective() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    public Location getSpawn(Player p, String s) {
-        String team = s;
-        if (spawnSwitch) {
-            if (s.equals("red")) {
-                team = "blue";
-            }
-            if (s.equals("blue")) {
-                team = "red";
-            }
-        }
-        Vector vec = MCMEPVP.Spawns.get(team);
-        Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY() + 0.5, vec.getZ());
-        return loc;
-    }
-
-    @Override
-    public int team1count() {
-        return RedMates;
-    }
-
-    @Override
-    public int team2count() {
-        return BlueMates;
-    }
-
-    @Override
-    public String team1() {
-        return "red";
-    }
-
-    @Override
-    public String team2() {
-        return "blue";
-    }
-
-    @Override
-    public Scoreboard getBoard() {
-        return board;
-    }
-
-    @Override
-    public void claimLootSign(Sign sign) {
-    }
-
-    @Override
-    public void clearBoard() {
-        board.clearSlot(DisplaySlot.SIDEBAR);
+	@Override
+	public void clearBoard() {
+		board.clearSlot(DisplaySlot.SIDEBAR);
         blueteam.unregister();
         redteam.unregister();
         objective.unregister();
+	}
+	
+	public void CountdownTimer() {
+        ringBearerGame.taskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(
+        		Bukkit.getPluginManager().getPlugin("MCMEPVP"), new Runnable() {
+        			
+        			@Override
+                    public void run() {
+                        if (m > 0) {
+                            m--;
+                        }
+                        if (m == 1) {
+                            Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "Team spawns switching in 1 minute!");
+                        }
+                        if (m == 0) {
+                            Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "Team spawns have now switched!");
+                            if (spawnSwitch) {
+                                spawnSwitch = false;
+                            } else {
+                                spawnSwitch = true;
+                            }
+                            m = 5;
+                        }
+                    }
+        			
+        }, 1200L, 1200L);
     }
-
-    @Override
-    public void displayBoard() {
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            p.setScoreboard(board);
+	
+	public static void stopTimer() {
+		if (taskId != 0) {
+			Bukkit.getScheduler().cancelTask(ringBearerGame.taskId);
+			taskId = 0;
+		}
+	}
+	
+	
+	//ANNOUNCE
+	private void announceGame() {
+		Bukkit.getServer().broadcastMessage(MCMEPVP.primarycolor 
+				+ "The next Game starts in a few seconds!");
+		
+		Bukkit.getServer().broadcastMessage(MCMEPVP.primarycolor 
+				+ "GameType is " + MCMEPVP.highlightcolor + "Ring Bearer" 
+				+ MCMEPVP.primarycolor + " on Map " + MCMEPVP.highlightcolor + MCMEPVP.PVPMap + "!");
+		
+		Bukkit.getServer().broadcastMessage(MCMEPVP.primarycolor 
+				+ "Hunt down the enemy's Ring Bearer to prevent them from respawning!");
+		
+		Bukkit.getServer().broadcastMessage( MCMEPVP.primarycolor 
+				+ "All Participants will be assigned to a team and teleported to their spawn!");
+	}
+	
+	private void chooseTeams() {
+		ArrayList<Player> queued = new ArrayList<Player>();
+        MCMEPVP.queue.drainTo(queued);
+        Collections.shuffle(queued);
+        
+        for (Player p : queued) {
+        	if (p.isOnline()) {
+        		if (redSize == blueSize) {
+            		boolean random = (Math.random() < 0.5);
+                    if (random == true) {
+                        if (!redHasBearer) {
+                            addBearer(p, "red");
+                        }
+                        addTeam(p, "red");
+                    } else {
+                        if (!blueHasBearer) {
+                            addBearer(p, "blue");
+                        }
+                        addTeam(p, "blue");
+                    }
+            	} else {
+            		if (redSize > blueSize) {
+                		if (!blueHasBearer) {
+                			addBearer(p, "blue");
+                		}
+                		addTeam(p, "blue");
+                	}
+                	if (redSize < blueSize) {
+                		if (!redHasBearer) {
+                			addBearer(p, "red");
+                		}
+                		addTeam(p, "red");
+                	}
+            	}
+        	}
+        	MCMEPVP.queue.remove(p);
         }
-    }
+	}
+	
+	private void addBearer(Player p, String team) {
+		ringBearers.put(p, team);
+		if (team.equals("red")) {
+			redHasBearer = true;
+		}
+		if (team.equals("blue")) {
+			blueHasBearer = true;
+		}
+		p.sendMessage(ChatColor.LIGHT_PURPLE
+                + "You are the Ring Bearer! Stay alive for as long as possible!");
+	}
+	
+	private void removeBearer(Player p, String team) {
+		ringBearers.remove(p);
+		if (team.equals("red")) {
+			redHasBearer = false;
+		}
+		if (team.equals("blue")) {
+			blueHasBearer = false;
+		}
+	}
+	
+	private void switchBearer(String team) {
+		if (team.equals("red")) {
+			if (redteam.getSize() > 0) {
+				for (OfflinePlayer p : redteam.getPlayers()) {
+					if (p.isOnline()) {
+						Player newP = (Player) p;
+						addBearer(newP, team);
+						addTeam(newP, team);
+						newP.sendMessage(MCMEPVP.positivecolor + "Your are now the RingBearer!");
+						break;
+					}
+				}
+			}
+		}
+		if (team.equals("blue")) {
+			if (blueteam.getSize() > 0) {
+				for (OfflinePlayer p : blueteam.getPlayers()) {
+					if (p.isOnline()) {
+						Player newP = (Player) p;
+						addBearer(newP, team);
+						addTeam(newP, team);
+						newP.sendMessage(MCMEPVP.positivecolor + "Your are now the RingBearer!");
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+	private void teamCount() {
+		redSize = redteam.getSize();
+		blueSize = blueteam.getSize();
+		redscore.setScore(redSize);
+        bluescore.setScore(blueSize);
+	}
+	
 
-    @Override
-    public HashMap<Player, String> getPlaying() {
-        return playing;
-    }
+	//BOOLEANS ETC
+	@Override
+	public void claimLootSign(Sign sign) {
+		// TODO Auto-generated method stub
+		
+	}
 
-    private void teamCount() {
-        RedMates = redteam.getSize();
-        BlueMates = blueteam.getSize();
-        redscore.setScore(RedMates);
-        bluescore.setScore(BlueMates);
-    }
+	@Override
+	@Deprecated
+	public void onPlayerLogin(PlayerLoginEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
 
-    private void removeRingBearer(Player p, String team) {
-        if (ringBearers.containsKey(p)) {
-            if (team.equals("red")) {
-                redHasBearer = false;
-                redteam.removePlayer(p);
-            }
-            if (team.equals("blue")) {
-                blueHasBearer = false;
-                blueteam.removePlayer(p);
-            }
-            p.getInventory().clear();
-            setSpectator(p);
-            ringBearers.remove(p);
-            isJoinable = false;
-            teamCount();
-        }
-    }
+	@Override
+	public int team1count() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
-    private void addRingBearer(Player p, String team) {
-        if (team.equals("red") && !redHasBearer) {
-            ringBearers.put(p, team);
-            redHasBearer = true;
-            isJoinable = true;
-        }
-        if (team.equals("blue") && !blueHasBearer) {
-            ringBearers.put(p, team);
-            blueHasBearer = true;
-            isJoinable = true;
-        }
-    }
+	@Override
+	public int team2count() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
-    private void switchRingBearer(String team) {
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            String Status = teamUtil.getPlayerTeam(p);
-            if (Status.equals(team) && !ringBearers.containsValue(team)) {
-                addRingBearer(p, team);
-                addTeam(p, team);
-                p.sendMessage(MCMEPVP.positivecolor + "Your are now the RingBearer!");
-            }
-        }
-    }
+	@Override
+	public String team1() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    public void setSpectator(Player p) {
-        teamUtil.setPlayerTeam(p, "spectator");
-        //TODO invisible spectators using hidePlayer
-    }
+	@Override
+	public String team2() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    private boolean isRingBearer(Player p) {
-        return ringBearers.containsKey(p);
-    }
+	@Override
+	public HashMap<?, ?> getPlaying() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    private boolean hasRingBearer(String team) {
-        return ringBearers.containsValue(team);
-    }
+	@Override
+	public boolean isJoinable() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-    @Override
-    public boolean isJoinable() {
-        return isJoinable;
-    }
+	@Override
+	public boolean allowBlockBreak() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-    @Override
-    public void onPlayerLogin(PlayerLoginEvent event) {
-        // Do nothing
-    }
+	@Override
+	public boolean allowBlockPlace() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-    @Override
-    public boolean allowBlockBreak() {
-        return false;
-    }
+	@Override
+	public boolean allowContainerIteraction() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-    @Override
-    public boolean allowBlockPlace() {
-        return false;
-    }
+	@Override
+	public boolean allowExplosionLogging() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
-    @Override
-    public boolean allowContainerIteraction() {
-        return false;
-    }
+	@Override
+	public boolean allowCustomAttributes() {
+		// TODO Auto-generated method stub
+		return true;
+	}
 
-    @Override
-    public boolean allowExplosionLogging() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public Objective getObjective() {
-        return objective;
-    }
 }

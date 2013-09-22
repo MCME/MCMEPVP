@@ -66,4 +66,6 @@ public abstract class gameType {
     public abstract boolean allowContainerIteraction();
     
     public abstract boolean allowExplosionLogging();
+    
+    public abstract boolean allowCustomAttributes();
 }

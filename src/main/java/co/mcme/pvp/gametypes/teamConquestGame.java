@@ -174,6 +174,7 @@ public class teamConquestGame extends gameType {
                 }
             }
         }, 100L);
+        MCMEPVP.setWeather();
         displayBoard();
         bluescore.setScore(BlueScore);
         redscore.setScore(RedScore);
@@ -570,4 +571,9 @@ public class teamConquestGame extends gameType {
     public Objective getObjective() {
         return objective;
     }
+
+	@Override
+	public boolean allowCustomAttributes() {
+		return true;
+	}
 }

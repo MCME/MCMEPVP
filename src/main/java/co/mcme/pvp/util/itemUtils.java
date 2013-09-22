@@ -1,5 +1,8 @@
 package co.mcme.pvp.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -29,10 +32,15 @@ public class itemUtils {
 
     }
 
-    public static ItemStack nameItem(ItemStack item, String name, ChatColor color) {
+    public static ItemStack nameItem(ItemStack item, String name, String lore, ChatColor color) {
         ItemMeta meta;
         meta = item.getItemMeta();
         meta.setDisplayName(color + name);
+        if(!lore.equals("none")){
+        	List<String> l = new ArrayList<String>();
+        	l.add(lore);
+        	meta.setLore(l);
+        }
         item.setItemMeta(meta);
         return item;
     }

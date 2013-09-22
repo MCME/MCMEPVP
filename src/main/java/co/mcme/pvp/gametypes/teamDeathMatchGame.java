@@ -110,6 +110,7 @@ public class teamDeathMatchGame extends gameType {
                 bluescore.setScore(BlueMates);
             }
         }, 100L);
+        MCMEPVP.setWeather();
         displayBoard();
     }
 
@@ -352,4 +353,9 @@ public class teamDeathMatchGame extends gameType {
     public Objective getObjective() {
         return objective;
     }
+
+	@Override
+	public boolean allowCustomAttributes() {
+		return true;
+	}
 }

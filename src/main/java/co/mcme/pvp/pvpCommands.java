@@ -16,6 +16,7 @@ import co.mcme.pvp.util.teamUtil;
 import co.mcme.pvp.util.util;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import org.bukkit.Bukkit;
@@ -42,6 +43,25 @@ public class pvpCommands implements CommandExecutor {
         Player player = sender.getServer().getPlayer(sender.getName());
         if (sender instanceof Player) {
             if (label.equalsIgnoreCase("pvp")) {
+            	if (args.length == 0) {
+            		String ll = ChatColor.DARK_GRAY + " | " + ChatColor.GRAY;
+            		String lb = ChatColor.DARK_GRAY + " [" + ChatColor.GRAY;
+            		String rb = ChatColor.DARK_GRAY+ "]";
+            		if (player.hasPermission("mcmepvp.user")) {
+            			player.sendMessage(ChatColor.DARK_AQUA + "|--------[Commands]--------|");
+            			player.sendMessage(ChatColor.GRAY + "/pvp" +lb+ "join"+ll+"leave"+ll+"list" +rb);
+            		}
+            		if (player.hasPermission("mcmepvp.admin")) {
+            			player.sendMessage(ChatColor.GRAY + "/pvp" +lb+ "map <MapName>" +ll+ "gt <GameType>" +rb);
+            			player.sendMessage(ChatColor.GRAY + "/pvp" +lb+ "SetScore <TSL/TCQ> #ScoreValue" +rb);
+            			player.sendMessage(ChatColor.GRAY + "/pvp" +lb+ "start" +ll+ "stop" +ll+ "forcejoin <TeamColor>" +rb);
+            			player.sendMessage(ChatColor.GRAY + "/pvp derp" +lb+ "g" +ll+ "m" +ll+ "s" +rb);
+            		}
+            		if (player.hasPermission("mcmepvp.user")) {
+            			player.sendMessage(ChatColor.GRAY + "/shout <YourMessage>");
+            		}
+                    return true;
+            	}
                 if (args.length != 0) {
                     String method = args[0];
                     if (method.equalsIgnoreCase("debug")) {
@@ -53,6 +73,19 @@ public class pvpCommands implements CommandExecutor {
                             } else {
                                 MCMEPVP.debug = true;
                                 util.notifyAdmin(player.getName(), 12, null);
+                                return true;
+                            }
+                        }
+                    }
+                    if (method.equalsIgnoreCase("horse")) {
+                        if (player.hasPermission("mcmepvp.horsemode")) {
+                            if (MCMEPVP.horseMode) {
+                                MCMEPVP.horseMode = false;
+                                player.sendMessage(ChatColor.GRAY + "Horse mode Disabled!");
+                                return true;
+                            } else {
+                                MCMEPVP.horseMode = true;
+                                player.sendMessage(ChatColor.GRAY + "Horse mode Enabled!");
                                 return true;
                             }
                         }
@@ -336,7 +369,9 @@ public class pvpCommands implements CommandExecutor {
                     if (method.equalsIgnoreCase("list")) {
                         if (player.hasPermission("mcmepvp.list")) {
                             if (args.length == 1) {
-                                sender.sendMessage(prettyPrint(MCMEPVP.Maps,
+                            	List<String> list = MCMEPVP.Maps;
+                            	Collections.sort(list);
+                                sender.sendMessage(prettyPrint(list,
                                         "Maps:"));
                                 return true;
                             }
