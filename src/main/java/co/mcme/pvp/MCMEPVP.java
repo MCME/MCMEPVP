@@ -68,6 +68,8 @@ public class MCMEPVP extends JavaPlugin {
     public static int Participants;
     public static World PVPWorld;
     public static String PVPMap;
+    public static String lastMap = "null";
+    public static String lastGT = "null";
     public static Location Spawn;
     public static String PVPGT;
     public static HashMap<String, Vector> Spawns;

@@ -90,6 +90,9 @@ public class lobbyGame extends gameType {
     	randomMap();
     	randomGameType();
     	gameScore();
+    	
+    	MCMEPVP.lastMap = MCMEPVP.PVPMap;
+    	MCMEPVP.lastGT = MCMEPVP.PVPGT;
     	MCMEPVP.startGame();
     }
     
@@ -149,8 +152,17 @@ public class lobbyGame extends gameType {
     
 	
     private void randomMap() {
+    	String map = "Tharbad";
+    	
     	int max = Maps.size() - 1;
-    	String map = Maps.get(getRandom(0, max));
+    	int i = 0;
+    	
+    	while (i < 1) {
+    		map = Maps.get(getRandom(0, max));
+    		if (!map.equals(MCMEPVP.lastMap)) {
+    			i++;
+    		}
+    	}
     	MCMEPVP.PVPMap = map;
     }
     
@@ -163,18 +175,22 @@ public class lobbyGame extends gameType {
     }
     
     private void randomGameType() {
-    	int max = GameTypes.size() -1;
     	String gt = "TSL";
-    	int i = 0;
+    	
     	boolean hasFlags = checkFlags();
+    	int max = GameTypes.size() -1;
+    	int i = 0;
+    	
     	while (i < 1) {
     		gt = GameTypes.get(getRandom(0, max));
-    		if (gt.equals("TCQ")) {
-    			if (hasFlags) {
-    				i ++;
-    			}
-    		} else {
-    			i ++;
+    		if (!gt.equals(MCMEPVP.lastGT)) {
+    			if (gt.equals("TCQ")) {
+        			if (hasFlags) {
+        				i ++;
+        			}
+        		} else {
+        			i ++;
+        		}
     		}
     	}
     	
@@ -223,6 +239,7 @@ public class lobbyGame extends gameType {
     
     
     public void AutoRunTimer() {
+    	objective.setDisplayName("Auto-Lobby Mode!");
         lobbyTaskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(
         		Bukkit.getPluginManager().getPlugin("MCMEPVP"), new Runnable() {
         			
