@@ -2,7 +2,7 @@ name: ${project.artifactId}
 main: co.mcme.pvp.MCMEPVP
 version: ${project.version}
 website: ${project.url}
-depend: [TagAPI]
+softdepend: [VoxelSniper]
 authors: [meggawatts, daggs]
 permissions:
   mcmepvp.user:
@@ -35,7 +35,8 @@ permissions:
       mcmepvp.createlootsign: true
       mcmepvp.remind: true
       mcmepvp.ignorebuildchecks: true
-      mcmepvp.setdebug: true
+      mcmepvp.autorun: true
+      mcmepvp.horsemode: true
   mcmepvp.version:
     default: true
   mcmepvp.join:
@@ -81,6 +82,10 @@ permissions:
   mcmepvp.remove:
     default: op
   mcmepvp.list:
+    default: op
+  mcmepvp.horsemode:
+    default: op
+  mcmepvp.autorun:
     default: op
 commands:
    pvp:
