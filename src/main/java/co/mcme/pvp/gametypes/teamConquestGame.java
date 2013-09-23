@@ -31,6 +31,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -63,6 +65,7 @@ public class teamConquestGame extends gameType {
     Scoreboard board;
     Team redteam;
     Team blueteam;
+    Team specteam;
     Objective objective;
     OfflinePlayer dummyred = Bukkit.getOfflinePlayer(ChatColor.RED
             + "Red:");
@@ -90,6 +93,10 @@ public class teamConquestGame extends gameType {
 
         RedScore = config.TCQscore;
         BlueScore = config.TCQscore;
+        
+        specteam = board.registerNewTeam("Spectator Team");
+        specteam.setAllowFriendlyFire(false);
+        specteam.setCanSeeFriendlyInvisibles(true);
 
         // Broadcast
         Bukkit.getServer()
@@ -178,6 +185,8 @@ public class teamConquestGame extends gameType {
         displayBoard();
         bluescore.setScore(BlueScore);
         redscore.setScore(RedScore);
+        
+        MCMEPVP.canJoin = true;
     }
 
     @Override
@@ -200,6 +209,14 @@ public class teamConquestGame extends gameType {
 
     @Override
     public void addTeam(Player player, String Team) {
+    	if (specteam.hasPlayer(player)) {
+    		specteam.removePlayer(player);
+    		if(player.getActivePotionEffects() != null){
+            	for(PotionEffect pe : player.getActivePotionEffects()){
+            		player.removePotionEffect(pe.getType());
+            	}
+            }
+    	}
         Color col = armorColor.WHITE;
         switch (Team) {
             case "red":
@@ -521,6 +538,7 @@ public class teamConquestGame extends gameType {
         board.clearSlot(DisplaySlot.SIDEBAR);
         blueteam.unregister();
         redteam.unregister();
+        specteam.unregister();
         objective.unregister();
     }
 
@@ -575,5 +593,11 @@ public class teamConquestGame extends gameType {
 	@Override
 	public boolean allowCustomAttributes() {
 		return true;
+	}
+
+	@Override
+	public void addSpectatorTeam(Player p) {
+		specteam.addPlayer(p);
+		p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY,999999,1));
 	}
 }

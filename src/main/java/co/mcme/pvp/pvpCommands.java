@@ -90,22 +90,53 @@ public class pvpCommands implements CommandExecutor {
                             }
                         }
                     }
+                    if (method.equalsIgnoreCase("auto")) {
+                        if (player.hasPermission("mcmepvp.autorun")) {
+                        	if (MCMEPVP.GameStatus == 0) {
+                        		CurrentGame.clearBoard();
+                        		
+                        		if (MCMEPVP.autorun) {
+                                    MCMEPVP.autorun = false;
+                                    MCMEPVP.resetGame();
+                                    player.sendMessage(ChatColor.GRAY + "AutoRun mode Disabled!");
+                                    return true;
+                                } else {
+                                    MCMEPVP.autorun = true;
+                                    MCMEPVP.resetGame();
+                                    player.sendMessage(ChatColor.GRAY + "AutoRun mode Enabled!");
+                                    return true;
+                                }
+                        	}
+                        }
+                    }
                     if (method.equalsIgnoreCase("join")) {
                         if (player.hasPermission("mcmepvp.join")) {
-                            queuePlayer(player);
-                            return true;
+                        	if (MCMEPVP.canJoin) {
+                        		queuePlayer(player);
+                                return true;
+                        	} else {
+                        		player.sendMessage(MCMEPVP.negativecolor
+                                        + "Can't join while game is loading!");
+                                return true;
+                        	}
                         }
                     }
                     if (method.equalsIgnoreCase("leave")) {
                         if (player.hasPermission("mcmepvp.leave")) {
-                            if (!teamUtil.isOnTeam(player) && GameStatus == 0) {
-                                unQueuePlayer(player);
+                        	if (MCMEPVP.canJoin) {
+                        		if (!teamUtil.isOnTeam(player) && GameStatus == 0) {
+                                    unQueuePlayer(player);
+                                    return true;
+                                } else if (GameStatus == 1) {
+                                    player.sendMessage(MCMEPVP.negativecolor
+                                            + "You cannot leave a game that is already running!");
+                                    return true;
+                                }
+                        	} else {
+                        		player.sendMessage(MCMEPVP.negativecolor
+                                        + "Can't leave while game is loading!");
                                 return true;
-                            } else if (GameStatus == 1) {
-                                player.sendMessage(MCMEPVP.negativecolor
-                                        + "You cannot leave a game that is already running!");
-                                return true;
-                            }
+                        	}
                         }
                     }
                     if (method.equalsIgnoreCase("version")) {

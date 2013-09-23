@@ -29,10 +29,10 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.Vector;
-import org.kitteh.tag.TagAPI;
 
 import co.mcme.pvp.gametypes.freeForAllGame;
 import co.mcme.pvp.gametypes.infectionGame;
+import co.mcme.pvp.gametypes.lobbyGame;
 import co.mcme.pvp.gametypes.ringBearerGame;
 import co.mcme.pvp.gametypes.teamConquestGame;
 import co.mcme.pvp.gametypes.teamDeathMatchGame;
@@ -47,7 +47,6 @@ import co.mcme.pvp.listeners.pingListener;
 import co.mcme.pvp.listeners.playerListener;
 import co.mcme.pvp.listeners.signListener;
 import co.mcme.pvp.listeners.statsListener;
-import co.mcme.pvp.listeners.tagListener;
 import co.mcme.pvp.listeners.weatherListener;
 import co.mcme.pvp.stats.DataManager;
 import co.mcme.pvp.stats.entry.GameEntry;
@@ -77,9 +76,11 @@ public class MCMEPVP extends JavaPlugin {
     public static List<String> Maps;
     public static List<String> GameTypes;
     private static Plugin instance;
+    public static boolean canJoin = true;
     public static boolean locked = true;
     public static boolean debug = false;
     public static boolean horseMode = false;
+    public static boolean autorun;
     public static List loot;
     public Configuration conf;
     public config config;
@@ -128,6 +129,7 @@ public class MCMEPVP extends JavaPlugin {
         PVPGT = config.PVPGT;
         PVPWorld = config.PVPWorld;
         Spawn = config.Spawn;
+        autorun = false;
         resetGame();
         getCommand("pvp").setExecutor(new pvpCommands(this));
         getCommand("shout").setExecutor(new pvpCommands(this));
@@ -158,6 +160,7 @@ public class MCMEPVP extends JavaPlugin {
     }
 
     public static void resetGame() {
+    	canJoin = true;
         if (GameStatus == 1) {
             if (PVPGT.equals("INF")) {
                 infectionGame.stopTimer();
@@ -186,13 +189,13 @@ public class MCMEPVP extends JavaPlugin {
         setWeather();
         
         PlayerStatus = new HashMap<String, String>();
+        
         for (Player currentplayer : Bukkit.getOnlinePlayers()) {
         	currentplayer.setPlayerListName(currentplayer.getName());
         	if(currentplayer.isInsideVehicle()){
             	currentplayer.getVehicle().remove();
             }
             teamUtil.setPlayerTeam(currentplayer, "spectator");
-            currentplayer.teleport(Spawn);
             currentplayer.getInventory().clear();
             currentplayer.setHealth(20);
             currentplayer.setFoodLevel(20);
@@ -208,6 +211,16 @@ public class MCMEPVP extends JavaPlugin {
             	currentplayer.getVehicle().eject();
             }
         }
+        
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(
+        		Bukkit.getPluginManager().getPlugin("MCMEPVP"), new Runnable() {
+        			public void run() {
+        				for (Player currentplayer : Bukkit.getOnlinePlayers()) {
+        					currentplayer.teleport(Spawn);
+                        }
+        			}
+        	}, 20L);
+        
         if (!statsListener.playerStats.isEmpty()) {
         	statsListener.playerStats.clear();
         }
@@ -239,6 +252,8 @@ public class MCMEPVP extends JavaPlugin {
             ringBearers.clear();
         }
         Bukkit.getServer().getPluginManager().enablePlugin(voxel);
+        lobbyGame.stopLobby();
+        CurrentGame = new lobbyGame();
     }
 
     public static void logKill(PlayerDeathEvent event) {
@@ -275,6 +290,9 @@ public class MCMEPVP extends JavaPlugin {
     }
 
     public static void startGame() {
+    	CurrentGame.clearBoard();
+    	
+    	canJoin = false;
         Spawns = new HashMap<String, Vector>();
         FlagHash = new HashMap<Integer, Vector>();
         extraSpawns = new HashMap<Integer, Vector>();
@@ -400,7 +418,6 @@ public class MCMEPVP extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new chatListener(this), this);
         getServer().getPluginManager().registerEvents(new damageListener(this), this);
         getServer().getPluginManager().registerEvents(new playerListener(this), this);
-        getServer().getPluginManager().registerEvents(new tagListener(), this);
         getServer().getPluginManager().registerEvents(new pingListener(), this);
         getServer().getPluginManager().registerEvents(new signListener(), this);
         getServer().getPluginManager().registerEvents(new flagListener(), this);
@@ -423,6 +440,7 @@ public class MCMEPVP extends JavaPlugin {
             } else {
                 queue.add(player);
                 Participants++;
+                CurrentGame.addTeam(player, "participant");
                 teamUtil.setPlayerTeam(player, "participant");
                 player.sendMessage(positivecolor + "You are participating! Wait for the next Game to start!");
                 if(MCMEPVP.GameStatus==0){
@@ -437,9 +455,9 @@ public class MCMEPVP extends JavaPlugin {
         if (queue.contains(player)) {
             queue.remove(player);
             Participants--;
+            CurrentGame.addTeam(player, "participant");
             teamUtil.setPlayerTeam(player, "spectator");
             player.sendMessage(negativecolor + "You are no longer participating!");
-            TagAPI.refreshPlayer(player);
             util.notifyAdmin(player.getName(), 2, null);
         } else {
             util.debug("Player `" + player.getName() + "` was not queued, but attempted to unqueue!");

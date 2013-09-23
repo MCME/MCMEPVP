@@ -28,6 +28,8 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -60,6 +62,7 @@ public class infectionGame extends gameType {
     Scoreboard board;
     Team zombieteam;
     Team survivorteam;
+    Team specteam;
     Objective objective;
     OfflinePlayer dummyzombie = Bukkit.getOfflinePlayer(ChatColor.DARK_PURPLE
             + "Infected:");
@@ -81,6 +84,10 @@ public class infectionGame extends gameType {
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         zombiescore = objective.getScore(dummyzombie);
         survivorscore = objective.getScore(dummysurvivor);
+        
+        specteam = board.registerNewTeam("Spectator Team");
+        specteam.setAllowFriendlyFire(false);
+        specteam.setCanSeeFriendlyInvisibles(true);
         // Broadcast
         Bukkit.getServer().broadcastMessage(
                 MCMEPVP.primarycolor
@@ -148,6 +155,7 @@ public class infectionGame extends gameType {
         CountdownTimer();
         objective.setDisplayName("Time: " + m + ":" + s);
         
+        MCMEPVP.canJoin = true;
     }
 
     public void determineTeamCounts() {
@@ -161,6 +169,14 @@ public class infectionGame extends gameType {
 
     @Override
     public void addTeam(Player player, String Team) {
+    	if (specteam.hasPlayer(player)) {
+    		specteam.removePlayer(player);
+    		if(player.getActivePotionEffects() != null){
+            	for(PotionEffect pe : player.getActivePotionEffects()){
+            		player.removePotionEffect(pe.getType());
+            	}
+            }
+    	}
         Color col = armorColor.WHITE;
         switch (Team) {
             case "zombie":
@@ -496,6 +512,7 @@ public class infectionGame extends gameType {
         board.clearSlot(DisplaySlot.SIDEBAR);
         zombieteam.unregister();
         survivorteam.unregister();
+        specteam.unregister();
     }
 
     @Override
@@ -560,5 +577,11 @@ public class infectionGame extends gameType {
 	@Override
 	public boolean allowCustomAttributes() {
 		return false;
+	}
+
+	@Override
+	public void addSpectatorTeam(Player p) {
+		specteam.addPlayer(p);
+		p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY,999999,1));
 	}
 }

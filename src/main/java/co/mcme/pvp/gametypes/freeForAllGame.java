@@ -59,6 +59,7 @@ public class freeForAllGame extends gameType {
     Objective objective;
     Objective objective1;
     Team reds;
+    Team specteam;
     OfflinePlayer dummyp = Bukkit.getOfflinePlayer(ChatColor.RED
             + "Total Kills:");
     Score kills;
@@ -85,6 +86,10 @@ public class freeForAllGame extends gameType {
         reds.setSuffix(ChatColor.WHITE.toString());
         reds.setAllowFriendlyFire(true);
         reds.setCanSeeFriendlyInvisibles(false);
+        
+        specteam = board.registerNewTeam("Spectator Team");
+        specteam.setAllowFriendlyFire(false);
+        specteam.setCanSeeFriendlyInvisibles(true);
 
         // Broadcast
         Bukkit.getServer()
@@ -143,6 +148,8 @@ public class freeForAllGame extends gameType {
         objective1.setDisplayName("Time: " + m + ":" + s);
         kills.setScore(0);
         updateBoard();
+        
+        MCMEPVP.canJoin = true;
     }
 
     @Override
@@ -217,6 +224,14 @@ public class freeForAllGame extends gameType {
 
     @Override
     public void addTeam(Player p, String Team) {
+    	if (specteam.hasPlayer(p)) {
+    		specteam.removePlayer(p);
+    		if(p.getActivePotionEffects() != null){
+            	for(PotionEffect pe : p.getActivePotionEffects()){
+            		p.removePotionEffect(pe.getType());
+            	}
+            }
+    	}
         Color col = armorColor.WHITE;
         teamUtil.setPlayerTeam(p, Team);
         p.getInventory().clear();
@@ -436,6 +451,7 @@ public class freeForAllGame extends gameType {
         objective.unregister();
         objective1.unregister();
         reds.unregister();
+        specteam.unregister();
     }
 
     @Override
@@ -487,5 +503,11 @@ public class freeForAllGame extends gameType {
 	@Override
 	public boolean allowCustomAttributes() {
 		return false;
+	}
+
+	@Override
+	public void addSpectatorTeam(Player p) {
+		specteam.addPlayer(p);
+		p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY,999999,1));
 	}
 }

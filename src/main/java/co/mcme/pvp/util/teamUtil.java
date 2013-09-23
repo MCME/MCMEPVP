@@ -4,10 +4,10 @@
  */
 package co.mcme.pvp.util;
 
-import co.mcme.pvp.MCMEPVP;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.kitteh.tag.TagAPI;
+
+import co.mcme.pvp.MCMEPVP;
 
 /**
  *
@@ -24,9 +24,6 @@ public class teamUtil {
         }
         if (!(status.equals("spectator") || status.equals("participant"))) {
             player.setMetadata("god", new FixedMetadataValue(MCMEPVP.inst(), false));
-        }
-        if (player.isOnline()) {
-            TagAPI.refreshPlayer(player);
         }
         if (status != "spectator") {
             spectatorUtil.setParticipant(player);

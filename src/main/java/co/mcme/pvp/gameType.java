@@ -32,6 +32,8 @@ public abstract class gameType {
     public abstract void onPlayerdie(PlayerDeathEvent event);
 
     public abstract void addTeam(Player player, String Team);
+    
+    public abstract void addSpectatorTeam(Player player);
 
     public abstract void onPlayerhit(EntityDamageByEntityEvent event);
 

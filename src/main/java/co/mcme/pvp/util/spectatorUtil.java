@@ -22,6 +22,9 @@ public class spectatorUtil {
 			}
 		}
 		isSpectator(p);
+		if (MCMEPVP.GameStatus == 1) {
+			MCMEPVP.CurrentGame.addSpectatorTeam(p);
+		}
 	}
 	
 	public static void setParticipant(Player p){

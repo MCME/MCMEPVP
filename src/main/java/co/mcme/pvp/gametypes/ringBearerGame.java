@@ -20,6 +20,8 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -40,14 +42,16 @@ public class ringBearerGame extends gameType{
 	
 	public static HashMap<Player, String> ringBearers = new HashMap<Player, String>();
 	
-	int blueSize = 0;
-	int redSize = 0;
+	private int blueSize = 0;
+	private int redSize = 0;
 	private int m = 5;
+	private int lm = 9;
 	public static int taskId = 0;
 	
 	boolean isJoinable = true;
     boolean redHasBearer = false;
     boolean blueHasBearer = false;
+    boolean lastMan = false;
     
     boolean spawnSwitch = false;
     
@@ -55,6 +59,7 @@ public class ringBearerGame extends gameType{
     Scoreboard board;
     Team redteam;
     Team blueteam;
+    Team specteam;
     Objective objective;
     OfflinePlayer dummyred = Bukkit.getOfflinePlayer(ChatColor.RED + "Red:");
     OfflinePlayer dummyblue = Bukkit.getOfflinePlayer(ChatColor.BLUE + "Blue:");
@@ -66,17 +71,24 @@ public class ringBearerGame extends gameType{
         manager = Bukkit.getScoreboardManager();
         board = manager.getNewScoreboard();
         
+        objective = board.registerNewObjective("Players Left", "dummy");
+        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        
         redteam = board.registerNewTeam("Red Team");
         blueteam = board.registerNewTeam("Blue Team");
+        specteam = board.registerNewTeam("Spectator Team");
         
         redteam.setPrefix(ChatColor.RED.toString());
         blueteam.setPrefix(ChatColor.BLUE.toString());
         
         redteam.setAllowFriendlyFire(false);
         blueteam.setAllowFriendlyFire(false);
+        specteam.setAllowFriendlyFire(false);
         
-        objective = board.registerNewObjective("Players Left", "dummy");
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        specteam.setCanSeeFriendlyInvisibles(true);
+        
+        redscore = objective.getScore(dummyred);
+        bluescore = objective.getScore(dummyblue);
         
         //Announce
         announceGame();
@@ -96,12 +108,21 @@ public class ringBearerGame extends gameType{
         CountdownTimer();
         displayBoard();
         
+        MCMEPVP.canJoin = true;
 	}
 	
 	
 	//HANDLE ADDING/REMOVING OF PLAYERS
 	@Override
 	public void addTeam(Player p, String Team) {
+		if (specteam.hasPlayer(p)) {
+			specteam.removePlayer(p);
+			if(p.getActivePotionEffects() != null){
+            	for(PotionEffect pe : p.getActivePotionEffects()){
+            		p.removePotionEffect(pe.getType());
+            	}
+            }
+		}
 		boolean isTharbad = false;
 		Color col = armorColor.WHITE;
 			
@@ -346,6 +367,17 @@ public class ringBearerGame extends gameType{
 	
 	//CHECK GAME-END SCENARIO
 	private void checkEndGame() {
+		if (!lastMan && (redSize == 1 || blueSize == 1)) {
+			lastMan = true;
+			if (redSize == 1) {
+				Bukkit.broadcastMessage(ChatColor.RED + "Reds " + MCMEPVP.positivecolor + "are down to their last man!");
+			}
+			if (blueSize == 1) {
+				Bukkit.broadcastMessage(ChatColor.BLUE + "Blues " + MCMEPVP.positivecolor + "are down to their last man!");
+			}
+			Bukkit.broadcastMessage(MCMEPVP.positivecolor + "Game ending in 10 minutes!");
+		}
+		
 		if (redSize <= 0) {
 			MCMEPVP.logGame("blue", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
 
@@ -382,12 +414,19 @@ public class ringBearerGame extends gameType{
 			stopTimer();
 			MCMEPVP.resetGame();
 		}
+		if (lastMan && lm == 0) {
+			Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Game Over - Stalemate!");
+			stopTimer();
+			MCMEPVP.resetGame();
+		}
 	}
 	
 	
 	//SCOREBOARD STUFF
 	@Override
 	public void displayBoard() {
+		redscore.setScore(redSize);
+        bluescore.setScore(blueSize);
 		for (Player p : Bukkit.getOnlinePlayers()) {
             p.setScoreboard(board);
         }
@@ -410,6 +449,7 @@ public class ringBearerGame extends gameType{
 		board.clearSlot(DisplaySlot.SIDEBAR);
         blueteam.unregister();
         redteam.unregister();
+        specteam.unregister();
         objective.unregister();
 	}
 	
@@ -433,6 +473,15 @@ public class ringBearerGame extends gameType{
                                 spawnSwitch = true;
                             }
                             m = 5;
+                        }
+                        if (lastMan) {
+                        	lm --;
+                        }
+                        if (lm == 1) {
+                        	Bukkit.broadcastMessage(MCMEPVP.positivecolor + "Game ending in 1 minute!");
+                        }
+                        if (lm == 0) {
+                        	checkEndGame();
                         }
                     }
         			
@@ -557,7 +606,7 @@ public class ringBearerGame extends gameType{
 		redSize = redteam.getSize();
 		blueSize = blueteam.getSize();
 		redscore.setScore(redSize);
-        bluescore.setScore(blueSize);
+		bluescore.setScore(blueSize);
 	}
 	
 
@@ -639,6 +688,13 @@ public class ringBearerGame extends gameType{
 	public boolean allowCustomAttributes() {
 		// TODO Auto-generated method stub
 		return true;
+	}
+
+
+	@Override
+	public void addSpectatorTeam(Player p) {
+		specteam.addPlayer(p);
+		p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY,999999,1));
 	}
 
 }

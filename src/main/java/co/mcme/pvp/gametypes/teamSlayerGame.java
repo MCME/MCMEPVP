@@ -31,6 +31,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -52,6 +54,7 @@ public class teamSlayerGame extends gameType {
     Scoreboard board;
     Team redteam;
     Team blueteam;
+    Team specteam;
     Objective objective;
     OfflinePlayer dummyred = Bukkit.getOfflinePlayer(ChatColor.RED + "Red:");
     OfflinePlayer dummyblue = Bukkit.getOfflinePlayer(ChatColor.BLUE + "Blue:");
@@ -70,6 +73,11 @@ public class teamSlayerGame extends gameType {
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         redscore = objective.getScore(dummyred);
         bluescore = objective.getScore(dummyblue);
+        
+        specteam = board.registerNewTeam("Spectator Team");
+        specteam.setAllowFriendlyFire(false);
+        specteam.setCanSeeFriendlyInvisibles(true);
+        
         //Broadcast
         Bukkit.getServer().broadcastMessage(MCMEPVP.primarycolor + "The next Game starts in a few seconds!");
         Bukkit.getServer().broadcastMessage(MCMEPVP.primarycolor + "GameType is " + MCMEPVP.highlightcolor + "Team Slayer" + MCMEPVP.primarycolor + " on Map " + MCMEPVP.highlightcolor + MCMEPVP.PVPMap + "!");
@@ -112,6 +120,8 @@ public class teamSlayerGame extends gameType {
         redscore.setScore(RedScore);
         bluescore.setScore(BlueScore);
         displayBoard();
+        
+        MCMEPVP.canJoin = true;
     }
 
     @Override
@@ -134,6 +144,14 @@ public class teamSlayerGame extends gameType {
 
     @Override
     public void addTeam(Player player, String Team) {
+    	if (specteam.hasPlayer(player)) {
+    		specteam.removePlayer(player);
+    		if(player.getActivePotionEffects() != null){
+            	for(PotionEffect pe : player.getActivePotionEffects()){
+            		player.removePotionEffect(pe.getType());
+            	}
+            }
+    	}
         Color col = armorColor.WHITE;
         switch (Team) {
             case "red":
@@ -401,6 +419,7 @@ public class teamSlayerGame extends gameType {
         board.clearSlot(DisplaySlot.SIDEBAR);
         blueteam.unregister();
         redteam.unregister();
+        specteam.unregister();
         objective.unregister();
     }
 
@@ -454,5 +473,11 @@ public class teamSlayerGame extends gameType {
 	@Override
 	public boolean allowCustomAttributes() {
 		return true;
+	}
+
+	@Override
+	public void addSpectatorTeam(Player p) {
+		specteam.addPlayer(p);
+		p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY,999999,1));
 	}
 }
