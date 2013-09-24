@@ -17,8 +17,8 @@ public class pvpMapMeta {
 
     private String name;
     private File file;
-    private HashMap<String, Spawn> spawns = new HashMap();
-    private HashMap<Integer, Vector> flags = new HashMap();
+    private HashMap<String, Spawn> spawns = new HashMap<String, Spawn>();
+    private HashMap<Integer, Vector> flags = new HashMap<Integer, Vector>();
     JsonArray data;
 
     public pvpMapMeta(JsonArray dat, File metafile) {

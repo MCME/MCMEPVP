@@ -16,6 +16,7 @@ public class config {
     }
     //Game variables
     public static boolean debug;
+    public static boolean autorun;
     public static List<String> Maps;
     public static List<String> GameTypes;
     public static String PVPMap;
@@ -24,6 +25,8 @@ public class config {
     public static Vector SpawnVec;
     public static Location Spawn;
     public static long announceDelay;
+    public static double startThreshHold;
+    public static int minOnlinePlayers;
     public static int TSLscore;
     public static int TCQscore;
     public static int FFATimeLimit;
@@ -63,5 +66,8 @@ public class config {
         INFTimeLimit = conf.getInt("infection.time");
         ZombieHealth = conf.getInt("infection.zombiehealth");
         FFATimeLimit = conf.getInt("freeforall.time");
+        autorun = conf.getBoolean("lobby.enableAutoLobby");
+        minOnlinePlayers = conf.getInt("lobby.minOnlinePlayers");
+        startThreshHold = conf.getDouble("lobby.startThreshHold");
     }
 }

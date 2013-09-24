@@ -9,9 +9,13 @@ general:
     x: -165.0
     y: 98.0
     z: 1824.0
+lobby:
+  enableAutoLobby: false
+  minOnlinePlayers: 6
+  startThreshHold: 0.75
 score:
-  TSL: 30
-  TCQ: 20
+  TSL: 25
+  TCQ: 50
 infection:
   time: 10
   zombiehealth: 12

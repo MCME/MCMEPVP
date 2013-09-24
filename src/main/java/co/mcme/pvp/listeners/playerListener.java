@@ -56,7 +56,7 @@ public class playerListener implements Listener {
             textureSwitcher.switchTP(event.getPlayer());
             spectatorUtil.showAll(event.getPlayer());
             
-            MCMEPVP.CurrentGame.onPlayerJoin(event);
+            MCMEPVP.CurrentLobby.onPlayerJoin(event);
         } else {
             MCMEPVP.CurrentGame.onPlayerJoin(event);
             textureSwitcher.switchTP(event.getPlayer());
@@ -106,7 +106,7 @@ public class playerListener implements Listener {
         if (MCMEPVP.GameStatus == 0) {
             MCMEPVP.unQueuePlayer(event.getPlayer());
             
-            MCMEPVP.CurrentGame.onPlayerleaveServer(event);
+            MCMEPVP.CurrentLobby.onPlayerleaveServer(event);
         } else {
             MCMEPVP.CurrentGame.onPlayerleaveServer(event);
         }

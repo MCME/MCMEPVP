@@ -7,8 +7,8 @@ public class pvpMap {
 
     private String name;
     private pvpMapMeta meta;
-    private HashMap<String, Spawn> spawns = new HashMap();
-    private HashMap<Integer, Vector> flags = new HashMap();
+    private HashMap<String, Spawn> spawns = new HashMap<String, Spawn>();
+    private HashMap<Integer, Vector> flags = new HashMap<Integer, Vector>();
 
     public pvpMap(pvpMapMeta m) {
         name = m.getName();

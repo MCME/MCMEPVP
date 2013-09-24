@@ -503,6 +503,19 @@ public class teamConquestGame extends gameType {
             MCMEPVP.resetGame();
         }
     }
+    
+    public static void setNewScore(Integer newScore) {
+    	int oldScore = config.TCQscore; ;
+    	int newRedScore = newScore - (oldScore - instance.redscore.getScore());
+    	int newBlueScore = newScore - (oldScore - instance.bluescore.getScore());
+    	
+    	instance.RedScore = newRedScore;
+    	instance.BlueScore = newBlueScore;
+    	
+    	instance.redscore.setScore(newRedScore);
+    	instance.bluescore.setScore(newBlueScore);
+    	instance.checkGameEnd();
+    }
 
     @Override
     public int team1count() {

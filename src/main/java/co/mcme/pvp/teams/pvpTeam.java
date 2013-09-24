@@ -10,7 +10,7 @@ public class pvpTeam {
     private String name;
     private ChatColor chatColor;
     private armorColor armorColor;
-    private ArrayList<String> members = new ArrayList();
+    private ArrayList<String> members = new ArrayList<String>();
 
     public pvpTeam(String n, armorColor ac, ChatColor cc) {
         this.name = n;

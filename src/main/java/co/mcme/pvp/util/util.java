@@ -124,7 +124,7 @@ public class util {
             for (Player p : Bukkit.getOnlinePlayers()) {
                 if (p.hasPermission("mcmepvp.admin")) {
                     p.sendMessage(desired + name + " has enabled debug mode.");
-                    p.sendMessage(MCMEPVP.highlightcolor + "Statistics will not be recorded!");
+                    p.sendMessage(MCMEPVP.highlightcolor + "Statistics will not be recorded.");
                 }
             }
         }
@@ -133,7 +133,15 @@ public class util {
             for (Player p : Bukkit.getOnlinePlayers()) {
                 if (p.hasPermission("mcmepvp.admin")) {
                     p.sendMessage(desired + name + " has disabled debug mode.");
-                    p.sendMessage(MCMEPVP.highlightcolor + "Statistics will be recorded");
+                    p.sendMessage(MCMEPVP.highlightcolor + "Statistics will be recorded.");
+                }
+            }
+        }
+        if (action == 14) {
+            desired = MCMEPVP.primarycolor;
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                if (p.hasPermission("mcmepvp.admin")) {
+                    p.sendMessage(desired + name + " has " + msg[0] + " auto-lobby mode.");
                 }
             }
         }

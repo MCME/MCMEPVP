@@ -30,9 +30,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.Vector;
 
+import co.mcme.pvp.commands.pvpCmds;
 import co.mcme.pvp.gametypes.freeForAllGame;
 import co.mcme.pvp.gametypes.infectionGame;
-import co.mcme.pvp.gametypes.lobbyGame;
 import co.mcme.pvp.gametypes.ringBearerGame;
 import co.mcme.pvp.gametypes.teamConquestGame;
 import co.mcme.pvp.gametypes.teamDeathMatchGame;
@@ -48,6 +48,8 @@ import co.mcme.pvp.listeners.playerListener;
 import co.mcme.pvp.listeners.signListener;
 import co.mcme.pvp.listeners.statsListener;
 import co.mcme.pvp.listeners.weatherListener;
+import co.mcme.pvp.lobby.lobbyMode;
+import co.mcme.pvp.lobby.lobbyType;
 import co.mcme.pvp.stats.DataManager;
 import co.mcme.pvp.stats.entry.GameEntry;
 import co.mcme.pvp.stats.entry.JoinEntry;
@@ -63,6 +65,7 @@ import co.mcme.pvp.util.worldUtils;
 public class MCMEPVP extends JavaPlugin {
 
     public static gameType CurrentGame;
+    public static lobbyType CurrentLobby;
     public static HashMap<String, String> PlayerStatus;
     public static int GameStatus;
     public static int Participants;
@@ -82,7 +85,6 @@ public class MCMEPVP extends JavaPlugin {
     public static boolean locked = true;
     public static boolean debug = false;
     public static boolean horseMode = false;
-    public static boolean autorun;
     public static List loot;
     public Configuration conf;
     public config config;
@@ -131,11 +133,17 @@ public class MCMEPVP extends JavaPlugin {
         PVPGT = config.PVPGT;
         PVPWorld = config.PVPWorld;
         Spawn = config.Spawn;
-        autorun = false;
+        
+        if (config.autorun) {
+        	System.out.print("Auto-lobby is enabled");
+        	System.out.print("Min online players: " + config.minOnlinePlayers);
+        	System.out.print("StartThreshHold: " + config.startThreshHold);
+        }
+        
         resetGame();
-        getCommand("pvp").setExecutor(new pvpCommands(this));
-        getCommand("shout").setExecutor(new pvpCommands(this));
-        getCommand("a").setExecutor(new pvpCommands(this));
+        getCommand("pvp").setExecutor(new pvpCmds(this));
+        getCommand("shout").setExecutor(new pvpCmds(this));
+        getCommand("a").setExecutor(new pvpCmds(this));
         
         getServer().getScheduler().runTask(this, new Runnable() {
 			@Override
@@ -254,8 +262,12 @@ public class MCMEPVP extends JavaPlugin {
             ringBearers.clear();
         }
         Bukkit.getServer().getPluginManager().enablePlugin(voxel);
-        lobbyGame.stopLobby();
-        CurrentGame = new lobbyGame();
+        
+        if (CurrentLobby != null) {
+        	System.out.print("Stopping current lobby.");
+        	CurrentLobby.stopLobby();
+        }
+        CurrentLobby = new lobbyMode();
     }
 
     public static void logKill(PlayerDeathEvent event) {
@@ -292,7 +304,7 @@ public class MCMEPVP extends JavaPlugin {
     }
 
     public static void startGame() {
-    	CurrentGame.clearBoard();
+    	CurrentLobby.clearBoard();
     	
     	canJoin = false;
         Spawns = new HashMap<String, Vector>();
@@ -442,7 +454,9 @@ public class MCMEPVP extends JavaPlugin {
             } else {
                 queue.add(player);
                 Participants++;
-                CurrentGame.addTeam(player, "participant");
+                if (GameStatus == 0) {
+                	CurrentLobby.setTeam(player, "participant");
+                }
                 teamUtil.setPlayerTeam(player, "participant");
                 player.sendMessage(positivecolor + "You are participating! Wait for the next Game to start!");
                 if(MCMEPVP.GameStatus==0){
@@ -457,7 +471,9 @@ public class MCMEPVP extends JavaPlugin {
         if (queue.contains(player)) {
             queue.remove(player);
             Participants--;
-            CurrentGame.addTeam(player, "participant");
+            if (GameStatus == 0) {
+            	CurrentLobby.setTeam(player, "participant");
+            }
             teamUtil.setPlayerTeam(player, "spectator");
             player.sendMessage(negativecolor + "You are no longer participating!");
             util.notifyAdmin(player.getName(), 2, null);

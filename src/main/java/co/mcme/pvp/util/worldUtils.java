@@ -6,7 +6,7 @@ import org.bukkit.entity.EntityType;
 
 public class worldUtils {
 
-    private static ArrayList<EntityType> toRemove = new ArrayList();
+    private static ArrayList<EntityType> toRemove = new ArrayList<EntityType>();
 
     public static int removeEntities(ArrayList<EntityType> types) {
         toRemove = types;

@@ -1,11 +1,12 @@
 package co.mcme.pvp.util;
 
+import static co.mcme.pvp.MCMEPVP.PVPMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 
 import co.mcme.pvp.MCMEPVP;
-import static co.mcme.pvp.MCMEPVP.PVPMap;
 
 public class textureSwitcher {
 	
