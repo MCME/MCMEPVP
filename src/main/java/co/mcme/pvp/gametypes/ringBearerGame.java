@@ -104,13 +104,13 @@ public class ringBearerGame extends gameType {
 							public void run() {
 								chooseTeams();
 								spectatorUtil.startingSpectators();
+								displayBoard();
+
+								MCMEPVP.canJoin = true;
 							}
 
 						}, 100L);
 		CountdownTimer();
-		displayBoard();
-
-		MCMEPVP.canJoin = true;
 	}
 
 	// HANDLE ADDING/REMOVING OF PLAYERS

@@ -13,6 +13,7 @@ lobby:
   enableAutoLobby: false
   minOnlinePlayers: 6
   startThreshHold: 0.75
+  enableMapVote: true
 score:
   TSL: 25
   TCQ: 50

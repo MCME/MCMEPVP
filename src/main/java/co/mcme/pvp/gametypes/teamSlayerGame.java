@@ -114,14 +114,15 @@ public class teamSlayerGame extends gameType {
                 spectatorUtil.startingSpectators();
                 //Broadcast
                 Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "The Fight begins!");
+                
+                MCMEPVP.setWeather();
+                redscore.setScore(RedScore);
+                bluescore.setScore(BlueScore);
+                displayBoard();
+                
+                MCMEPVP.canJoin = true;
             }
         }, 100L);
-        MCMEPVP.setWeather();
-        redscore.setScore(RedScore);
-        bluescore.setScore(BlueScore);
-        displayBoard();
-        
-        MCMEPVP.canJoin = true;
     }
 
     @Override

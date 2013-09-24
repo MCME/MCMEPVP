@@ -7,6 +7,8 @@ import org.bukkit.World;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.util.Vector;
 
+import co.mcme.pvp.MCMEPVP;
+
 public class config {
 
     private static Configuration conf;
@@ -17,6 +19,7 @@ public class config {
     //Game variables
     public static boolean debug;
     public static boolean autorun;
+    public static boolean voteMap;
     public static List<String> Maps;
     public static List<String> GameTypes;
     public static String PVPMap;
@@ -69,5 +72,22 @@ public class config {
         autorun = conf.getBoolean("lobby.enableAutoLobby");
         minOnlinePlayers = conf.getInt("lobby.minOnlinePlayers");
         startThreshHold = conf.getDouble("lobby.startThreshHold");
+        voteMap = conf.getBoolean("lobby.enableMapVote");
+    }
+    
+    public void setPVPDefaults() {
+    	MCMEPVP.Maps = config.Maps;
+    	MCMEPVP.GameTypes = config.GameTypes;
+    	MCMEPVP.PVPMap = config.PVPMap;
+    	MCMEPVP.PVPGT = config.PVPGT;
+    	MCMEPVP.PVPWorld = config.PVPWorld;
+    	MCMEPVP.Spawn = config.Spawn;
+    	
+    	MCMEPVP.autorun = config.autorun;
+    	MCMEPVP.minOnlinePlayers = config.minOnlinePlayers;
+    	MCMEPVP.startThreshHold = (float) config.startThreshHold;
+    	MCMEPVP.voteMap = config.voteMap;
+    	
+    	System.out.print("[MCMEPVP] Defaults loaded from config!");
     }
 }

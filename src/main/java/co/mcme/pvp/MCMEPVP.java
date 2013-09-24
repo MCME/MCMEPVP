@@ -31,6 +31,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.Vector;
 
 import co.mcme.pvp.commands.pvpCmds;
+import co.mcme.pvp.commands.voteCmdMethods;
 import co.mcme.pvp.gametypes.freeForAllGame;
 import co.mcme.pvp.gametypes.infectionGame;
 import co.mcme.pvp.gametypes.ringBearerGame;
@@ -82,10 +83,14 @@ public class MCMEPVP extends JavaPlugin {
     public static List<String> GameTypes;
     private static Plugin instance;
     public static boolean canJoin = true;
+    public static boolean voteMap = false;
     public static boolean locked = true;
     public static boolean debug = false;
     public static boolean horseMode = false;
-    public static List loot;
+    public static boolean autorun =false;
+    public static int minOnlinePlayers = 0;
+    public static float startThreshHold = 0;
+    public static List<String> loot;
     public Configuration conf;
     public config config;
     public static LinkedBlockingQueue<Player> queue;
@@ -127,23 +132,21 @@ public class MCMEPVP extends JavaPlugin {
         //registering Listeners
         registerEvents();
         PlayerStatus = new HashMap<String, String>();
-        Maps = config.Maps;
-        GameTypes = config.GameTypes;
-        PVPMap = config.PVPMap;
-        PVPGT = config.PVPGT;
-        PVPWorld = config.PVPWorld;
-        Spawn = config.Spawn;
         
-        if (config.autorun) {
-        	System.out.print("Auto-lobby is enabled");
-        	System.out.print("Min online players: " + config.minOnlinePlayers);
-        	System.out.print("StartThreshHold: " + config.startThreshHold);
+        config.setPVPDefaults();
+        
+        if (autorun) {
+        	System.out.print("[MCMEPVP] (Lobby) Auto-lobby: " + autorun);
+        	System.out.print("[MCMEPVP] (Lobby) Min online players: " + minOnlinePlayers);
+        	System.out.print("[MCMEPVP] (Lobby) StartThreshHold: " + startThreshHold);
+        	System.out.print("[MCMEPVP] (Lobby) Map Voting: " + voteMap);
         }
         
         resetGame();
         getCommand("pvp").setExecutor(new pvpCmds(this));
         getCommand("shout").setExecutor(new pvpCmds(this));
         getCommand("a").setExecutor(new pvpCmds(this));
+        getCommand("vote").setExecutor(new pvpCmds(this));
         
         getServer().getScheduler().runTask(this, new Runnable() {
 			@Override
@@ -264,8 +267,8 @@ public class MCMEPVP extends JavaPlugin {
         Bukkit.getServer().getPluginManager().enablePlugin(voxel);
         
         if (CurrentLobby != null) {
-        	System.out.print("Stopping current lobby.");
         	CurrentLobby.stopLobby();
+        	System.out.print("[MCMEPVP] (Lobby) Clearing lobby!");
         }
         CurrentLobby = new lobbyMode();
     }
@@ -305,6 +308,12 @@ public class MCMEPVP extends JavaPlugin {
 
     public static void startGame() {
     	CurrentLobby.clearBoard();
+    	CurrentLobby.stopLobby();
+    	
+    	if (!voteCmdMethods.hasVoted.isEmpty()) {
+    		voteCmdMethods.hasVoted.clear();
+    		System.out.print("[MCMEPVP] HasVotedList cleared!");
+    	}
     	
     	canJoin = false;
         Spawns = new HashMap<String, Vector>();

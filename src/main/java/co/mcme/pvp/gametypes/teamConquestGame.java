@@ -179,14 +179,14 @@ public class teamConquestGame extends gameType {
                         beacon.setData((byte) i);
                     }
                 }
+                MCMEPVP.setWeather();
+                displayBoard();
+                bluescore.setScore(BlueScore);
+                redscore.setScore(RedScore);
+                
+                MCMEPVP.canJoin = true;
             }
         }, 100L);
-        MCMEPVP.setWeather();
-        displayBoard();
-        bluescore.setScore(BlueScore);
-        redscore.setScore(RedScore);
-        
-        MCMEPVP.canJoin = true;
     }
 
     @Override

@@ -2,7 +2,11 @@ package co.mcme.pvp.lobby;
 
 import static co.mcme.pvp.MCMEPVP.GameTypes;
 import static co.mcme.pvp.MCMEPVP.Maps;
+import static co.mcme.pvp.MCMEPVP.voteMap;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
@@ -29,11 +33,15 @@ public class lobbyMode extends lobbyType {
 
 	int m = 30;
 	int mm = 120;
+	
+	int map1votes = 0;
+	int map2votes = 0;
 
 	static Float threshHold = (float) config.startThreshHold;
 	static Float ratio = (float) 0;
 	static int minPlayers = config.minOnlinePlayers;
 	static int lobbyTaskId = 0;
+	static HashMap<Integer, List<String>> games = new HashMap<Integer, List<String>>();
 
 	ScoreboardManager manager;
 	Scoreboard board;
@@ -44,8 +52,14 @@ public class lobbyMode extends lobbyType {
 			+ "Participants:");
 	OfflinePlayer dummywhite = Bukkit.getOfflinePlayer(ChatColor.WHITE
 			+ "Spectators:");
+	OfflinePlayer dummymap1 = Bukkit.getOfflinePlayer(ChatColor.DARK_AQUA
+			+ "Map 1:");
+	OfflinePlayer dummymap2 = Bukkit.getOfflinePlayer(ChatColor.DARK_AQUA
+			+ "Map 2:");
 	Score greenscore;
 	Score whitescore;
+	Score map1score;
+	Score map2score;
 
 	public lobbyMode() {
 		MCMEPVP.GameStatus = 0;
@@ -77,22 +91,45 @@ public class lobbyMode extends lobbyType {
 									setTeam(p, "spectator");
 									p.setScoreboard(board);
 								}
+								displayBoard();
 							}
 						}, 10L);
-		displayBoard();
-		if (config.autorun) {
+		if (MCMEPVP.autorun) {
 			autoRunTimer();
+			if (voteMap) {
+				setMapVote();
+			}
 		}
 	}
 
 	public void autoRun() {
 		stopLobby();
-		randomMap();
-		randomGameType();
+		String map = randomMap();
+		String gt = randomGameType();
+		
+		if (map1votes > map2votes) {
+			map = games.get(1).get(0);
+			gt = games.get(1).get(1);
+			Bukkit.broadcastMessage(MCMEPVP.positivecolor + "Map 1 wins!");
+		}
+		if (map1votes < map2votes) {
+			map = games.get(2).get(0);
+			gt = games.get(2).get(1);
+			Bukkit.broadcastMessage(MCMEPVP.positivecolor + "Map 2 wins!");
+		}
+		if (map1votes == map2votes) {
+			Bukkit.broadcastMessage(MCMEPVP.positivecolor + "Voting is tied. Choosing random a game instead!");
+		}
+		games.clear();
+		
+		MCMEPVP.PVPMap = map;
+		MCMEPVP.PVPGT = gt;
+		
 		gameScore();
 
 		MCMEPVP.lastMap = MCMEPVP.PVPMap;
 		MCMEPVP.lastGT = MCMEPVP.PVPGT;
+		
 		MCMEPVP.startGame();
 	}
 
@@ -138,21 +175,90 @@ public class lobbyMode extends lobbyType {
 
 		displayBoard();
 	}
+	
+	@Override
+	public void setMapVote() {
+		if (voteMap) {
+			System.out.print("[MCMEPVP] (Lobby) Setting maps for voting");
+			
+			games.clear();
+			int i = 1;
+			
+			while (i <= 2) {
+				List<String> mapgt = new ArrayList<String>();
+				String map = randomMap();
+				String gt = randomGameType();
+				
+				if (games.containsKey(1)) {
+					if (games.get(1).get(0).equals(map)) {
+						System.out.print("[MCMEPVP] (Lobby) " + map + " already used!");
+					} else {
+						mapgt.add(0, map);
+						mapgt.add(1, gt);
+						
+						games.put(i, mapgt);
+						i ++;
+					}
+				} else {
+					mapgt.add(0, map);
+					mapgt.add(1, gt);
+					
+					games.put(i, mapgt);
+					i ++;
+				}
+			}
+			
+			map1score = objective.getScore(dummymap1);
+			map2score = objective.getScore(dummymap2);
+			displayBoard();
+			
+			map1score.setScore(1);
+			map2score.setScore(1);
+			displayBoard();
+			map1score.setScore(map1votes);
+			map2score.setScore(map2votes);
+			announceVoteMap();
+		} else {
+			games.clear();
+			Bukkit.broadcastMessage(ChatColor.GRAY + "Map voting has been disabled!");
+		}
+	}
+	
+	public void announceVoteMap() {
+		if (!games.isEmpty()) {
+			ChatColor prim = ChatColor.DARK_AQUA;
+			ChatColor scd = ChatColor.AQUA;
+			
+			Bukkit.broadcastMessage(prim + "|----[Map 1]----|");
+			Bukkit.broadcastMessage(prim + "Map: " + scd + games.get(1).get(0));
+			Bukkit.broadcastMessage(prim + "GameMode: " + scd + games.get(1).get(1));
+			Bukkit.broadcastMessage(prim + "/vote 1");
+			Bukkit.broadcastMessage(prim + "|--------------|");
+			Bukkit.broadcastMessage("");
+			Bukkit.broadcastMessage(prim + "|----[Map 2]----|");
+			Bukkit.broadcastMessage(prim + "Map: " + scd + games.get(2).get(0));
+			Bukkit.broadcastMessage(prim + "GameMode: " + scd + games.get(2).get(1));
+			Bukkit.broadcastMessage(prim + "/vote 2");
+			Bukkit.broadcastMessage(prim + "|--------------|");
+		}
+	}
 
 	@Override
-	public void randomMap() {
+	public String randomMap() {
 		String map = "Tharbad";
 
 		int max = Maps.size() - 1;
 		int i = 0;
 
 		while (i < 1) {
-			map = Maps.get(getRandom(0, max));
-			if (!map.equals(MCMEPVP.lastMap)) {
+			String m = Maps.get(getRandom(0, max));
+			if (!m.equals(MCMEPVP.lastMap)) {
 				i++;
+				map = m;
+				System.out.print("[MCMEPVP] (Lobby) RandomMap: " + map);
 			}
 		}
-		MCMEPVP.PVPMap = map;
+		return map;
 	}
 
 	@Override
@@ -166,7 +272,7 @@ public class lobbyMode extends lobbyType {
 	}
 
 	@Override
-	public void randomGameType() {
+	public String randomGameType() {
 		String gt = "TSL";
 
 		boolean hasFlags = checkFlags();
@@ -186,7 +292,7 @@ public class lobbyMode extends lobbyType {
 			}
 		}
 
-		MCMEPVP.PVPGT = gt;
+		return gt;
 	}
 
 	@Override
@@ -232,6 +338,7 @@ public class lobbyMode extends lobbyType {
 		}
 		return i;
 	}
+	
 
 	@Override
 	public void autoRunTimer() {
@@ -260,7 +367,7 @@ public class lobbyMode extends lobbyType {
 										} else {
 											Bukkit.broadcastMessage(MCMEPVP.negativecolor
 													+ "Waiting for more players to join!");
-											System.out.print("Ratio: " + ratio);
+											System.out.print("[MCMEPVP] Ratio: " + ratio);
 											remindJoin();
 										}
 									}
@@ -274,6 +381,9 @@ public class lobbyMode extends lobbyType {
 										} else {
 											Bukkit.broadcastMessage(MCMEPVP.negativecolor
 													+ "Timer reset. Need more players to join!");
+											if (voteMap) {
+												announceVoteMap();
+											}
 											remindJoin();
 											m = 30;
 										}
@@ -331,10 +441,10 @@ public class lobbyMode extends lobbyType {
 	private void remindJoin() {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (!MCMEPVP.isQueued(p) && !teamUtil.isOnTeam(p)) {
-				p.playSound(p.getLocation(), Sound.ANVIL_LAND, 100, 100);
+				p.playSound(p.getLocation(), Sound.ANVIL_LAND, 100, 1);
 				p.sendMessage(ChatColor.BOLD + "" + ChatColor.DARK_RED
 						+ "You have not joined the game yet!");
-				p.sendMessage(ChatColor.BOLD + "" + ChatColor.GREEN
+				p.sendMessage(ChatColor.BOLD + "" + ChatColor.DARK_RED
 						+ "/pvp join");
 			}
 		}
@@ -343,6 +453,18 @@ public class lobbyMode extends lobbyType {
 	@Override
 	public void onRespawn(PlayerRespawnEvent event) {
 		event.setRespawnLocation(MCMEPVP.Spawn);
+	}
+
+	@Override
+	public void voteMap(Integer i) {
+		if (i == 1) {
+			map1votes ++;
+		}
+		if (i == 2) {
+			map2votes ++;
+		}
+		map1score.setScore(map1votes);
+		map2score.setScore(map2votes);
 	}
 
 }

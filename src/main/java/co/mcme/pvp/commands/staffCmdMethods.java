@@ -70,12 +70,12 @@ public class staffCmdMethods {
 			if (MCMEPVP.GameStatus == 0) {
 				CurrentLobby.clearBoard();
 				String[] msg = new String[1];
-				if (config.autorun) {
-					config.autorun = false;
+				if (MCMEPVP.autorun) {
+					MCMEPVP.autorun = false;
 					MCMEPVP.resetGame();
 					msg[0] = "Disabled!";
 				} else {
-					config.autorun = true;
+					MCMEPVP.autorun = true;
 					MCMEPVP.resetGame();
 					msg[0] = "Enabled!";
 				}

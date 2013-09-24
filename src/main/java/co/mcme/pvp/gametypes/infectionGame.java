@@ -146,16 +146,17 @@ public class infectionGame extends gameType {
                 Bukkit.getServer().broadcastMessage(
                         MCMEPVP.positivecolor
                         + "The Fight begins!");
+                
+                MCMEPVP.setWeather();
+                spectatorUtil.startingSpectators();
+                displayBoard();
+                m--;
+                objective.setDisplayName("Time: " + m + ":" + s);
+                
+                MCMEPVP.canJoin = true;
             }
         }, 100L);
-        MCMEPVP.setWeather();
-        spectatorUtil.startingSpectators();
-        displayBoard();
-        m--;
         CountdownTimer();
-        objective.setDisplayName("Time: " + m + ":" + s);
-        
-        MCMEPVP.canJoin = true;
     }
 
     public void determineTeamCounts() {

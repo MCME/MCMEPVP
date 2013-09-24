@@ -141,15 +141,15 @@ public class freeForAllGame extends gameType {
                 Bukkit.getServer().broadcastMessage(
                         MCMEPVP.positivecolor
                         + "The Fight begins!");
+                m--;
+                objective1.setDisplayName("Time: " + m + ":" + s);
+                kills.setScore(0);
+                updateBoard();
+                
+                MCMEPVP.canJoin = true;
             }
         }, 100L);
-        m--;
         CountdownTimer();
-        objective1.setDisplayName("Time: " + m + ":" + s);
-        kills.setScore(0);
-        updateBoard();
-        
-        MCMEPVP.canJoin = true;
     }
 
     @Override

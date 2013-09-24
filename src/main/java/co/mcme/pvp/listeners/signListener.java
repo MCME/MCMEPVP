@@ -17,7 +17,6 @@ import co.mcme.pvp.util.gearGiver;
 public class signListener implements Listener {
 
     // @EventHandler(priority = EventPriority.NORMAL)
-    @SuppressWarnings("unchecked")
 	public void onSignChange(SignChangeEvent event) {
         Player player = event.getPlayer();
         Sign s = (Sign) event.getBlock();

@@ -19,11 +19,15 @@ public abstract class lobbyType {
 
     public abstract void setTeam(Player player, String Team);
     
-    public abstract void randomMap();
+    public abstract void setMapVote();
+    
+    public abstract void voteMap(Integer i);
+    
+    public abstract String randomMap();
     
     public abstract boolean checkFlags();
     
-    public abstract void randomGameType();
+    public abstract String randomGameType();
     
     public abstract void gameScore();
     

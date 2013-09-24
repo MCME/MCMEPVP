@@ -34,11 +34,9 @@ public class userCmdMethods {
 			p.sendMessage(ChatColor.GRAY + "/pvp" + lb + "map <MapName>" + ll
 					+ "gt <GameType>" + rb);
 			p.sendMessage(ChatColor.GRAY + "/pvp" + lb
-					+ "SetScore <TSL/TCQ> #ScoreValue" + rb);
+					+ "SetScore #ScoreValue" + rb);
 			p.sendMessage(ChatColor.GRAY + "/pvp" + lb + "start" + ll + "stop"
 					+ ll + "forcejoin <TeamColor>" + rb);
-			p.sendMessage(ChatColor.GRAY + "/pvp derp" + lb + "g" + ll + "m"
-					+ ll + "s" + rb);
 		}
 		if (p.hasPermission("mcmepvp.user")) {
 			p.sendMessage(ChatColor.GRAY + "/shout <YourMessage>");

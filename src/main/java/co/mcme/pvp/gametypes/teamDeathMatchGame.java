@@ -116,12 +116,13 @@ public class teamDeathMatchGame extends gameType {
                 Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "The Fight begins!");
                 redscore.setScore(RedMates);
                 bluescore.setScore(BlueMates);
+                
+                MCMEPVP.setWeather();
+                displayBoard();
+                
+                MCMEPVP.canJoin = true;
             }
         }, 100L);
-        MCMEPVP.setWeather();
-        displayBoard();
-        
-        MCMEPVP.canJoin = true;
     }
 
     @Override
@@ -198,6 +199,9 @@ public class teamDeathMatchGame extends gameType {
         MCMEPVP.logKill(event);
         Player player = event.getEntity();
         String Status = teamUtil.getPlayerTeam(player);
+        
+        String victim = player.getName();
+        String deathMessage = MCMEPVP.primarycolor + " was lost in battle!";
         //TODO Log deaths
         if (Status.equals("spectator")) {
             event.setDeathMessage(MCMEPVP.primarycolor + "Spectator " + player.getName() + " was tired watching this fight!");
@@ -205,17 +209,30 @@ public class teamDeathMatchGame extends gameType {
         if (Status.equals("red")) {
             RedMates--;
             redscore.setScore(RedMates);
-            event.setDeathMessage(ChatColor.RED + player.getName() + MCMEPVP.primarycolor + " was killed by " + ChatColor.BLUE + player.getKiller().getName());
+            victim = ChatColor.RED + player.getName();
             event.getDrops().add(new ItemStack(364, 1));
             redteam.removePlayer(player);
         }
         if (Status.equals("blue")) {
             BlueMates--;
             bluescore.setScore(BlueMates);
-            event.setDeathMessage(ChatColor.BLUE + player.getName() + MCMEPVP.primarycolor + " was killed by " + ChatColor.RED + player.getKiller().getName());
+            victim = ChatColor.BLUE + player.getName();
             event.getDrops().add(new ItemStack(364, 1));
             blueteam.removePlayer(player);
         }
+        if (player.getKiller() instanceof Player) {
+        	Player killerP = player.getKiller();
+        	String killer = player.getKiller().getName(); 
+        	
+        	if (teamUtil.getPlayerTeam(killerP).equals("red")) {
+        		killer = ChatColor.RED + killerP.getName();
+        	}
+        	if (teamUtil.getPlayerTeam(killerP).equals("blue")) {
+        		killer = ChatColor.BLUE + killerP.getName();
+        	}
+        	deathMessage = victim + MCMEPVP.positivecolor + " was killed by " + killer;
+        }
+        event.setDeathMessage(deathMessage);
         teamUtil.setPlayerTeam(event.getEntity(), "spectator");
         checkGameEnd();
     }
