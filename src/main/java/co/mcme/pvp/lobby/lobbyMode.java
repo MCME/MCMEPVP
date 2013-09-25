@@ -139,6 +139,24 @@ public class lobbyMode extends lobbyType {
 		whiteteam.addPlayer(p);
 
 		displayBoard();
+		
+		if (MCMEPVP.autorun) {
+			final Player q = p;
+			
+			Bukkit.getServer()
+			.getScheduler()
+			.scheduleSyncDelayedTask(
+					Bukkit.getPluginManager().getPlugin("MCMEPVP"),
+					new Runnable() {
+
+						@Override
+						public void run() {
+							getVoteMaps(q);
+							playersUntilStart(q);
+						}
+						
+					}, 20L);
+		}
 	}
 
 	@Override
@@ -170,9 +188,9 @@ public class lobbyMode extends lobbyType {
 			if (status.equals("spectator")) {
 				whiteteam.removePlayer(p);
 				greenteam.addPlayer(p);
+				playersUntilStart(p);
 			}
 		}
-
 		displayBoard();
 	}
 	
@@ -412,6 +430,9 @@ public class lobbyMode extends lobbyType {
 		if (lobbyTaskId != 0) {
 			Bukkit.getScheduler().cancelTask(lobbyTaskId);
 		}
+		if (!games.isEmpty()) {
+			games.clear();
+		}
 	}
 
 	@Override
@@ -465,6 +486,41 @@ public class lobbyMode extends lobbyType {
 		}
 		map1score.setScore(map1votes);
 		map2score.setScore(map2votes);
+	}
+	
+	private static void playersUntilStart(Player p) {
+		int i = Bukkit.getOnlinePlayers().length;
+		if (i < minPlayers) {
+			int dif = minPlayers - i;
+			if (p.isOnline()) {
+				p.sendMessage(MCMEPVP.highlightcolor + "Waiting on "
+						+ MCMEPVP.positivecolor + dif + MCMEPVP.highlightcolor
+						+ " more player(s) to join!");
+			}
+		}
+	}
+
+	@Override
+	public void getVoteMaps(Player p) {
+		if (!games.isEmpty()) {
+			ChatColor prim = ChatColor.DARK_AQUA;
+			ChatColor scd = ChatColor.AQUA;
+			
+			p.sendMessage(prim + "|----[Map 1]----|");
+			p.sendMessage(prim + "Map: " + scd + games.get(1).get(0));
+			p.sendMessage(prim + "GameMode: " + scd + games.get(1).get(1));
+			p.sendMessage(prim + "/vote 1");
+			p.sendMessage(prim + "|--------------|");
+			p.sendMessage("");
+			p.sendMessage(prim + "|----[Map 2]----|");
+			p.sendMessage(prim + "Map: " + scd + games.get(2).get(0));
+			p.sendMessage(prim + "GameMode: " + scd + games.get(2).get(1));
+			p.sendMessage(prim + "/vote 2");
+			p.sendMessage(prim + "|--------------|");
+		} else {
+			p.sendMessage(ChatColor.GRAY + "There are no games to vote on!");
+		}
+		
 	}
 
 }

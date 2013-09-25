@@ -40,4 +40,7 @@ public abstract class lobbyType {
     public abstract void clearBoard();
 
     public abstract void displayBoard();
+
+	public abstract void getVoteMaps(Player p);
+	
 }

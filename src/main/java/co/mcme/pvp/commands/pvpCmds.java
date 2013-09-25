@@ -196,11 +196,20 @@ public class pvpCmds implements CommandExecutor {
 				}
 			}
 			if (c.equalsIgnoreCase("vote")) {
-				if (a.length == 1) {
-					voteCmdMethods.pvpVote(p, a[0]);
-					return true;
+				if (MCMEPVP.GameStatus == 0) {
+					if (a.length == 0) {
+						voteCmdMethods.pvpVoteInfo(p);
+						return true;
+					}
+					if (a.length == 1) {
+						voteCmdMethods.pvpVote(p, a[0]);
+						return true;
+					} else {
+						p.sendMessage(err + "/vote <1 | 2>");
+						return true;
+					}
 				} else {
-					p.sendMessage(err + "/vote <1 | 2>");
+					p.sendMessage(err + "Cannot run that command during a game!");
 					return true;
 				}
 			}

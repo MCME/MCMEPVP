@@ -73,11 +73,11 @@ public class staffCmdMethods {
 				if (MCMEPVP.autorun) {
 					MCMEPVP.autorun = false;
 					MCMEPVP.resetGame();
-					msg[0] = "Disabled!";
+					msg[0] = "disabled";
 				} else {
 					MCMEPVP.autorun = true;
 					MCMEPVP.resetGame();
-					msg[0] = "Enabled!";
+					msg[0] = "enabled";
 				}
 				util.notifyAdmin(p.getName(), 14, msg);
 				return;

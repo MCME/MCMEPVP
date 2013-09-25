@@ -15,6 +15,16 @@ public class voteCmdMethods {
 	static ChatColor err = ChatColor.GRAY;
 	
 	public static HashSet<String> hasVoted = new HashSet<String>();
+	
+	public static void pvpVoteInfo(Player p) {
+		if (p.hasPermission("mcmepvp.vote")) {
+			CurrentLobby.getVoteMaps(p);
+			return;
+		} else {
+			nope(p);
+			return;
+		}
+	}
 
 	public static void pvpVote(Player p, String a) {
 		if (p.hasPermission("mcmepvp.vote")) {

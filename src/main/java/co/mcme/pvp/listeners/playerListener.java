@@ -46,7 +46,7 @@ public class playerListener implements Listener {
     void onPlayerJoin(PlayerJoinEvent event) {
         if (event.getPlayer().hasPermission("mcmepvp.admin")){
             if (MCMEPVP.debug){
-                event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENDERDRAGON_GROWL, 100, 100);
+                event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENDERDRAGON_GROWL, 1, 1);
                 event.getPlayer().sendMessage(MCMEPVP.highlightcolor + "Debug mode is enabled!");
                 event.getPlayer().sendMessage(MCMEPVP.highlightcolor + "Stats are not being recorded!");
             }
