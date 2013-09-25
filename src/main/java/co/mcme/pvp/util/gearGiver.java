@@ -29,7 +29,7 @@ public class gearGiver {
 
     public static void giveArmor(Player player, Color col) {
         PlayerInventory target = player.getInventory();
-        if (ringBearers.containsKey(player)) {
+        if (ringBearers.containsValue(player.getName())) {
             target.setHelmet(new ItemStack(89, 1));
         } else {
             target.setHelmet(itemUtils.setEnchantments(itemUtils.setColor(new ItemStack(298, 1, (short) 40000), col), "armor"));

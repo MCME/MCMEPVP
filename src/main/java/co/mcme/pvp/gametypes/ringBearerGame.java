@@ -40,7 +40,7 @@ import co.mcme.pvp.util.util;
 
 public class ringBearerGame extends gameType {
 
-	public static HashMap<Player, String> ringBearers = new HashMap<Player, String>();
+	public static HashMap<String, String> ringBearers = new HashMap<String, String>();
 
 	private int blueSize = 0;
 	private int redSize = 0;
@@ -156,7 +156,7 @@ public class ringBearerGame extends gameType {
 
 		gearGiver.loadout(p, true, isTharbad, true, "warrior", col, "boating",
 				Team);
-		if (ringBearers.containsKey(p)) {
+		if (ringBearers.containsValue(p.getName())) {
 			p.getInventory().setItem(4, gearGiver.magicItem(false, 0, 1));
 		}
 		Location loc = getSpawn(p, Team);
@@ -208,6 +208,7 @@ public class ringBearerGame extends gameType {
 			}
 			if (team.equals("spectator")) {
 				spectatorUtil.setSpectator(p);
+				addSpectatorTeam(p);
 			}
 			Location l = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(p))
 					.toLocation(MCMEPVP.PVPWorld);
@@ -266,20 +267,19 @@ public class ringBearerGame extends gameType {
 			event.setDeathMessage(MCMEPVP.primarycolor + "Spectator "
 					+ victim.getName() + " was tired watching this fight!");
 		} else {
-			if (ringBearers.containsKey(victim)) {
-				String s = ringBearers.get(victim);
-				ChatColor msg = ChatColor.WHITE;
+			if (ringBearers.containsValue(victim.getName())) {
+				ChatColor pre = ChatColor.WHITE;
 
-				if (s.equals("red")) {
-					msg = ChatColor.RED;
+				if (team.equals("red")) {
+					pre = ChatColor.RED;
 				}
-				if (s.equals("blue")) {
-					msg = ChatColor.BLUE;
+				if (team.equals("blue")) {
+					pre = ChatColor.BLUE;
 				}
-				Bukkit.broadcastMessage(msg + s.toUpperCase() + " Team "
+				Bukkit.broadcastMessage(pre + team.toUpperCase() + " Team "
 						+ ChatColor.DARK_RED + "lost their RingBearer!");
 
-				removeBearer(victim, s);
+				removeBearer(victim, team);
 			}
 
 			String deathMessage = "!";
@@ -288,6 +288,7 @@ public class ringBearerGame extends gameType {
 				if (!redHasBearer) {
 					teamUtil.setPlayerTeam(victim, "spectator");
 					redteam.removePlayer(victim);
+					addSpectatorTeam(victim);
 				}
 				deathMessage = ChatColor.RED + victim.getName()
 						+ MCMEPVP.primarycolor + " was lost in battle!";
@@ -297,6 +298,7 @@ public class ringBearerGame extends gameType {
 				if (!blueHasBearer) {
 					teamUtil.setPlayerTeam(victim, "spectator");
 					blueteam.removePlayer(victim);
+					addSpectatorTeam(victim);
 				}
 				deathMessage = ChatColor.BLUE + victim.getName()
 						+ MCMEPVP.primarycolor + " was lost in battle!";
@@ -315,7 +317,7 @@ public class ringBearerGame extends gameType {
 							+ MCMEPVP.primarycolor + " was killed by "
 							+ ChatColor.BLUE + killer.getName();
 				}
-				if (ringBearers.containsKey(killer)) {
+				if (ringBearers.containsValue(killer.getName())) {
 					event.getDrops().add(gearGiver.magicItem(false, 0, 1));
 				}
 			}
@@ -353,6 +355,7 @@ public class ringBearerGame extends gameType {
 			}
 			event.setRespawnLocation(l);
 			teamUtil.setPlayerTeam(p, "spectator");
+			addSpectatorTeam(p);
 		}
 
 		teamCount();
@@ -410,6 +413,7 @@ public class ringBearerGame extends gameType {
 					MCMEPVP.positivecolor + "Team " + ChatColor.BLUE + "Blue"
 							+ MCMEPVP.positivecolor + " wins!");
 			stopTimer();
+			MCMEPVP.winFireworks("blue");
 			MCMEPVP.resetGame();
 		}
 		if (blueSize <= 0) {
@@ -431,6 +435,7 @@ public class ringBearerGame extends gameType {
 					MCMEPVP.positivecolor + "Team " + ChatColor.RED + "Red"
 							+ MCMEPVP.positivecolor + " wins!");
 			stopTimer();
+			MCMEPVP.winFireworks("red");
 			MCMEPVP.resetGame();
 		}
 		if (lastMan && lm == 0) {
@@ -554,25 +559,25 @@ public class ringBearerGame extends gameType {
 				if (redSize == blueSize) {
 					boolean random = (Math.random() < 0.5);
 					if (random == true) {
-						if (!redHasBearer) {
+						if (!ringBearers.containsKey("red")) {
 							addBearer(p, "red");
 						}
 						addTeam(p, "red");
 					} else {
-						if (!blueHasBearer) {
+						if (!ringBearers.containsKey("blue")) {
 							addBearer(p, "blue");
 						}
 						addTeam(p, "blue");
 					}
 				} else {
 					if (redSize > blueSize) {
-						if (!blueHasBearer) {
+						if (!ringBearers.containsKey("blue")) {
 							addBearer(p, "blue");
 						}
 						addTeam(p, "blue");
 					}
 					if (redSize < blueSize) {
-						if (!redHasBearer) {
+						if (!ringBearers.containsKey("red")) {
 							addBearer(p, "red");
 						}
 						addTeam(p, "red");
@@ -584,7 +589,7 @@ public class ringBearerGame extends gameType {
 	}
 
 	private void addBearer(Player p, String team) {
-		ringBearers.put(p, team);
+		ringBearers.put(team, p.getName());
 		if (team.equals("red")) {
 			redHasBearer = true;
 		}
@@ -596,12 +601,13 @@ public class ringBearerGame extends gameType {
 	}
 
 	private void removeBearer(Player p, String team) {
-		ringBearers.remove(p);
 		if (team.equals("red")) {
 			redHasBearer = false;
+			ringBearers.remove(team);
 		}
 		if (team.equals("blue")) {
 			blueHasBearer = false;
+			ringBearers.remove(team);
 		}
 	}
 
@@ -725,9 +731,11 @@ public class ringBearerGame extends gameType {
 
 	@Override
 	public void addSpectatorTeam(Player p) {
-		specteam.addPlayer(p);
-		p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY,
-				999999, 1));
+		if (!specteam.hasPlayer(p)) {
+			specteam.addPlayer(p);
+			
+		}
+		p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY,999999,1));
 	}
 
 }

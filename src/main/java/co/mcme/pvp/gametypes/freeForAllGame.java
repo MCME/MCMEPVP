@@ -14,10 +14,8 @@ import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -141,14 +139,14 @@ public class freeForAllGame extends gameType {
                 Bukkit.getServer().broadcastMessage(
                         MCMEPVP.positivecolor
                         + "The Fight begins!");
-                m--;
-                objective1.setDisplayName("Time: " + m + ":" + s);
-                kills.setScore(0);
-                updateBoard();
                 
                 MCMEPVP.canJoin = true;
             }
         }, 100L);
+        m--;
+        objective1.setDisplayName("Time: " + m + ":" + s);
+        kills.setScore(0);
+        updateBoard();
         CountdownTimer();
     }
 
@@ -177,6 +175,7 @@ public class freeForAllGame extends gameType {
             addTeam(p, "red");
         } else {
             spectatorUtil.setSpectator(p);
+            addSpectatorTeam(p);
         }
         Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(p));
         Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
@@ -261,22 +260,30 @@ public class freeForAllGame extends gameType {
 
     @Override
     public void onPlayerShoot(EntityDamageByEntityEvent event) {
-        Player attacker = (Player) ((Projectile) event.getDamager())
-                .getShooter();
-        attacker.playSound(attacker.getLocation(), Sound.ORB_PICKUP,
-                (float) 20, (float) 50);
+    	// TODO Auto-generated method stub
     }
 
     @Override
     public void onRespawn(PlayerRespawnEvent event) {
         Player p = event.getPlayer();
-        addTeam(p, "red");
-        Vector vec = extraSpawns();
-        Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
-                vec.getY() + 0.5, vec.getZ());
-        event.setRespawnLocation(loc);
-        p.setNoDamageTicks(160);
-        p.setScoreboard(board);
+        String status = teamUtil.getPlayerTeam(p);
+        if (status.equals("spectator")) {
+        	spectatorUtil.setSpectator(p);
+        	addSpectatorTeam(p);
+        	Vector vec = MCMEPVP.Spawns.get("spectator");
+        	Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
+                    vec.getY() + 0.5, vec.getZ());
+        	event.setRespawnLocation(loc);
+        	p.setScoreboard(board);
+        } else {
+        	addTeam(p, "red");
+            Vector vec = extraSpawns();
+            Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
+                    vec.getY() + 0.5, vec.getZ());
+            event.setRespawnLocation(loc);
+            p.setNoDamageTicks(160);
+            p.setScoreboard(board);
+        }
     }
 
     public void checkGameEnd() {
@@ -507,7 +514,10 @@ public class freeForAllGame extends gameType {
 
 	@Override
 	public void addSpectatorTeam(Player p) {
-		specteam.addPlayer(p);
+		if (!specteam.hasPlayer(p)) {
+			specteam.addPlayer(p);
+			
+		}
 		p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY,999999,1));
 	}
 }

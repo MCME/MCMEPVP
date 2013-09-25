@@ -33,26 +33,21 @@ public class magicItemListener implements Listener {
 			if ((event.hasItem())
 					&& (event.getItem().getType().equals(Material.GOLD_NUGGET))) {
 				if (MCMEPVP.PVPGT.equals("RBR")
-						&& ringBearers.containsKey(event.getPlayer())) {
-					if (!(event.getPlayer()
-							.hasPotionEffect(PotionEffectType.INVISIBILITY))
-							&& (((event.getAction()
-									.equals(Action.RIGHT_CLICK_AIR)) || (event
-									.getAction()
-									.equals(Action.RIGHT_CLICK_BLOCK))))
-							&& ringBearers.containsKey(event.getPlayer())) {
+						&& ringBearers.containsValue(event.getPlayer().getName())) {
+					if (!(event.getPlayer().hasPotionEffect(PotionEffectType.INVISIBILITY))
+							&& (((event.getAction().equals(Action.RIGHT_CLICK_AIR)) 
+									|| (event.getAction().equals(Action.RIGHT_CLICK_BLOCK))))) {
 						event.setCancelled(true);
 						oneRingEffects(event);
 					}
 				} else {
-					if (!(event.getPlayer()
-							.hasPotionEffect(PotionEffectType.INVISIBILITY))
-							&& (((event.getAction()
-									.equals(Action.RIGHT_CLICK_AIR)) || (event
-									.getAction()
-									.equals(Action.RIGHT_CLICK_BLOCK))))) {
-						event.setCancelled(true);
-						oneRingEffects(event);
+					if (!MCMEPVP.PVPGT.equals("RBR")) {
+						if (!(event.getPlayer().hasPotionEffect(PotionEffectType.INVISIBILITY))
+								&& (((event.getAction().equals(Action.RIGHT_CLICK_AIR)) 
+										|| (event.getAction().equals(Action.RIGHT_CLICK_BLOCK))))) {
+							event.setCancelled(true);
+							oneRingEffects(event);
+						}
 					}
 				}
 			}
@@ -124,6 +119,7 @@ public class magicItemListener implements Listener {
 		p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 300,
 				0));
 		p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 300, 0));
+		p.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 300, 2));
 		i.setBoots(new ItemStack(Material.AIR));
 		i.setLeggings(new ItemStack(Material.AIR));
 		i.setChestplate(new ItemStack(Material.AIR));

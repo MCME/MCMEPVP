@@ -8,6 +8,7 @@ import static co.mcme.pvp.listeners.flagListener.blueFlagCount;
 import static co.mcme.pvp.listeners.flagListener.redFlagCount;
 import static co.mcme.pvp.util.config.LogDelay;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,15 +16,20 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.FireworkEffect.Builder;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -173,7 +179,7 @@ public class MCMEPVP extends JavaPlugin {
     }
 
     public static void resetGame() {
-    	canJoin = true;
+    	canJoin = false;
         if (GameStatus == 1) {
             if (PVPGT.equals("INF")) {
                 infectionGame.stopTimer();
@@ -232,7 +238,7 @@ public class MCMEPVP extends JavaPlugin {
         					currentplayer.teleport(Spawn);
                         }
         			}
-        	}, 20L);
+        	}, 60L);
         
         if (!statsListener.playerStats.isEmpty()) {
         	statsListener.playerStats.clear();
@@ -270,7 +276,16 @@ public class MCMEPVP extends JavaPlugin {
         	CurrentLobby.stopLobby();
         	System.out.print("[MCMEPVP] (Lobby) Clearing lobby!");
         }
-        CurrentLobby = new lobbyMode();
+        
+        Bukkit.getScheduler().scheduleSyncDelayedTask(
+        		Bukkit.getPluginManager().getPlugin("MCMEPVP"), new Runnable() {
+
+			@Override
+			public void run() {
+				CurrentLobby = new lobbyMode();
+			}
+        	
+        }, 40L);
     }
 
     public static void logKill(PlayerDeathEvent event) {
@@ -307,8 +322,10 @@ public class MCMEPVP extends JavaPlugin {
     }
 
     public static void startGame() {
-    	CurrentLobby.clearBoard();
-    	CurrentLobby.stopLobby();
+    	if (CurrentLobby != null) {
+    		CurrentLobby.clearBoard();
+        	CurrentLobby.stopLobby();
+    	}
     	
     	if (!voteCmdMethods.hasVoted.isEmpty()) {
     		voteCmdMethods.hasVoted.clear();
@@ -498,4 +515,52 @@ public class MCMEPVP extends JavaPlugin {
     public static void determineSpawn(PlayerRespawnEvent event) {
         event.setRespawnLocation(Spawn);
     }
+    
+    public static void winFireworks(String team) {
+		Builder builder = FireworkEffect.builder();
+		
+		FireworkEffect ffx = null;
+		if (team.equals("red")) {
+			builder.withColor(Color.RED);
+			builder.withTrail();
+			builder.withFlicker();
+			builder.with(FireworkEffect.Type.CREEPER);
+		}
+		if (team.equals("blue")) {
+			builder.withColor(Color.BLUE);
+			builder.withTrail();
+			builder.withFlicker();
+			builder.with(FireworkEffect.Type.STAR);
+		}
+		ffx = builder.build();
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			Location l = p.getLocation();
+			World w = p.getWorld();
+			
+			Firework fw = w.spawn(l, Firework.class);
+			FireworkMeta fwm = fw.getFireworkMeta();
+			fwm.clearEffects();
+			fwm.addEffects(ffx);
+			
+			Field f;
+			try {
+				f = fwm.getClass().getDeclaredField("power");
+				f.setAccessible(true);
+				f.set(fwm, -2);
+			} catch (NoSuchFieldException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			fw.setFireworkMeta(fwm);
+		}
+	}
 }

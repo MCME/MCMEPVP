@@ -17,12 +17,10 @@ import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -79,10 +77,15 @@ public class teamConquestGame extends gameType {
         MCMEPVP.GameStatus = 1;
         manager = Bukkit.getScoreboardManager();
         board = manager.getNewScoreboard();
+        
         redteam = board.registerNewTeam("Red Team");
         redteam.setPrefix(ChatColor.RED.toString());
+        redteam.setAllowFriendlyFire(false);
+        
         blueteam = board.registerNewTeam("Blue Team");
         blueteam.setPrefix(ChatColor.BLUE.toString());
+        redteam.setAllowFriendlyFire(false);
+        
         objective = board.registerNewObjective(
                 "" + ChatColor.BLUE + "0"
                 + ChatColor.WHITE + " : "
@@ -268,6 +271,7 @@ public class teamConquestGame extends gameType {
                 BlueMates++;
             } else {
                 spectatorUtil.setSpectator(player);
+                addSpectatorTeam(player);
             }
             Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
             Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
@@ -382,28 +386,12 @@ public class teamConquestGame extends gameType {
 
     @Override
     public void onPlayerhit(EntityDamageByEntityEvent event) {
-        Player defender = (Player) event.getEntity();
-        Player attacker = (Player) event.getDamager();
-        String attackerteam = teamUtil.getPlayerTeam(attacker);
-        String defenderteam = teamUtil.getPlayerTeam(defender);
-        if (attackerteam.equals(defenderteam)) {
-            event.setCancelled(true);
-        }
+        // Unused
     }
 
     @Override
     public void onPlayerShoot(EntityDamageByEntityEvent event) {
-        Player defender = (Player) event.getEntity();
-        Player attacker = (Player) ((Projectile) event.getDamager())
-                .getShooter();
-        String attackerteam = teamUtil.getPlayerTeam(attacker);
-        String defenderteam = teamUtil.getPlayerTeam(defender);
-        if (attackerteam.equals(defenderteam)) {
-            event.setCancelled(true);
-        } else if (!attackerteam.equals(defenderteam)) {
-            attacker.playSound(attacker.getLocation(), Sound.ORB_PICKUP,
-                    (float) 20, (float) 50);
-        }
+    	// Unused
     }
 
     @Override
@@ -415,7 +403,7 @@ public class teamConquestGame extends gameType {
             col = armorColor.RED;
             gearGiver.loadout(player, true, isTharbad, true, "warrior", col,
                     "boating", Status);
-            Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
+            Vector vec = MCMEPVP.Spawns.get(Status);
             Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
                     vec.getY() + 0.5, vec.getZ());
             event.setRespawnLocation(loc);
@@ -424,11 +412,20 @@ public class teamConquestGame extends gameType {
             col = armorColor.BLUE;
             gearGiver.loadout(player, true, isTharbad, true, "warrior", col,
                     "boating", Status);
-            Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
+            Vector vec = MCMEPVP.Spawns.get(Status);
             Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
                     vec.getY() + 0.5, vec.getZ());
             event.setRespawnLocation(loc);
         }
+        if (Status.equals("spectator")) {
+            Vector vec = MCMEPVP.Spawns.get(Status);
+            Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
+                    vec.getY() + 0.5, vec.getZ());
+            event.setRespawnLocation(loc);
+            spectatorUtil.setSpectator(player);
+            addSpectatorTeam(player);
+        }
+        
 
     }
 
@@ -449,6 +446,7 @@ public class teamConquestGame extends gameType {
             Bukkit.getServer().broadcastMessage(
                     MCMEPVP.positivecolor + "Team " + ChatColor.BLUE + "Blue"
                     + MCMEPVP.positivecolor + " wins by " + ChatColor.BLUE + BlueMates + MCMEPVP.positivecolor + " lives!");
+            MCMEPVP.winFireworks("blue");
             MCMEPVP.resetGame();
         }
         if (BlueMates < 1) {
@@ -467,6 +465,7 @@ public class teamConquestGame extends gameType {
             Bukkit.getServer().broadcastMessage(
                     MCMEPVP.positivecolor + "Team " + ChatColor.RED + "Red"
                     + MCMEPVP.positivecolor + " wins by " + ChatColor.RED + RedMates + MCMEPVP.positivecolor + " lives!");
+            MCMEPVP.winFireworks("red");
             MCMEPVP.resetGame();
         }
         if (BlueScore <= 0) {
@@ -484,6 +483,7 @@ public class teamConquestGame extends gameType {
             Bukkit.getServer().broadcastMessage(
                     MCMEPVP.positivecolor + "Team " + ChatColor.RED + "Red"
                     + MCMEPVP.positivecolor + " wins!");
+            MCMEPVP.winFireworks("red");
             MCMEPVP.resetGame();
         } else if (RedScore <= 0) {
             MCMEPVP.logGame("blue", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
@@ -500,6 +500,7 @@ public class teamConquestGame extends gameType {
             Bukkit.getServer().broadcastMessage(
                     MCMEPVP.positivecolor + "Team " + ChatColor.BLUE + "Blue"
                     + MCMEPVP.positivecolor + " wins!");
+            MCMEPVP.winFireworks("blue");
             MCMEPVP.resetGame();
         }
     }
@@ -610,7 +611,10 @@ public class teamConquestGame extends gameType {
 
 	@Override
 	public void addSpectatorTeam(Player p) {
-		specteam.addPlayer(p);
+		if (!specteam.hasPlayer(p)) {
+			specteam.addPlayer(p);
+			
+		}
 		p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY,999999,1));
 	}
 }

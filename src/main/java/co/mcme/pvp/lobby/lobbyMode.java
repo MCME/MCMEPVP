@@ -26,6 +26,7 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
 import co.mcme.pvp.MCMEPVP;
+import co.mcme.pvp.commands.voteCmdMethods;
 import co.mcme.pvp.util.config;
 import co.mcme.pvp.util.teamUtil;
 
@@ -92,18 +93,21 @@ public class lobbyMode extends lobbyType {
 									p.setScoreboard(board);
 								}
 								displayBoard();
+								MCMEPVP.canJoin= true; 
+								if (MCMEPVP.autorun) {
+									if (voteMap) {
+										setMapVote();
+									}
+								}
 							}
 						}, 10L);
 		if (MCMEPVP.autorun) {
+			voteCmdMethods.hasVoted.clear();
 			autoRunTimer();
-			if (voteMap) {
-				setMapVote();
-			}
 		}
 	}
 
 	public void autoRun() {
-		stopLobby();
 		String map = randomMap();
 		String gt = randomGameType();
 		
@@ -120,7 +124,9 @@ public class lobbyMode extends lobbyType {
 		if (map1votes == map2votes) {
 			Bukkit.broadcastMessage(MCMEPVP.positivecolor + "Voting is tied. Choosing random a game instead!");
 		}
+		
 		games.clear();
+		voteCmdMethods.hasVoted.clear();
 		
 		MCMEPVP.PVPMap = map;
 		MCMEPVP.PVPGT = gt;
@@ -165,10 +171,14 @@ public class lobbyMode extends lobbyType {
 		String status = teamUtil.getPlayerTeam(p);
 
 		if (status.equals("spectator")) {
-			whiteteam.removePlayer(p);
+			if (whiteteam.hasPlayer(p)) {
+				whiteteam.removePlayer(p);
+			}
 		}
 		if (status.equals("participant")) {
-			greenteam.removePlayer(p);
+			if (greenteam.hasPlayer(p)) {
+				greenteam.removePlayer(p);
+			}
 		}
 
 		displayBoard();
@@ -400,10 +410,11 @@ public class lobbyMode extends lobbyType {
 										} else {
 											Bukkit.broadcastMessage(MCMEPVP.negativecolor
 													+ "Timer reset. Need more players to join!");
-											if (voteMap) {
-												announceVoteMap();
-											}
 											remindJoin();
+											if (voteMap) {
+												Bukkit.broadcastMessage(MCMEPVP.highlightcolor
+														+ "Use '/vote' to choose the next map and gametype!");
+											}
 											m = 30;
 										}
 									}
@@ -479,14 +490,16 @@ public class lobbyMode extends lobbyType {
 
 	@Override
 	public void voteMap(Integer i) {
-		if (i == 1) {
-			map1votes ++;
+		if (!games.isEmpty()) {
+			if (i == 1) {
+				map1votes ++;
+			}
+			if (i == 2) {
+				map2votes ++;
+			}
+			map1score.setScore(map1votes);
+			map2score.setScore(map2votes);
 		}
-		if (i == 2) {
-			map2votes ++;
-		}
-		map1score.setScore(map1votes);
-		map2score.setScore(map2votes);
 	}
 	
 	private static void playersUntilStart(Player p) {

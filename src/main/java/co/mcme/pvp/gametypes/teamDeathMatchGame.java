@@ -1,27 +1,18 @@
 package co.mcme.pvp.gametypes;
 
-import co.mcme.pvp.MCMEPVP;
-import co.mcme.pvp.gameType;
-import co.mcme.pvp.util.armorColor;
-import co.mcme.pvp.util.gearGiver;
-import co.mcme.pvp.util.spectatorUtil;
-import co.mcme.pvp.util.teamUtil;
-import co.mcme.pvp.util.textureSwitcher;
-import co.mcme.pvp.util.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -39,6 +30,15 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
+
+import co.mcme.pvp.MCMEPVP;
+import co.mcme.pvp.gameType;
+import co.mcme.pvp.util.armorColor;
+import co.mcme.pvp.util.gearGiver;
+import co.mcme.pvp.util.spectatorUtil;
+import co.mcme.pvp.util.teamUtil;
+import co.mcme.pvp.util.textureSwitcher;
+import co.mcme.pvp.util.util;
 
 public class teamDeathMatchGame extends gameType {
 
@@ -62,10 +62,15 @@ public class teamDeathMatchGame extends gameType {
         MCMEPVP.GameStatus = 1;
         manager = Bukkit.getScoreboardManager();
         board = manager.getNewScoreboard();
+        
         redteam = board.registerNewTeam("Red Team");
         redteam.setPrefix(ChatColor.RED.toString());
+        redteam.setAllowFriendlyFire(false);
+        
         blueteam = board.registerNewTeam("Blue Team");
         blueteam.setPrefix(ChatColor.BLUE.toString());
+        blueteam.setAllowFriendlyFire(false);
+        
         objective = board.registerNewObjective("Score", "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         redscore = objective.getScore(dummyred);
@@ -171,6 +176,7 @@ public class teamDeathMatchGame extends gameType {
             String Team = teamUtil.getPlayerTeam(player);
             if (Team.equals("spectator")) {
                 spectatorUtil.setSpectator(player);
+                addSpectatorTeam(player);
             }
             Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
             Location loc = vec.toLocation(MCMEPVP.PVPWorld);
@@ -230,10 +236,10 @@ public class teamDeathMatchGame extends gameType {
         	if (teamUtil.getPlayerTeam(killerP).equals("blue")) {
         		killer = ChatColor.BLUE + killerP.getName();
         	}
-        	deathMessage = victim + MCMEPVP.positivecolor + " was killed by " + killer;
+        	deathMessage = victim + MCMEPVP.primarycolor + " was killed by " + killer;
         }
         event.setDeathMessage(deathMessage);
-        teamUtil.setPlayerTeam(event.getEntity(), "spectator");
+        teamUtil.setPlayerTeam(player, "spectator");
         checkGameEnd();
     }
 
@@ -241,6 +247,7 @@ public class teamDeathMatchGame extends gameType {
     public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
         spectatorUtil.setSpectator(player);
+        addSpectatorTeam(player);
         Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
         Location spawnloc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY() + 0.5, vec.getZ());
         event.setRespawnLocation(spawnloc);
@@ -248,26 +255,12 @@ public class teamDeathMatchGame extends gameType {
 
     @Override
     public void onPlayerhit(EntityDamageByEntityEvent event) {
-        Player defender = (Player) event.getEntity();
-        Player attacker = (Player) event.getDamager();
-        String attackerteam = teamUtil.getPlayerTeam(attacker);
-        String defenderteam = teamUtil.getPlayerTeam(defender);
-        if (attackerteam.equals(defenderteam)) {
-            event.setCancelled(true);
-        }
+    	// Unused
     }
 
     @Override
     public void onPlayerShoot(EntityDamageByEntityEvent event) {
-        Player defender = (Player) event.getEntity();
-        Player attacker = (Player) ((Projectile) event.getDamager()).getShooter();
-        String attackerteam = teamUtil.getPlayerTeam(attacker);
-        String defenderteam = teamUtil.getPlayerTeam(defender);
-        if (attackerteam.equals(defenderteam)) {
-            event.setCancelled(true);
-        } else if (!attackerteam.equals(defenderteam)) {
-            attacker.playSound(attacker.getLocation(), Sound.ORB_PICKUP, (float) 20, (float) 50);
-        }
+    	// Unused
     }
 
     private void checkGameEnd() {
@@ -285,6 +278,7 @@ public class teamDeathMatchGame extends gameType {
             }
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Team " + ChatColor.RED + "Red" + MCMEPVP.positivecolor + " wins "
                     + RedMates + ":" + BlueMates + "!");
+            MCMEPVP.winFireworks("red");
             MCMEPVP.resetGame();
         } else if (RedMates <= 0) {
             MCMEPVP.logGame("blue", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
@@ -300,6 +294,7 @@ public class teamDeathMatchGame extends gameType {
             }
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Team " + ChatColor.BLUE + "Blue" + MCMEPVP.positivecolor + " wins "
                     + BlueMates + ":" + RedMates + "!");
+            MCMEPVP.winFireworks("blue");
             MCMEPVP.resetGame();
         }
     }
@@ -397,7 +392,10 @@ public class teamDeathMatchGame extends gameType {
 
 	@Override
 	public void addSpectatorTeam(Player p) {
-		specteam.addPlayer(p);
+		if (!specteam.hasPlayer(p)) {
+			specteam.addPlayer(p);
+			
+		}
 		p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY,999999,1));
 	}
 }

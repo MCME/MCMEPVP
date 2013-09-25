@@ -226,8 +226,13 @@ public class staffCmdMethods {
 		if (p.hasPermission("mcmepvp.start")) {
 			if (GameStatus == 0) {
 				if (Participants >= 2) {
-					MCMEPVP.startGame();
-					return;
+					if (MCMEPVP.autorun) {
+						CurrentLobby.autoRun();
+						return;
+					} else {
+						MCMEPVP.startGame();
+						return;
+					}
 				} else {
 					p.sendMessage(MCMEPVP.negativecolor
 							+ "There need to be at least two participants!");

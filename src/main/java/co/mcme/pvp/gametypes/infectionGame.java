@@ -20,7 +20,6 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -76,10 +75,15 @@ public class infectionGame extends gameType {
         MCMEPVP.GameStatus = 1;
         manager = Bukkit.getScoreboardManager();
         board = manager.getNewScoreboard();
+        
         zombieteam = board.registerNewTeam("Red Team");
         zombieteam.setPrefix(ChatColor.DARK_PURPLE.toString());
+        zombieteam.setAllowFriendlyFire(false);
+        
         survivorteam = board.registerNewTeam("Blue Team");
         survivorteam.setPrefix(ChatColor.AQUA.toString());
+        survivorteam.setAllowFriendlyFire(false);
+        
         objective = board.registerNewObjective("Score", "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         zombiescore = objective.getScore(dummyzombie);
@@ -261,6 +265,7 @@ public class infectionGame extends gameType {
             }
             if (Team.equals("spectator")) {
                 spectatorUtil.setSpectator(player);
+                addSpectatorTeam(player);
             }
             Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
             Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
@@ -313,8 +318,6 @@ public class infectionGame extends gameType {
                 w.playSound(l, Sound.ZOMBIE_DEATH, 1, (float) 1);
                 w.playEffect(l, Effect.MOBSPAWNER_FLAMES, 9);
             }
-            teamCount();
-            checkGameEnd();
         } else {
             if (Status.equals("spectator")) {
                 event.setDeathMessage(MCMEPVP.primarycolor + "Spectator "
@@ -333,23 +336,19 @@ public class infectionGame extends gameType {
                 event.getDrops().add(new ItemStack(367, 2));
                 event.getDrops().add(new ItemStack(262, 8));
             }
-            teamCount();
-            checkGameEnd();
         }
+        teamCount();
+        checkGameEnd();
     }
 
     @Override
     public void onPlayerhit(EntityDamageByEntityEvent event) {
         Player defender = (Player) event.getEntity();
-        Player attacker = (Player) event.getDamager();
-        String attackerteam = teamUtil.getPlayerTeam(attacker);
-        String defenderteam = teamUtil.getPlayerTeam(defender);
-        if (attackerteam.equals(defenderteam)) {
-            event.setCancelled(true);
-        } else if (defenderteam.equals("red")) {
-            if (defender.getHealth() > ZombieHealth) {
+        if (zombieteam.hasPlayer(defender)) {
+        	if (defender.getHealth() > ZombieHealth) {
                 defender.setHealth(ZombieHealth);
             }
+            
             World w = defender.getWorld();
             Location l = defender.getLocation();
             w.playSound(l, Sound.ZOMBIE_HURT, 1, (float) 1);
@@ -359,33 +358,36 @@ public class infectionGame extends gameType {
     @Override
     public void onPlayerShoot(EntityDamageByEntityEvent event) {
         Player defender = (Player) event.getEntity();
-        Player attacker = (Player) ((Projectile) event.getDamager())
-                .getShooter();
-        String attackerteam = teamUtil.getPlayerTeam(attacker);
-        String defenderteam = teamUtil.getPlayerTeam(defender);
-        if (attackerteam.equals(defenderteam)) {
-            event.setCancelled(true);
-        } else if (defenderteam.equals("red")) {
-            attacker.playSound(attacker.getLocation(), Sound.ORB_PICKUP,
-                    (float) 20, (float) 50);
-            defender.getWorld().playSound(defender.getLocation(), Sound.ZOMBIE_HURT, 1, (float) 1);
+        if (zombieteam.hasPlayer(defender)) {
+        	defender.getWorld().playSound(defender.getLocation(), Sound.ZOMBIE_HURT, 1, (float) 1);
         }
     }
 
     @Override
     public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        teamUtil.setPlayerTeam(player, "red");
-        addTeam(player, "zombie");
-        Vector vec = extraSpawns();
-        Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY() + 0.5,
-                vec.getZ());
-        event.setRespawnLocation(loc);
-        teamCount();
+        String status = teamUtil.getPlayerTeam(player);
+        
+        if (status.equals("spectator")) {
+        	spectatorUtil.setSpectator(player);
+        	addSpectatorTeam(player);
+        	Vector vec = MCMEPVP.Spawns.get("spectator");
+        	Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
+                    vec.getY() + 0.5, vec.getZ());
+        	event.setRespawnLocation(loc);
+        } else {
+        	teamUtil.setPlayerTeam(player, "red");
+            addTeam(player, "zombie");
+            Vector vec = extraSpawns();
+            Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY() + 0.5,
+                    vec.getZ());
+            event.setRespawnLocation(loc);
+            teamCount();
+        }
     }
 
     public void checkGameEnd() {
-        if (survivorscore.getScore() == 0) {
+        if (survivorscore.getScore() <= 0) {
             MCMEPVP.logGame("red", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
             for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus.entrySet()) {
                 String key = entry.getKey();
@@ -399,6 +401,7 @@ public class infectionGame extends gameType {
             }
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "The " + ChatColor.DARK_PURPLE + "Infected"
                     + MCMEPVP.positivecolor + " win with " + ChatColor.DARK_PURPLE + m + "m" + s + "s" + MCMEPVP.positivecolor + " remaining!");
+            MCMEPVP.winFireworks("red");
             MCMEPVP.resetGame();
         }
         if (zombiescore.getScore() <= 0) {
@@ -414,6 +417,7 @@ public class infectionGame extends gameType {
                 }
             }
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "The " + ChatColor.BLUE + "Survivors" + MCMEPVP.positivecolor + " win by default!");
+            MCMEPVP.winFireworks("blue");
             MCMEPVP.resetGame();
         }
         if (m == 0 && s == 0) {
@@ -430,6 +434,7 @@ public class infectionGame extends gameType {
             }
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "The " + ChatColor.BLUE + "Survivors"
                     + MCMEPVP.positivecolor + " win with " + ChatColor.BLUE + survivorcount + " survivors" + MCMEPVP.positivecolor + " remaining!");
+            MCMEPVP.winFireworks("blue");
             MCMEPVP.resetGame();
         }
     }
@@ -582,7 +587,10 @@ public class infectionGame extends gameType {
 
 	@Override
 	public void addSpectatorTeam(Player p) {
-		specteam.addPlayer(p);
+		if (!specteam.hasPlayer(p)) {
+			specteam.addPlayer(p);
+			
+		}
 		p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY,999999,1));
 	}
 }
