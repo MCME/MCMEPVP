@@ -280,28 +280,29 @@ public class lobbyMode extends lobbyType {
 	}
 
 	@Override
-	public boolean checkFlags() {
+	public boolean checkFlags(String map) {
 		Plugin instance = MCMEPVP.inst();
 		if (instance.getConfig().contains(
-				MCMEPVP.PVPMap.toLowerCase() + ".Flag0")) {
+				map.toLowerCase() + ".Flag0")) {
 			return true;
+		} else {
+			System.out.print("[MCMEPVP] (Lobby) + " + map + " does not have TCQ flags. Skipping GT."); 
+			return false;
 		}
-		return false;
 	}
 
 	@Override
 	public String randomGameType() {
 		String gt = "TSL";
 
-		boolean hasFlags = checkFlags();
 		int max = GameTypes.size() - 1;
 		int i = 0;
 
 		while (i < 1) {
 			gt = GameTypes.get(getRandom(0, max));
 			if (!gt.equals(MCMEPVP.lastGT)) {
-				if (gt.equals("TCQ")) {
-					if (hasFlags) {
+				if (gt.equals("TCQ") || gt.equals("INF")) {
+					if (checkFlags(MCMEPVP.PVPMap)) {
 						i++;
 					}
 				} else {

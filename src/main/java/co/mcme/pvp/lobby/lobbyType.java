@@ -25,7 +25,7 @@ public abstract class lobbyType {
     
     public abstract String randomMap();
     
-    public abstract boolean checkFlags();
+    public abstract boolean checkFlags(String map);
     
     public abstract String randomGameType();
     
