@@ -11,14 +11,19 @@ import static co.mcme.pvp.MCMEPVP.Participants;
 import static co.mcme.pvp.MCMEPVP.locked;
 import static co.mcme.pvp.MCMEPVP.resetGame;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import co.mcme.pvp.MCMEPVP;
 import co.mcme.pvp.gametypes.teamConquestGame;
 import co.mcme.pvp.util.config;
+import co.mcme.pvp.util.teamUtil;
 import co.mcme.pvp.util.util;
 
 public class staffCmdMethods {
@@ -303,10 +308,50 @@ public class staffCmdMethods {
 			return;
 		}
 	}
+	
+	// REMIND
+	public static void pvpRemind(Player p, String a) {
+		if (p.hasPermission("mcmepvp.remind")) {
+			if (a.equalsIgnoreCase("stats")) {
+				for (Player q : Bukkit.getOnlinePlayers()) {
+                    q.sendMessage(MCMEPVP.primarycolor + "Don't forget to check your stats at " 
+				+ MCMEPVP.highlightcolor + "mcme.co/pvp/stats/" + q.getName());
+                }
+			}
+			if (a.equalsIgnoreCase("join")) {
+				ArrayList<String> notjoined = new ArrayList<String>();
+                for (Player q : Bukkit.getOnlinePlayers()) {
+                    if (!MCMEPVP.isQueued(p) && !teamUtil.isOnTeam(q)) {
+                        q.playSound(q.getLocation(), Sound.ZOMBIE_WOODBREAK, 100, 100);
+                        q.sendMessage(ChatColor.BOLD + "" + ChatColor.DARK_RED + "You have not joined the game yet!");
+                        notjoined.add(q.getName());
+                    }
+                }
+                p.playSound(p.getLocation(), Sound.BURP, 100, 100);
+                p.sendMessage(prettyPrint(notjoined, "Not Joined:"));
+			} else {
+				p.sendMessage(scd + "/pvp remind <Stats | Join>");
+			}
+		} else {
+			nope(p);
+		}
+		
+	}
 
 	// ----------------//
 	// UTILITIES
 	// ----------------//
+	
+	// Pretty print
+	private static String prettyPrint(List<String> list, String title) {
+		StringBuilder out = new StringBuilder();
+		out.append(MCMEPVP.primarycolor).append(title);
+		for (String item : list) {
+			out.append("\n").append(MCMEPVP.primarycolor).append("- ")
+					.append(MCMEPVP.highlightcolor).append(item);
+		}
+		return out.toString();
+	}
 
 	// Check if string is integer
 	private static boolean isInt(String s) {

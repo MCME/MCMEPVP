@@ -423,12 +423,13 @@ public class lobbyMode extends lobbyType {
 										mm--;
 									}
 									if (mm == 0) {
-										Bukkit.broadcastMessage(MCMEPVP.positivecolor
-												+ "AutoRun mode is enabled!");
-										Bukkit.broadcastMessage(MCMEPVP.negativecolor
-												+ "Minimum of "
-												+ minPlayers
-												+ " players required to run a game!");
+										int dif = minPlayers - onlinePlayers;
+										Bukkit.broadcastMessage(MCMEPVP.highlightcolor
+												+ "Waiting on "
+												+ MCMEPVP.positivecolor
+												+ dif
+												+ MCMEPVP.highlightcolor
+												+ " more player(s) to join!");
 										mm = 120;
 									}
 								}

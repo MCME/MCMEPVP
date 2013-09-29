@@ -10,11 +10,11 @@ import org.bukkit.plugin.Plugin;
 import co.mcme.pvp.MCMEPVP;
 import co.mcme.pvp.util.config;
 
-public class pvpCmds implements CommandExecutor {
+public class pvpCommands implements CommandExecutor {
 
 	Plugin plugin;
 
-	public pvpCmds(Plugin plug) {
+	public pvpCommands(Plugin plug) {
 		this.plugin = plug;
 	}
 
@@ -137,6 +137,12 @@ public class pvpCmds implements CommandExecutor {
 					if (a[0].equalsIgnoreCase("horse")) {
 						staffCmdMethods.pvpHorse(p);
 						return true;
+					}
+					if (a[0].equalsIgnoreCase("remind")) {
+						if (a.length == 2) {
+							staffCmdMethods.pvpRemind(p, a[1]);
+							return true;
+						}
 					}
 					// DEV COMMANDS
 					if (a[0].equalsIgnoreCase("add")) {

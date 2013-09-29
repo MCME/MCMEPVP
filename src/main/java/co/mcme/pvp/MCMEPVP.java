@@ -36,7 +36,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.Vector;
 
-import co.mcme.pvp.commands.pvpCmds;
+import co.mcme.pvp.commands.pvpCommands;
 import co.mcme.pvp.commands.voteCmdMethods;
 import co.mcme.pvp.gametypes.freeForAllGame;
 import co.mcme.pvp.gametypes.infectionGame;
@@ -149,10 +149,10 @@ public class MCMEPVP extends JavaPlugin {
         }
         
         resetGame();
-        getCommand("pvp").setExecutor(new pvpCmds(this));
-        getCommand("shout").setExecutor(new pvpCmds(this));
-        getCommand("a").setExecutor(new pvpCmds(this));
-        getCommand("vote").setExecutor(new pvpCmds(this));
+        getCommand("pvp").setExecutor(new pvpCommands(this));
+        getCommand("shout").setExecutor(new pvpCommands(this));
+        getCommand("a").setExecutor(new pvpCommands(this));
+        getCommand("vote").setExecutor(new pvpCommands(this));
         
         getServer().getScheduler().runTask(this, new Runnable() {
 			@Override
@@ -321,7 +321,7 @@ public class MCMEPVP extends JavaPlugin {
     	}
     }
 
-    public static void startGame() {
+    public static void startGame() {    	
     	if (CurrentLobby != null) {
     		CurrentLobby.clearBoard();
         	CurrentLobby.stopLobby();

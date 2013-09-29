@@ -97,3 +97,6 @@ commands:
    a:
       description: Chat only for Admins!
       usage: /<command> [msg]
+   vote:
+      description: Chat only for Admins!
+      usage: /<command> [int]
