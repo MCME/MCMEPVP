@@ -51,7 +51,7 @@
                             </relocations>
                             <artifactSet>
                                 <excludes>
-                                    <exclude>org.bukkit:bukkit</exclude>
+                                    <exclude>org.spigotmc:spigot-api</exclude>
                                 </excludes>
                             </artifactSet>
                         </configuration>
@@ -63,8 +63,8 @@
 
     <repositories>
         <repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/content/groups/public/</url>
+            <id>spigot-api</id>
+            <url>http://repo.md-5.net/content/repositories/snapshots/</url>
         </repository>
     </repositories>
 
@@ -76,9 +76,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.6.2-R0.1-SNAPSHOT</version>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.6.2-R1.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

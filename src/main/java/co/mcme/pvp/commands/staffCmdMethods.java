@@ -9,7 +9,6 @@ import static co.mcme.pvp.MCMEPVP.PVPGT;
 import static co.mcme.pvp.MCMEPVP.PVPMap;
 import static co.mcme.pvp.MCMEPVP.Participants;
 import static co.mcme.pvp.MCMEPVP.locked;
-import static co.mcme.pvp.MCMEPVP.resetGame;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -259,7 +258,7 @@ public class staffCmdMethods {
 			Bukkit.getServer().broadcastMessage(
 					MCMEPVP.highlightcolor
 							+ "The PVP Event has been aborted by an admin!");
-			resetGame();
+			MCMEPVP.resetGame();
 			return;
 		} else {
 			nope(p);
@@ -317,6 +316,7 @@ public class staffCmdMethods {
                     q.sendMessage(MCMEPVP.primarycolor + "Don't forget to check your stats at " 
 				+ MCMEPVP.highlightcolor + "mcme.co/pvp/stats/" + q.getName());
                 }
+				return;
 			}
 			if (a.equalsIgnoreCase("join")) {
 				ArrayList<String> notjoined = new ArrayList<String>();
@@ -329,11 +329,14 @@ public class staffCmdMethods {
                 }
                 p.playSound(p.getLocation(), Sound.BURP, 100, 100);
                 p.sendMessage(prettyPrint(notjoined, "Not Joined:"));
+                return;
 			} else {
 				p.sendMessage(scd + "/pvp remind <Stats | Join>");
+				return;
 			}
 		} else {
 			nope(p);
+			return;
 		}
 		
 	}

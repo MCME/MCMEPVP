@@ -26,11 +26,13 @@ public class userCmdMethods {
 		String lb = ChatColor.DARK_GRAY + " [" + ChatColor.GRAY;
 		String rb = ChatColor.DARK_GRAY + "]";
 		if (p.hasPermission("mcmepvp.user")) {
-			p.sendMessage(ChatColor.DARK_AQUA + "|--------[Commands]--------|");
+			p.sendMessage(ChatColor.DARK_AQUA + "|--------------[Commands]--------------|");
 			p.sendMessage(ChatColor.GRAY + "/pvp" + lb + "join" + ll + "leave"
 					+ ll + "list" + rb);
 		}
 		if (p.hasPermission("mcmepvp.admin")) {
+			p.sendMessage(ChatColor.GRAY + "");
+			p.sendMessage(ChatColor.GRAY + "/pvp" + lb + "auto" + rb);
 			p.sendMessage(ChatColor.GRAY + "/pvp" + lb + "map <MapName>" + ll
 					+ "gt <GameType>" + rb);
 			p.sendMessage(ChatColor.GRAY + "/pvp" + lb
@@ -39,7 +41,13 @@ public class userCmdMethods {
 					+ ll + "forcejoin <TeamColor>" + rb);
 		}
 		if (p.hasPermission("mcmepvp.user")) {
-			p.sendMessage(ChatColor.GRAY + "/shout <YourMessage>");
+			p.sendMessage(ChatColor.GRAY + "");
+			p.sendMessage(ChatColor.GRAY + "/shout" + lb + "<YourMessage>" + rb);
+			p.sendMessage(ChatColor.GRAY + "/vote" + lb + "1" + ll + "2" + rb);
+		}
+		if (p.hasPermission("mcmepvp.admin")) {
+			p.sendMessage(ChatColor.GRAY + "/vote" + lb + "on" + ll + "off" + rb);
+			p.sendMessage(ChatColor.GRAY + "/a" + lb + "<YourAdminChatMessage>" + rb);
 		}
 		return;
 	}

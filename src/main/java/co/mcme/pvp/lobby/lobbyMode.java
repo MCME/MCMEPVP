@@ -111,18 +111,20 @@ public class lobbyMode extends lobbyType {
 		String map = randomMap();
 		String gt = randomGameType();
 		
-		if (map1votes > map2votes) {
-			map = games.get(1).get(0);
-			gt = games.get(1).get(1);
-			Bukkit.broadcastMessage(MCMEPVP.positivecolor + "Map 1 wins!");
-		}
-		if (map1votes < map2votes) {
-			map = games.get(2).get(0);
-			gt = games.get(2).get(1);
-			Bukkit.broadcastMessage(MCMEPVP.positivecolor + "Map 2 wins!");
-		}
-		if (map1votes == map2votes) {
-			Bukkit.broadcastMessage(MCMEPVP.positivecolor + "Voting is tied. Choosing random a game instead!");
+		if (voteMap) {
+			if (map1votes > map2votes) {
+				map = games.get(1).get(0);
+				gt = games.get(1).get(1);
+				Bukkit.broadcastMessage(MCMEPVP.positivecolor + "Map 1 wins!");
+			}
+			if (map1votes < map2votes) {
+				map = games.get(2).get(0);
+				gt = games.get(2).get(1);
+				Bukkit.broadcastMessage(MCMEPVP.positivecolor + "Map 2 wins!");
+			}
+			if (map1votes == map2votes) {
+				Bukkit.broadcastMessage(MCMEPVP.positivecolor + "Voting is tied. Choosing random a game instead!");
+			}
 		}
 		
 		games.clear();
@@ -504,13 +506,15 @@ public class lobbyMode extends lobbyType {
 	}
 	
 	private static void playersUntilStart(Player p) {
-		int i = Bukkit.getOnlinePlayers().length;
-		if (i < minPlayers) {
-			int dif = minPlayers - i;
-			if (p.isOnline()) {
-				p.sendMessage(MCMEPVP.highlightcolor + "Waiting on "
-						+ MCMEPVP.positivecolor + dif + MCMEPVP.highlightcolor
-						+ " more player(s) to join!");
+		if (MCMEPVP.autorun) {
+			int i = Bukkit.getOnlinePlayers().length;
+			if (i < minPlayers) {
+				int dif = minPlayers - i;
+				if (p.isOnline()) {
+					p.sendMessage(MCMEPVP.highlightcolor + "Waiting on "
+							+ MCMEPVP.positivecolor + dif + MCMEPVP.highlightcolor
+							+ " more player(s) to join!");
+				}
 			}
 		}
 	}

@@ -22,8 +22,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.spigotmc.event.entity.EntityDismountEvent;
 
 import co.mcme.pvp.MCMEPVP;
 import co.mcme.pvp.util.teamUtil;
@@ -131,8 +131,10 @@ public class horseListener implements Listener{
 	} 
 	
 	@EventHandler(priority = EventPriority.HIGH)
-	public void horseDismount(VehicleExitEvent event){
-		event.getVehicle().remove();
+	public void horseDismount(EntityDismountEvent event){
+		if (event.getDismounted().getType().equals(EntityType.HORSE)) {
+			event.getDismounted().remove();
+		}
 	}
 	
 	public Variant randomVariant(){

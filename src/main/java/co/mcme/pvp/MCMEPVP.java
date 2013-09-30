@@ -195,12 +195,15 @@ public class MCMEPVP extends JavaPlugin {
             repairExplosions();
             CurrentGame.clearBoard();
         }
-        ArrayList<EntityType> removing = new ArrayList<EntityType>();
+        
+        List<EntityType> removing = new ArrayList<EntityType>();
         removing.add(EntityType.ARROW);
         removing.add(EntityType.DROPPED_ITEM);
         removing.add(EntityType.HORSE);
         int removed = worldUtils.removeEntities(removing);
+        System.out.print("Removed: " + removed + " entities from the world.");
         util.debug("Removed " + removed + " entities from the world.");
+        
         Participants = 0;
         GameStatus = 0;
         
@@ -382,7 +385,7 @@ public class MCMEPVP extends JavaPlugin {
         }
     }
 
-    private static void extraSpawns() {
+	private static void extraSpawns() {
     	extraSpawns.put(0, instance.getConfig().getVector(PVPMap.toLowerCase() + ".blue"));
     	extraSpawns.put(1, instance.getConfig().getVector(PVPMap.toLowerCase() + ".red"));
         int i = 0;
