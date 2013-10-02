@@ -33,7 +33,7 @@ public class mapCmdMethods {
 	
 	// Set Map
 	public static void setMap(Player p, String a) {
-		if (p.hasPermission("mcmepvp.set")) {
+		if (p.hasPermission("mcmepvp.map")) {
 			if (GameStatus == 0) {
 				String map = "null";
 

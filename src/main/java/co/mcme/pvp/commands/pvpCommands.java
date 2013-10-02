@@ -129,7 +129,7 @@ public class pvpCommands implements CommandExecutor {
 						staffCmdMethods.pvpStop(p);
 						return true;
 					}
-					if (a[0].equalsIgnoreCase("forecjoin")) {
+					if (a[0].equalsIgnoreCase("forcejoin")) {
 						if (a.length == 2) {
 							staffCmdMethods.pvpForceJoin(p, a[1]);
 							return true;

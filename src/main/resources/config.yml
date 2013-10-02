@@ -12,6 +12,10 @@ general:
 consolechat:
   prefix: '[MCMEPVP] (Chat)'
   suffix: ':'
+status:
+  open: 'OPEN'
+  closed: 'CLOSED'
+  beta: 'BETA TESTING'
 lobby:
   enableAutoLobby: false
   minOnlinePlayers: 6

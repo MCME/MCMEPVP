@@ -27,6 +27,9 @@ public class config {
     public static String PVPGT;
     public static String prefix;
     public static String suffix;
+    public static String statusOpen;
+    public static String statusClosed;
+    public static String statusBeta;
     public static World PVPWorld;
     public static Vector SpawnVec;
     public static Location Spawn;
@@ -78,6 +81,9 @@ public class config {
         voteMap = conf.getBoolean("lobby.enableMapVote");
         prefix = conf.getString("consolechat.prefix");
         suffix = conf.getString("consolechat.suffix");
+        statusOpen = conf.getString("status.open");
+        statusClosed = conf.getString("status.closed");
+        statusBeta = conf.getString("status.beta");
     }
     
     public void setPVPDefaults() {
