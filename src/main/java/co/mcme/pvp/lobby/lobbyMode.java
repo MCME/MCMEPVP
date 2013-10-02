@@ -433,14 +433,17 @@ public class lobbyMode extends lobbyType {
 										mm--;
 									}
 									if (mm == 0) {
-										int dif = minPlayers - onlinePlayers;
-										Bukkit.broadcastMessage(MCMEPVP.highlightcolor
-												+ "Waiting on "
-												+ MCMEPVP.positivecolor
-												+ dif
-												+ MCMEPVP.highlightcolor
-												+ " more player(s) to join!");
-										mm = 120;
+										if (onlinePlayers > 0) {
+											int dif = minPlayers - onlinePlayers;
+											
+											Bukkit.broadcastMessage(MCMEPVP.highlightcolor
+													+ "Waiting on "
+													+ MCMEPVP.positivecolor
+													+ dif
+													+ MCMEPVP.highlightcolor
+													+ " more player(s) to join!");
+											mm = 120;
+										}
 									}
 								}
 							}
