@@ -11,6 +11,7 @@ import static co.mcme.pvp.util.config.LogDelay;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -36,8 +37,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.Vector;
 
+import co.mcme.pvp.commands.mapCommands;
 import co.mcme.pvp.commands.pvpCommands;
-import co.mcme.pvp.commands.voteCmdMethods;
+import co.mcme.pvp.commands.methods.voteCmdMethods;
 import co.mcme.pvp.gametypes.freeForAllGame;
 import co.mcme.pvp.gametypes.infectionGame;
 import co.mcme.pvp.gametypes.ringBearerGame;
@@ -57,6 +59,9 @@ import co.mcme.pvp.listeners.statsListener;
 import co.mcme.pvp.listeners.weatherListener;
 import co.mcme.pvp.lobby.lobbyMode;
 import co.mcme.pvp.lobby.lobbyType;
+import co.mcme.pvp.maps.Spawn;
+import co.mcme.pvp.maps.pvpMap;
+import co.mcme.pvp.maps.pvpMapMeta;
 import co.mcme.pvp.stats.DataManager;
 import co.mcme.pvp.stats.entry.GameEntry;
 import co.mcme.pvp.stats.entry.JoinEntry;
@@ -73,17 +78,19 @@ public class MCMEPVP extends JavaPlugin {
 
     public static gameType CurrentGame;
     public static lobbyType CurrentLobby;
+    public static pvpMap CurrentMap;
+    
     public static HashMap<String, String> PlayerStatus;
+    public static HashSet<String> adminChat = new HashSet<String>();
     public static int GameStatus;
     public static int Participants;
     public static World PVPWorld;
-    public static String PVPMap;
     public static String lastMap = "null";
     public static String lastGT = "null";
     public static Location Spawn;
     public static String PVPGT;
-    public static HashMap<String, Vector> Spawns;
-    public static HashMap<Integer, Vector> FlagHash;
+    public static String pref = "";
+    public static String suff = "";
     public static HashMap<Integer, Vector> extraSpawns;
     public static List<String> Maps;
     public static List<String> GameTypes;
@@ -91,7 +98,7 @@ public class MCMEPVP extends JavaPlugin {
     public static boolean canJoin = true;
     public static boolean voteMap = false;
     public static boolean locked = true;
-    public static boolean debug = false;
+    public static boolean gameDebug = false;
     public static boolean horseMode = false;
     public static boolean autorun =false;
     public static int minOnlinePlayers = 0;
@@ -153,6 +160,7 @@ public class MCMEPVP extends JavaPlugin {
         getCommand("shout").setExecutor(new pvpCommands(this));
         getCommand("a").setExecutor(new pvpCommands(this));
         getCommand("vote").setExecutor(new pvpCommands(this));
+        getCommand("map").setExecutor(new mapCommands(this));
         
         getServer().getScheduler().runTask(this, new Runnable() {
 			@Override
@@ -266,9 +274,6 @@ public class MCMEPVP extends JavaPlugin {
                 }
                 CarpetFlagMarkers.clear();
             }
-            if (FlagHash != null) {
-                FlagHash.clear();
-            }
         }
         if (PVPGT.equals("RBR")) {
             ringBearers.clear();
@@ -292,7 +297,7 @@ public class MCMEPVP extends JavaPlugin {
     }
 
     public static void logKill(PlayerDeathEvent event) {
-    	if (!PVPGT.equals("INF") && !debug) {
+    	if (!PVPGT.equals("INF") && !gameDebug) {
         Player victim = event.getEntity();
         Player killer;
         String victimname = victim.getName();
@@ -307,19 +312,19 @@ public class MCMEPVP extends JavaPlugin {
                 killername = "//ENVIRONMENT//";
                 util.debug("Kill Sent to logger!");
             }
-            entry.setInfo(victimname, killername, PVPMap, PVPGT);
+            entry.setInfo(victimname, killername, CurrentMap.getName(), PVPGT);
             DataManager.addKillEntry(entry);
         }
     }
 
     public static void logJoin(String player, String mapname, String gametype, boolean win) {
-    	if(!debug){
+    	if(!gameDebug){
     		DataManager.addJoinEntry(new JoinEntry(player, mapname, gametype, win));
     	}
     }
 
     public static void logGame(String winner, String mapname, String gametype) {
-    	if(!debug){
+    	if(!gameDebug){
     		DataManager.addGameEntry(new GameEntry(winner, mapname, gametype));
     	}
     }
@@ -336,10 +341,8 @@ public class MCMEPVP extends JavaPlugin {
     	}
     	
     	canJoin = false;
-        Spawns = new HashMap<String, Vector>();
-        FlagHash = new HashMap<Integer, Vector>();
         extraSpawns = new HashMap<Integer, Vector>();
-        loadSpawns();
+        
         if (PVPGT.equals("TDM")) {
             CurrentGame = new teamDeathMatchGame();
         }
@@ -348,7 +351,6 @@ public class MCMEPVP extends JavaPlugin {
         }
         if (PVPGT.equals("TCQ")) {
             CurrentGame = new teamConquestGame();
-            loadFlags();
         }
         if (PVPGT.equals("RBR")) {
             CurrentGame = new ringBearerGame();
@@ -364,50 +366,23 @@ public class MCMEPVP extends JavaPlugin {
         if(CurrentGame.allowExplosionLogging()){
         	exploadables();
         }
+        if (gameDebug) {
+            Bukkit.getServer().broadcastMessage(ChatColor.DARK_AQUA + "This is a debug game. Stats will not be recorded!");
+        }
         Bukkit.getServer().getPluginManager().disablePlugin(voxel);
     }
 
-    private static void loadSpawns() {
-        Spawns.put("blue", instance.getConfig().getVector(PVPMap.toLowerCase() + ".blue"));
-        Spawns.put("red", instance.getConfig().getVector(PVPMap.toLowerCase() + ".red"));
-        Spawns.put("green", instance.getConfig().getVector(PVPMap.toLowerCase() + ".green"));
-        Spawns.put("purple", instance.getConfig().getVector(PVPMap.toLowerCase() + ".purple"));
-        Spawns.put("spectator", instance.getConfig().getVector(PVPMap.toLowerCase() + ".spectator"));
-    }
-
-    private static void loadFlags() {
-        int i = 0;
-        while (i >= 0 && i <= 5) {
-            if (instance.getConfig().contains(PVPMap.toLowerCase() + ".Flag" + i)) {
-                FlagHash.put(i, instance.getConfig().getVector(PVPMap.toLowerCase() + ".Flag" + i));
-            }
-            i++;
-        }
-    }
-
 	private static void extraSpawns() {
-    	extraSpawns.put(0, instance.getConfig().getVector(PVPMap.toLowerCase() + ".blue"));
-    	extraSpawns.put(1, instance.getConfig().getVector(PVPMap.toLowerCase() + ".red"));
-        int i = 0;
-        int t = 2;
-        while (i >= 0 && i <= 5) {
-            if (instance.getConfig().contains(PVPMap.toLowerCase() + ".Flag" + i)) {
-                Vector vec = instance.getConfig().getVector(PVPMap.toLowerCase() + ".Flag" + i);
-                Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY(), vec.getZ());
-                Location loc1 = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY(), vec.getZ());
-                World w = loc.getWorld();
-                loc.setY(loc.getY() + 2);
-                loc1.setY(loc1.getY() + 3);
-                Block bz = w.getBlockAt(loc);
-                Block bz1 = w.getBlockAt(loc1);
-
-                if (bz.getTypeId() == 0 && bz1.getTypeId() == 0) {
-                	extraSpawns.put(t, loc.toVector());
-                    t++;
-                }
-            }
-            i++;
-        }
+		pvpMapMeta meta = CurrentMap.getMapMeta();
+		int i = 0;
+		for (Spawn s : meta.getSpawns().values()) {
+			extraSpawns.put(i, s.toVector());
+			i++;
+		}
+		for (Vector v : meta.getFlags().values()) {
+			extraSpawns.put(i, v);
+			i++;
+		}
     }
     
     private static void autoUnlock(){
@@ -423,7 +398,7 @@ public class MCMEPVP extends JavaPlugin {
     	if (GameStatus == 1) {
     		int i = gearGiver.getRandom(0, 2);
     		if (i == 2) {
-    			if (PVPMap.equalsIgnoreCase("HelmsDeep")) {
+    			if (CurrentMap.getName().equalsIgnoreCase("HelmsDeep")) {
             		PVPWorld.setTime(15000);
             		PVPWorld.setStorm(true);
             		PVPWorld.setThundering(true);

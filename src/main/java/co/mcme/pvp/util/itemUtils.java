@@ -49,6 +49,12 @@ public class itemUtils {
         if (ench.equalsIgnoreCase("armor")) {
             item.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
         }
+        if (ench.equalsIgnoreCase("sword")) {
+        	item.addUnsafeEnchantment(Enchantment.OXYGEN, 1);
+        }
+        if (ench.equalsIgnoreCase("bow")) {
+        	item.addUnsafeEnchantment(Enchantment.OXYGEN, 1);
+        }
         return item;
     }
 }

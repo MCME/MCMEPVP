@@ -18,13 +18,9 @@ permissions:
     children:
       mcmepvp.user: true
       mcmepvp.start: true
-      mcmepvp.set: true
       mcmepvp.stop: true
       mcmepvp.map: true
-      mcmepvp.derp: true
       mcmepvp.gt: true
-      mcmepvp.add: true
-      mcmepvp.remove: true
       mcmepvp.list: true
       mcmepvp.adminchat: true
       mcmepvp.setscore: true
@@ -37,6 +33,14 @@ permissions:
       mcmepvp.ignorebuildchecks: true
       mcmepvp.autorun: true
       mcmepvp.horsemode: true
+      mcmepvp.tp: true
+  mcmepvp.dev:
+    default: op
+    children:
+      mcmepvp.add: true
+      mcmepvp.remove: true
+      mcmepvp.set: true
+      mcmepvp.setdebug: true
   mcmepvp.version:
     default: true
   mcmepvp.join:
@@ -44,6 +48,8 @@ permissions:
   mcmepvp.leave:
     default: true
   mcmepvp.shout:
+    default: true
+  mcmepvp.vote:
     default: true
   mcmepvp.setdebug:
     default: op
@@ -87,10 +93,12 @@ permissions:
     default: op
   mcmepvp.autorun:
     default: op
+  mcmepvp.tp:
+    default: op
 commands:
    pvp:
-      description: PVP
-      usage: /<command> [join|start|map|gt|set|stop|setscore|lock|unlock|forcejoin]
+      description: PVP commands
+      usage: /<command> [Argument(s)] - see '/pvp'
    shout:
       description: Shout a message to Everyone!
       usage: /<command> [msg]
@@ -98,5 +106,8 @@ commands:
       description: Chat only for Admins!
       usage: /<command> [msg]
    vote:
-      description: Chat only for Admins!
-      usage: /<command> [int]
+      description: Vote for the next map!
+      usage: /<command> [int] - see '/vote'
+   map:
+      description: Map setup commands
+      usage: /<command> [Argument(s)] - see '/pvp'

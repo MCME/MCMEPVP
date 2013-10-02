@@ -3,7 +3,6 @@ package co.mcme.pvp.util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 import co.mcme.pvp.MCMEPVP;
 
@@ -39,8 +38,7 @@ public class spectatorUtil {
     		String status = teamUtil.getPlayerTeam(p);
     		if(status.equals("spectator")){
     			spectatorUtil.setSpectator(p);
-    			Vector vec = MCMEPVP.Spawns.get("spectator");
-    			Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY() + 0.5, vec.getZ());
+    			Location loc = MCMEPVP.CurrentMap.getMapMeta().getSpawn("spectator").toLocation();
     			p.teleport(loc);
     		}
     	}

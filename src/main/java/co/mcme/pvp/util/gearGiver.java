@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -30,21 +31,21 @@ public class gearGiver {
     public static void giveArmor(Player player, Color col) {
         PlayerInventory target = player.getInventory();
         if (ringBearers.containsValue(player.getName())) {
-            target.setHelmet(new ItemStack(89, 1));
+            target.setHelmet(new ItemStack(Material.GLOWSTONE, 1));
         } else {
-            target.setHelmet(itemUtils.setEnchantments(itemUtils.setColor(new ItemStack(298, 1, (short) 40000), col), "armor"));
+            target.setHelmet(itemUtils.setEnchantments(itemUtils.setColor(new ItemStack(Material.LEATHER_HELMET, 1, (short) 40000), col), "armor"));
         }
-        target.setChestplate(itemUtils.setEnchantments(itemUtils.setColor(new ItemStack(299, 1, (short) 40000), col), "armor"));
-        target.setLeggings(itemUtils.setEnchantments(itemUtils.setColor(new ItemStack(300, 1, (short) 40000), col), "armor"));
-        target.setBoots(itemUtils.setEnchantments(itemUtils.setColor(new ItemStack(301, 1, (short) 40000), col), "armor"));
+        target.setChestplate(itemUtils.setEnchantments(itemUtils.setColor(new ItemStack(Material.LEATHER_CHESTPLATE, 1, (short) 40000), col), "armor"));
+        target.setLeggings(itemUtils.setEnchantments(itemUtils.setColor(new ItemStack(Material.LEATHER_LEGGINGS, 1, (short) 40000), col), "armor"));
+        target.setBoots(itemUtils.setEnchantments(itemUtils.setColor(new ItemStack(Material.LEATHER_BOOTS, 1, (short) 40000), col), "armor"));
     }
 
     public static void giveWeapons(Player player, String team, String loadout) {
         PlayerInventory target = player.getInventory();
-        ItemStack sword = itemUtils.nameItem(new ItemStack(267), player.getName() + "'s Sword", "none",ChatColor.AQUA);
-        ItemStack bow = new ItemStack(261);
-        ItemStack arrows = new ItemStack(262, 32);
-        ItemStack food = new ItemStack(364);
+        ItemStack sword = itemUtils.nameItem(new ItemStack(Material.IRON_SWORD, 1), player.getName() + "'s Sword", "none",ChatColor.AQUA);
+        ItemStack bow = new ItemStack(Material.BOW, 1);
+        ItemStack arrows = new ItemStack(Material.ARROW, 32);
+        ItemStack food = new ItemStack(Material.COOKED_BEEF, 1);
         if (loadout.equals("warrior")) {
             target.setItem(0, sword);
             target.setItem(1, bow);
@@ -55,7 +56,7 @@ public class gearGiver {
             	target.setItem(7, leash);
             }
             if(MCMEPVP.CurrentGame.allowCustomAttributes()){
-            	ItemStack book = itemUtils.nameItem(new ItemStack(340, 1), "PVP Attributes", "Read me!", ChatColor.DARK_AQUA);
+            	ItemStack book = itemUtils.nameItem(new ItemStack(Material.BOOK, 1), "PVP Attributes", "Read me!", ChatColor.DARK_AQUA);
             	target.setItem(8, book);
             }
         }
@@ -64,7 +65,7 @@ public class gearGiver {
     public static void giveExtras(Player player, String team, String set) {
         PlayerInventory target = player.getInventory();
         if (set.equals("boating")) {
-            target.addItem(new ItemStack(333, 5));
+            target.addItem(new ItemStack(Material.BOAT, 5));
         }
     }
 
@@ -140,7 +141,7 @@ public class gearGiver {
     }
 
     public static void giveRing(Player p, int i) {
-        p.getInventory().setItem(4, new ItemStack(371, i));
+        p.getInventory().setItem(4, new ItemStack(Material.GOLD_NUGGET, i));
     }
 
     public static void loadout(Player player, boolean giveArmor, boolean giveExtras, boolean giveWeapons, String weapons, Color col, String extras, String team) {

@@ -1,5 +1,6 @@
 package co.mcme.pvp.gametypes;
 
+import static co.mcme.pvp.MCMEPVP.CurrentMap;
 import static co.mcme.pvp.MCMEPVP.extraSpawns;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -44,8 +46,10 @@ import co.mcme.pvp.util.textureSwitcher;
 import co.mcme.pvp.util.util;
 
 public class freeForAllGame extends gameType {
+	
+    private String map = CurrentMap.getName();
 
-    boolean isTharbad = MCMEPVP.PVPMap.equalsIgnoreCase("tharbad");
+    boolean isTharbad = map.equalsIgnoreCase("tharbad");
     public static int taskId;
     int m = config.FFATimeLimit;
     int s = 60;
@@ -97,10 +101,7 @@ public class freeForAllGame extends gameType {
         Bukkit.getServer().broadcastMessage(
                 MCMEPVP.primarycolor + "GameType is " + MCMEPVP.highlightcolor
                 + "FreeForAll" + MCMEPVP.primarycolor + " on Map "
-                + MCMEPVP.highlightcolor + MCMEPVP.PVPMap + "!");
-        if (MCMEPVP.debug) {
-            Bukkit.getServer().broadcastMessage(ChatColor.DARK_AQUA + "This is a debug game. Stats will not be recorded!");
-        }
+                + MCMEPVP.highlightcolor + MCMEPVP.CurrentMap.getName() + "!");
         Bukkit.getServer()
                 .broadcastMessage(
                 MCMEPVP.positivecolor
@@ -177,9 +178,7 @@ public class freeForAllGame extends gameType {
             spectatorUtil.setSpectator(p);
             addSpectatorTeam(p);
         }
-        Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(p));
-        Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
-                vec.getY() + 0.5, vec.getZ());
+        Location loc = CurrentMap.getMapMeta().getSpawn(teamUtil.getPlayerTeam(p)).toLocation();
         p.teleport(loc);
     }
 
@@ -206,8 +205,8 @@ public class freeForAllGame extends gameType {
                         + MCMEPVP.primarycolor + " was killed by "
                         + ChatColor.RED + killer.getName()
                         + MCMEPVP.primarycolor + "!");
-                event.getDrops().add(new ItemStack(364, 1));
-                event.getDrops().add(new ItemStack(262, 8));
+                event.getDrops().add(new ItemStack(Material.COOKED_BEEF, 1));
+                event.getDrops().add(new ItemStack(Material.ARROW, 8));
                 event.getDrops().add(gearGiver.magicItem(true, 0, 1));
             }
         } else {
@@ -270,9 +269,7 @@ public class freeForAllGame extends gameType {
         if (status.equals("spectator")) {
         	spectatorUtil.setSpectator(p);
         	addSpectatorTeam(p);
-        	Vector vec = MCMEPVP.Spawns.get("spectator");
-        	Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
-                    vec.getY() + 0.5, vec.getZ());
+        	Location loc = CurrentMap.getMapMeta().getSpawn("spectator").toLocation();
         	event.setRespawnLocation(loc);
         	p.setScoreboard(board);
         } else {

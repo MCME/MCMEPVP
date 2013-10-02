@@ -51,7 +51,7 @@ public class util {
             desired = MCMEPVP.primarycolor;
             for (Player p : Bukkit.getOnlinePlayers()) {
                 if (p.hasPermission("mcmepvp.admin")) {
-                    p.sendMessage(desired + name + " has changed the map to " + MCMEPVP.highlightcolor + MCMEPVP.PVPMap + ".");
+                    p.sendMessage(desired + name + " has changed the map to " + MCMEPVP.highlightcolor + MCMEPVP.CurrentMap.getName() + ".");
                 }
             }
         }

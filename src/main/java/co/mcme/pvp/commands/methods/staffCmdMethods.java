@@ -1,12 +1,10 @@
-package co.mcme.pvp.commands;
+package co.mcme.pvp.commands.methods;
 
 import static co.mcme.pvp.MCMEPVP.CurrentGame;
 import static co.mcme.pvp.MCMEPVP.CurrentLobby;
 import static co.mcme.pvp.MCMEPVP.GameStatus;
 import static co.mcme.pvp.MCMEPVP.GameTypes;
-import static co.mcme.pvp.MCMEPVP.Maps;
 import static co.mcme.pvp.MCMEPVP.PVPGT;
-import static co.mcme.pvp.MCMEPVP.PVPMap;
 import static co.mcme.pvp.MCMEPVP.Participants;
 import static co.mcme.pvp.MCMEPVP.locked;
 
@@ -84,46 +82,6 @@ public class staffCmdMethods {
 					msg[0] = "enabled";
 				}
 				util.notifyAdmin(p.getName(), 14, msg);
-				return;
-			}
-		} else {
-			nope(p);
-			return;
-		}
-	}
-
-	// MAP
-	public static void pvpMap(Player p, String map) {
-		if (p.hasPermission("mcmepvp.map")) {
-			if (GameStatus == 0) {
-				boolean isValid = false;
-				String newMap = PVPMap;
-
-				for (String s : Maps) {
-					if (s.toLowerCase().contains(map.toLowerCase())) {
-						newMap = s;
-						isValid = true;
-						break;
-					}
-				}
-
-				if (isValid) {
-					if (!PVPMap.equals(newMap)) {
-						PVPMap = newMap;
-						util.notifyAdmin(p.getName(), 3, null);
-					} else {
-						p.sendMessage(MCMEPVP.positivecolor + newMap + scd
-								+ " is already selected!");
-					}
-					return;
-				} else {
-					p.sendMessage(MCMEPVP.negativecolor + "'" + map
-							+ "' is not a valid Map!");
-					return;
-				}
-			} else {
-				p.sendMessage(MCMEPVP.negativecolor
-						+ "Can't change maps while a game is running!");
 				return;
 			}
 		} else {
@@ -339,6 +297,21 @@ public class staffCmdMethods {
 			return;
 		}
 		
+	}
+	
+	// DEBUG
+	public static void pvpDebug(Player p) {
+		if (p.hasPermission("mcmepvp.setdebug")) {
+            if (MCMEPVP.gameDebug) {
+                MCMEPVP.gameDebug = false;
+                util.notifyAdmin(p.getName(), 13, null);
+                return;
+            } else {
+                MCMEPVP.gameDebug = true;
+                util.notifyAdmin(p.getName(), 12, null);
+                return;
+            }
+        }
 	}
 
 	// ----------------//

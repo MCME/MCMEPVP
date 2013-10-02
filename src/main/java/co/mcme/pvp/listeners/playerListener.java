@@ -45,7 +45,7 @@ public class playerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     void onPlayerJoin(PlayerJoinEvent event) {
         if (event.getPlayer().hasPermission("mcmepvp.admin")){
-            if (MCMEPVP.debug){
+            if (MCMEPVP.gameDebug){
                 event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENDERDRAGON_GROWL, 1, 1);
                 event.getPlayer().sendMessage(MCMEPVP.highlightcolor + "Debug mode is enabled!");
                 event.getPlayer().sendMessage(MCMEPVP.highlightcolor + "Stats are not being recorded!");
@@ -76,7 +76,7 @@ public class playerListener implements Listener {
                 if (p.getInventory().contains(Material.GLOWSTONE)) {
                     p.getInventory().remove(Material.GLOWSTONE);
                 }
-                p.getInventory().setHelmet(new ItemStack(89, 1));
+                p.getInventory().setHelmet(new ItemStack(Material.GLOWSTONE, 1));
             }
         }
     }

@@ -147,7 +147,7 @@ public class magicItemListener implements Listener {
 			p.getInventory().remove(is);
 		}
 		Location l = p.getLocation();
-		p.playEffect(l, Effect.ENDER_SIGNAL, 1);
+		p.playEffect(l, Effect.ENDER_SIGNAL, null);
 		p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 600, 0));
 	}
 
@@ -161,7 +161,7 @@ public class magicItemListener implements Listener {
 			p.getInventory().remove(is);
 		}
 		Location l = p.getTargetBlock(null, 2).getLocation();
-		p.playEffect(l, Effect.SMOKE, 1);
+		p.playEffect(l, Effect.SMOKE, null);
 		p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 500,
 				0));
 		p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 500, 0));
@@ -177,7 +177,7 @@ public class magicItemListener implements Listener {
 			p.getInventory().remove(is);
 		}
 		Location l = p.getLocation();
-		p.playEffect(l, Effect.ENDER_SIGNAL, 1);
+		p.playEffect(l, Effect.ENDER_SIGNAL, null);
 		p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 1000,
 				0));
 	}
@@ -192,7 +192,7 @@ public class magicItemListener implements Listener {
 			p.getInventory().remove(is);
 		}
 		Location l = p.getLocation();
-		p.playEffect(l, Effect.ENDER_SIGNAL, 1);
+		p.playEffect(l, Effect.ENDER_SIGNAL, null);
 		p.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 2, 0));
 	}
 	
@@ -206,7 +206,7 @@ public class magicItemListener implements Listener {
 			p.getInventory().remove(is);
 		}
 		Location l = p.getLocation();
-		p.playEffect(l, Effect.ENDER_SIGNAL, 1);
+		p.playEffect(l, Effect.ENDER_SIGNAL, null);
 		for(Entity e : p.getNearbyEntities(30, 30, 30)){
 			if(e instanceof Player){
 				Player pl = ((Player) e).getPlayer();

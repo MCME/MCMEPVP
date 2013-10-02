@@ -34,7 +34,7 @@ public class horseListener implements Listener{
 	public void leadClick(PlayerInteractEvent event) {
 		if((event.getAction().equals(Action.RIGHT_CLICK_AIR)
 				|| event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) ){
-			if(!teamUtil.getPlayerTeam(event.getPlayer()).equals("spectator") && event.getPlayer().getItemInHand().getTypeId()==420){
+			if(!teamUtil.getPlayerTeam(event.getPlayer()).equals("spectator") && event.getPlayer().getItemInHand().getType().equals(Material.LEASH)){
 				event.setCancelled(true);
 				Player p = event.getPlayer();
 				

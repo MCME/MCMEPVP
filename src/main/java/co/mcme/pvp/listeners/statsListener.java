@@ -1,5 +1,7 @@
 package co.mcme.pvp.listeners;
 
+import static co.mcme.pvp.MCMEPVP.CurrentMap;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,10 +38,10 @@ public class statsListener implements Listener{
 			if((event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
 					|| event.getAction().equals(Action.RIGHT_CLICK_AIR))
 					&& event.hasItem()
-					&& p.getItemInHand().getTypeId() == 340 ){
+					&& p.getItemInHand().getType().equals(Material.BOOK) ){
 				if(MCMEPVP.CurrentGame.allowCustomAttributes()){
-					Location red = MCMEPVP.Spawns.get("red").toLocation(p.getWorld());
-					Location blue = MCMEPVP.Spawns.get("blue").toLocation(p.getWorld());
+					Location red = CurrentMap.getMapMeta().getSpawn("red").toLocation();
+					Location blue = CurrentMap.getMapMeta().getSpawn("blue").toLocation();
 					if(event.getPlayer().getLocation().distance(red) <= (double)25
 							|| event.getPlayer().getLocation().distance(blue) <= (double)25){
 						event.setCancelled(true);
@@ -72,13 +74,16 @@ public class statsListener implements Listener{
 						|| event.getAction().equals(InventoryAction.PLACE_ALL)
 						|| event.getAction().equals(InventoryAction.PLACE_ONE)){
 					DecimalFormat df = new DecimalFormat("#.##");
-					if(event.getCursor().getTypeId() == 381){
+					if(event.getCursor().getType().equals(Material.EYE_OF_ENDER)){
 						if(event.getSlot()<9 && !event.getSlotType().equals(SlotType.QUICKBAR)){
 							Player p = (Player) event.getWhoClicked();
 							
 							Double exp = Double.valueOf(df.format(Double.valueOf(event.getSlot())/8));
 							
+							// Bow Modifier
 							Double bm = (Double) (exp - 0.5);
+							
+							// Sword Modifier
 							Double sm = (Double) (1 - exp - 0.5);
 							
 							List<Double> modifiers = playerStats.get(p.getName());
@@ -92,7 +97,8 @@ public class statsListener implements Listener{
 							event.setCancelled(true);
 						}
 					}
-					if(event.getCursor().getTypeId() == 341){
+					// Armor
+					if(event.getCursor().getType().equals(Material.ENDER_PEARL)){
 						if((event.getSlot()>9 && event.getSlot()<17) && !event.getSlotType().equals(SlotType.QUICKBAR)){
 							Player p = (Player) event.getWhoClicked();
 							
@@ -130,19 +136,21 @@ public class statsListener implements Listener{
 	@EventHandler
 	public void statsClose(InventoryCloseEvent event){
 		if(MCMEPVP.GameStatus==1){
-			if(event.getPlayer().getInventory().contains(Material.EYE_OF_ENDER)){
-				event.getPlayer().getInventory().remove(Material.EYE_OF_ENDER);
-			}
-			if(event.getPlayer().getInventory().contains(Material.SLIME_BALL)){
-				event.getPlayer().getInventory().remove(Material.SLIME_BALL);
+			if(event.getInventory().getTitle().equals(ChatColor.GOLD+"PVP Attributes")){
+				if(event.getPlayer().getInventory().contains(Material.EYE_OF_ENDER)){
+					event.getPlayer().getInventory().remove(Material.EYE_OF_ENDER);
+				}
+				if(event.getPlayer().getInventory().contains(Material.SLIME_BALL)){
+					event.getPlayer().getInventory().remove(Material.SLIME_BALL);
+				}
 			}
 		}
 	}
 	
 	@EventHandler
 	public void dropItem(PlayerDropItemEvent event){
-		if(event.getItemDrop().getType().getTypeId()==341
-				|| event.getItemDrop().getType().getTypeId()==341){
+		if(event.getItemDrop().getType().equals(Material.ENDER_PEARL)
+				|| event.getItemDrop().getType().equals(Material.EYE_OF_ENDER)){
 			event.setCancelled(true);
 		}
 	}
@@ -153,13 +161,13 @@ public class statsListener implements Listener{
 		
 		Inventory stats = p.getServer().createInventory(p, (18), ChatColor.GOLD+"PVP Attributes");
 		
-		stats.setItem(0, itemUtils.nameItem(new ItemStack(267), "Increases sword damage", "Reduces bow damage", ChatColor.DARK_PURPLE));
-		stats.setItem(4, itemUtils.nameItem(new ItemStack(381), "Sword vs Bow", "none", ChatColor.DARK_AQUA));
-		stats.setItem(8, itemUtils.nameItem(new ItemStack(261), "Increases bow damage", "Reduces sword damage", ChatColor.DARK_PURPLE));
+		stats.setItem(0, itemUtils.nameItem(new ItemStack(Material.IRON_SWORD), "Increases sword damage", "Reduces bow damage", ChatColor.DARK_PURPLE));
+		stats.setItem(4, itemUtils.nameItem(new ItemStack(Material.ENDER_PEARL), "Sword vs Bow", "none", ChatColor.DARK_AQUA));
+		stats.setItem(8, itemUtils.nameItem(new ItemStack(Material.BOW), "Increases bow damage", "Reduces sword damage", ChatColor.DARK_PURPLE));
 		
-		stats.setItem(9, itemUtils.nameItem(new ItemStack(301), "Increases sprint speed", "Reduces armor strength", ChatColor.DARK_PURPLE));
-		stats.setItem(13, itemUtils.nameItem(new ItemStack(341), "Speed vs Armor", "none", ChatColor.DARK_AQUA));
-		stats.setItem(17, itemUtils.nameItem(new ItemStack(307), "Increases armor strength", "Reduces sprint speed", ChatColor.DARK_PURPLE));
+		stats.setItem(9, itemUtils.nameItem(new ItemStack(Material.LEATHER_BOOTS), "Increases sprint speed", "Reduces armor strength", ChatColor.DARK_PURPLE));
+		stats.setItem(13, itemUtils.nameItem(new ItemStack(Material.ENDER_PEARL), "Speed vs Armor", "none", ChatColor.DARK_AQUA));
+		stats.setItem(17, itemUtils.nameItem(new ItemStack(Material.IRON_CHESTPLATE), "Increases armor strength", "Reduces sprint speed", ChatColor.DARK_PURPLE));
 
 		p.openInventory(stats);	
 	}
@@ -184,4 +192,5 @@ public class statsListener implements Listener{
 		}
 		p.sendMessage(ChatColor.AQUA + "Stats reset to defaults!");
 	}
+	
 }

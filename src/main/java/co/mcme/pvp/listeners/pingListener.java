@@ -18,7 +18,7 @@ public class pingListener implements Listener {
             maxp = 130;
         } else {
             status = ChatColor.GREEN + "OPEN";
-            if (MCMEPVP.debug) {
+            if (MCMEPVP.gameDebug) {
             	status = ChatColor.GOLD + "OPEN BETA TESTING";
             }
             maxp = 130;

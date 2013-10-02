@@ -26,9 +26,11 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
 import co.mcme.pvp.MCMEPVP;
-import co.mcme.pvp.commands.voteCmdMethods;
+import co.mcme.pvp.commands.methods.voteCmdMethods;
+import co.mcme.pvp.maps.pvpMapLoader;
 import co.mcme.pvp.util.config;
 import co.mcme.pvp.util.teamUtil;
+import co.mcme.pvp.util.util;
 
 public class lobbyMode extends lobbyType {
 
@@ -111,31 +113,36 @@ public class lobbyMode extends lobbyType {
 		String map = randomMap();
 		String gt = randomGameType();
 		
-		if (voteMap) {
-			if (map1votes > map2votes) {
-				map = games.get(1).get(0);
-				gt = games.get(1).get(1);
-				Bukkit.broadcastMessage(MCMEPVP.positivecolor + "Map 1 wins!");
-			}
-			if (map1votes < map2votes) {
-				map = games.get(2).get(0);
-				gt = games.get(2).get(1);
-				Bukkit.broadcastMessage(MCMEPVP.positivecolor + "Map 2 wins!");
-			}
-			if (map1votes == map2votes) {
-				Bukkit.broadcastMessage(MCMEPVP.positivecolor + "Voting is tied. Choosing random a game instead!");
+		if (MCMEPVP.autorun) {
+			if (voteMap) {
+				if (map1votes > map2votes) {
+					map = games.get(1).get(0);
+					gt = games.get(1).get(1);
+					Bukkit.broadcastMessage(MCMEPVP.positivecolor + "Map 1 wins!");
+				}
+				if (map1votes < map2votes) {
+					map = games.get(2).get(0);
+					gt = games.get(2).get(1);
+					Bukkit.broadcastMessage(MCMEPVP.positivecolor + "Map 2 wins!");
+				}
+				if (map1votes == map2votes) {
+					Bukkit.broadcastMessage(MCMEPVP.positivecolor + "Voting is tied. Choosing random a game instead!");
+				}
 			}
 		}
 		
 		games.clear();
 		voteCmdMethods.hasVoted.clear();
 		
-		MCMEPVP.PVPMap = map;
+		//TODO load map - 'map'
+		pvpMapLoader.loadMap(map);
+		
+		
 		MCMEPVP.PVPGT = gt;
 		
 		gameScore();
 
-		MCMEPVP.lastMap = MCMEPVP.PVPMap;
+		MCMEPVP.lastMap = MCMEPVP.CurrentMap.getName();
 		MCMEPVP.lastGT = MCMEPVP.PVPGT;
 		
 		MCMEPVP.startGame();
@@ -209,7 +216,7 @@ public class lobbyMode extends lobbyType {
 	@Override
 	public void setMapVote() {
 		if (voteMap) {
-			System.out.print("[MCMEPVP] (Lobby) Setting maps for voting");
+			util.debug("(Lobby) Setting maps for voting");
 			
 			games.clear();
 			int i = 1;
@@ -221,7 +228,7 @@ public class lobbyMode extends lobbyType {
 				
 				if (games.containsKey(1)) {
 					if (games.get(1).get(0).equals(map)) {
-						System.out.print("[MCMEPVP] (Lobby) " + map + " already used!");
+						util.debug("(Lobby) " + map + " already used!");
 					} else {
 						mapgt.add(0, map);
 						mapgt.add(1, gt);
@@ -285,7 +292,7 @@ public class lobbyMode extends lobbyType {
 			if (!m.equals(MCMEPVP.lastMap)) {
 				i++;
 				map = m;
-				System.out.print("[MCMEPVP] (Lobby) RandomMap: " + map);
+				util.debug("(Lobby) RandomMap: " + map);
 			}
 		}
 		return map;
@@ -298,7 +305,7 @@ public class lobbyMode extends lobbyType {
 				map.toLowerCase() + ".Flag0")) {
 			return true;
 		} else {
-			System.out.print("[MCMEPVP] (Lobby) + " + map + " does not have TCQ flags. Skipping GT."); 
+			util.debug("(Lobby) + " + map + " does not have TCQ flags. Skipping GT."); 
 			return false;
 		}
 	}
@@ -314,7 +321,8 @@ public class lobbyMode extends lobbyType {
 			gt = GameTypes.get(getRandom(0, max));
 			if (!gt.equals(MCMEPVP.lastGT)) {
 				if (gt.equals("TCQ") || gt.equals("INF")) {
-					if (checkFlags(MCMEPVP.PVPMap)) {
+					//TODO Inc counter if map has flags
+					if (MCMEPVP.CurrentMap.getFlagCount() != 0) {
 						i++;
 					}
 				} else {
@@ -398,7 +406,7 @@ public class lobbyMode extends lobbyType {
 										} else {
 											Bukkit.broadcastMessage(MCMEPVP.negativecolor
 													+ "Waiting for more players to join!");
-											System.out.print("[MCMEPVP] Ratio: " + ratio);
+											util.debug("(Lobby) Ratio: " + ratio);
 											remindJoin();
 										}
 									}

@@ -12,7 +12,7 @@ public class weatherListener implements Listener{
 	public void weatherChange(WeatherChangeEvent event){
 		if (event.toWeatherState()) {
 			if (MCMEPVP.GameStatus == 1) {
-				if (MCMEPVP.PVPMap.equals("HelmsDeep")) {
+				if (MCMEPVP.CurrentMap.getName().equals("HelmsDeep")) {
 					event.setCancelled(false);
 				} else {
 					event.setCancelled(true);

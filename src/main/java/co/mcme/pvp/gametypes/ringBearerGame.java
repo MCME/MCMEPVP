@@ -1,5 +1,7 @@
 package co.mcme.pvp.gametypes;
 
+import static co.mcme.pvp.MCMEPVP.CurrentMap;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -28,7 +31,6 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
-import org.bukkit.util.Vector;
 
 import co.mcme.pvp.MCMEPVP;
 import co.mcme.pvp.gameType;
@@ -41,6 +43,7 @@ import co.mcme.pvp.util.util;
 public class ringBearerGame extends gameType {
 
 	public static HashMap<String, String> ringBearers = new HashMap<String, String>();
+    private String map = CurrentMap.getName();
 
 	private int blueSize = 0;
 	private int redSize = 0;
@@ -66,7 +69,7 @@ public class ringBearerGame extends gameType {
 	Score redscore;
 	Score bluescore;
 
-	public ringBearerGame() {
+	public ringBearerGame() {		
 		MCMEPVP.GameStatus = 1;
 		manager = Bukkit.getScoreboardManager();
 		board = manager.getNewScoreboard();
@@ -210,8 +213,7 @@ public class ringBearerGame extends gameType {
 				spectatorUtil.setSpectator(p);
 				addSpectatorTeam(p);
 			}
-			Location l = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(p))
-					.toLocation(MCMEPVP.PVPWorld);
+			Location l = CurrentMap.getMapMeta().getSpawn(teamUtil.getPlayerTeam(p)).toLocation();
 			p.teleport(l);
 		} else {
 			teamUtil.setPlayerTeam(p, "spectator");
@@ -321,8 +323,8 @@ public class ringBearerGame extends gameType {
 					event.getDrops().add(gearGiver.magicItem(false, 0, 1));
 				}
 			}
-			event.getDrops().add(new ItemStack(364, 1));
-			event.getDrops().add(new ItemStack(262, 8));
+			event.getDrops().add(new ItemStack(Material.COOKED_BEEF, 1));
+			event.getDrops().add(new ItemStack(Material.ARROW, 8));
 			event.setDeathMessage(deathMessage);
 
 			teamCount();
@@ -334,8 +336,7 @@ public class ringBearerGame extends gameType {
 	public void onRespawn(PlayerRespawnEvent event) {
 		Player p = event.getPlayer();
 		String team = teamUtil.getPlayerTeam(p);
-		Location l = MCMEPVP.Spawns.get("spectator").toLocation(
-				MCMEPVP.PVPWorld);
+		Location l = CurrentMap.getMapMeta().getSpawn("spectator").toLocation();
 
 		if ((team.equals("red") && redHasBearer)
 				|| (team.equals("blue") && blueHasBearer)) {
@@ -372,9 +373,7 @@ public class ringBearerGame extends gameType {
 				team = "red";
 			}
 		}
-		Vector vec = MCMEPVP.Spawns.get(team);
-		Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
-				vec.getY() + 0.5, vec.getZ());
+		Location loc = CurrentMap.getMapMeta().getSpawn(team).toLocation();
 		return loc;
 	}
 
@@ -395,7 +394,7 @@ public class ringBearerGame extends gameType {
 		}
 
 		if (redSize <= 0) {
-			MCMEPVP.logGame("blue", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
+			MCMEPVP.logGame("blue", map, MCMEPVP.PVPGT);
 
 			for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus
 					.entrySet()) {
@@ -403,9 +402,9 @@ public class ringBearerGame extends gameType {
 				String value = entry.getValue();
 				util.debug("player: " + key + " Team: " + value);
 				if (value.equalsIgnoreCase("blue")) {
-					MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, true);
+					MCMEPVP.logJoin(key, map, MCMEPVP.PVPGT, true);
 				} else {
-					MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, false);
+					MCMEPVP.logJoin(key, map, MCMEPVP.PVPGT, false);
 				}
 			}
 
@@ -417,7 +416,7 @@ public class ringBearerGame extends gameType {
 			MCMEPVP.resetGame();
 		}
 		if (blueSize <= 0) {
-			MCMEPVP.logGame("red", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
+			MCMEPVP.logGame("red", map, MCMEPVP.PVPGT);
 
 			for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus
 					.entrySet()) {
@@ -425,9 +424,9 @@ public class ringBearerGame extends gameType {
 				String value = entry.getValue();
 				util.debug("player: " + key + " Team: " + value);
 				if (value.equalsIgnoreCase("red")) {
-					MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, true);
+					MCMEPVP.logJoin(key, map, MCMEPVP.PVPGT, true);
 				} else {
-					MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, false);
+					MCMEPVP.logJoin(key, map, MCMEPVP.PVPGT, false);
 				}
 			}
 
@@ -536,7 +535,7 @@ public class ringBearerGame extends gameType {
 		Bukkit.getServer().broadcastMessage(
 				MCMEPVP.primarycolor + "GameType is " + MCMEPVP.highlightcolor
 						+ "Ring Bearer" + MCMEPVP.primarycolor + " on Map "
-						+ MCMEPVP.highlightcolor + MCMEPVP.PVPMap + "!");
+						+ MCMEPVP.highlightcolor + map + "!");
 
 		Bukkit.getServer()
 				.broadcastMessage(

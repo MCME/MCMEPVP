@@ -1,5 +1,6 @@
 package co.mcme.pvp.gametypes;
 
+import static co.mcme.pvp.MCMEPVP.CurrentMap;
 import static co.mcme.pvp.MCMEPVP.extraSpawns;
 import static co.mcme.pvp.util.config.ZombieHealth;
 
@@ -15,6 +16,7 @@ import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -50,6 +52,7 @@ import co.mcme.pvp.util.util;
 public class infectionGame extends gameType {
 
     public static int taskId;
+    private String map = CurrentMap.getName();
     int m = config.INFTimeLimit;
     int s = 60; //last 60 seconds of game
     int targetzombiecount;
@@ -69,7 +72,7 @@ public class infectionGame extends gameType {
             + "Survivors:");
     Score zombiescore;
     Score survivorscore;
-    boolean isTharbad = MCMEPVP.PVPMap.equalsIgnoreCase("tharbad");
+    boolean isTharbad = map.equalsIgnoreCase("tharbad");
 
     public infectionGame() {
         MCMEPVP.GameStatus = 1;
@@ -99,7 +102,7 @@ public class infectionGame extends gameType {
         Bukkit.getServer().broadcastMessage(
                 MCMEPVP.primarycolor + "GameType is " + MCMEPVP.highlightcolor
                 + "Infection" + MCMEPVP.primarycolor + " on Map "
-                + MCMEPVP.highlightcolor + MCMEPVP.PVPMap + "!");
+                + MCMEPVP.highlightcolor + map + "!");
         Bukkit.getServer()
                 .broadcastMessage(
                 MCMEPVP.positivecolor
@@ -206,16 +209,14 @@ public class infectionGame extends gameType {
                 teamCount();
                 break;
         }
-        if (MCMEPVP.PVPMap.equalsIgnoreCase("tharbad")) {
+        if (map.equalsIgnoreCase("tharbad")) {
             gearGiver.giveExtras(player, Team, "boating");
         }
         gearGiver.loadout(player, true, isTharbad, true, "warrior", col,
                 "boating", Team);
         playing.put(player.getName(), Team);
 
-        Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
-        Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY() + 0.5,
-                vec.getZ());
+        Location loc = CurrentMap.getMapMeta().getSpawn(teamUtil.getPlayerTeam(player)).toLocation();
         player.teleport(loc);
         player.setHealth(20);
         player.setFoodLevel(20);
@@ -267,9 +268,7 @@ public class infectionGame extends gameType {
                 spectatorUtil.setSpectator(player);
                 addSpectatorTeam(player);
             }
-            Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
-            Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
-                    vec.getY() + 0.5, vec.getZ());
+            Location loc = CurrentMap.getMapMeta().getSpawn(teamUtil.getPlayerTeam(player)).toLocation();
             player.teleport(loc);
         }
         teamCount();
@@ -307,14 +306,14 @@ public class infectionGame extends gameType {
                         + ChatColor.RED + p.getKiller().getName());
                 survivorteam.removePlayer(p);
                 zombieteam.addPlayer(p);
-                event.getDrops().add(new ItemStack(364, 1));
-                event.getDrops().add(new ItemStack(262, 8));
+                event.getDrops().add(new ItemStack(Material.COOKED_BEEF, 1));
+                event.getDrops().add(new ItemStack(Material.ARROW, 8));
             } else if (Status.equals("red")) {
                 event.setDeathMessage(ChatColor.RED + p.getName()
                         + MCMEPVP.primarycolor + " was killed by "
                         + ChatColor.BLUE + p.getKiller().getName());
-                event.getDrops().add(new ItemStack(367, 2));
-                event.getDrops().add(new ItemStack(262, 8));
+                event.getDrops().add(new ItemStack(Material.ROTTEN_FLESH, 2));
+                event.getDrops().add(new ItemStack(Material.ARROW, 8));
                 w.playSound(l, Sound.ZOMBIE_DEATH, 1, (float) 1);
                 w.playEffect(l, Effect.MOBSPAWNER_FLAMES, 9);
             }
@@ -326,15 +325,14 @@ public class infectionGame extends gameType {
             if (Status.equals("blue")) {
                 event.setDeathMessage(ChatColor.BLUE + p.getName()
                         + MCMEPVP.primarycolor + " was lost in battle!");
-                event.getDrops().add(new ItemStack(364, 1));
-                event.getDrops().add(new ItemStack(262, 8));
+                event.getDrops().add(new ItemStack(Material.ARROW, 8));
                 survivorteam.removePlayer(p);
                 zombieteam.addPlayer(p);
             } else if (Status.equals("red")) {
                 event.setDeathMessage(ChatColor.RED + p.getName()
                         + MCMEPVP.primarycolor + " was lost in battle!");
-                event.getDrops().add(new ItemStack(367, 2));
-                event.getDrops().add(new ItemStack(262, 8));
+                event.getDrops().add(new ItemStack(Material.ROTTEN_FLESH, 2));
+                event.getDrops().add(new ItemStack(Material.ARROW, 8));
             }
         }
         teamCount();
@@ -371,9 +369,7 @@ public class infectionGame extends gameType {
         if (status.equals("spectator")) {
         	spectatorUtil.setSpectator(player);
         	addSpectatorTeam(player);
-        	Vector vec = MCMEPVP.Spawns.get("spectator");
-        	Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
-                    vec.getY() + 0.5, vec.getZ());
+        	Location loc = CurrentMap.getMapMeta().getSpawn("spectator").toLocation();
         	event.setRespawnLocation(loc);
         } else {
         	teamUtil.setPlayerTeam(player, "red");
@@ -388,15 +384,15 @@ public class infectionGame extends gameType {
 
     public void checkGameEnd() {
         if (survivorscore.getScore() <= 0) {
-            MCMEPVP.logGame("red", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
+            MCMEPVP.logGame("red", map, MCMEPVP.PVPGT);
             for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
                 util.debug("player: " + key + " Team: " + value);
                 if (value.equalsIgnoreCase("red")) {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, true);
+                    MCMEPVP.logJoin(key, map, MCMEPVP.PVPGT, true);
                 } else {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, false);
+                    MCMEPVP.logJoin(key, map, MCMEPVP.PVPGT, false);
                 }
             }
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "The " + ChatColor.DARK_PURPLE + "Infected"
@@ -405,15 +401,15 @@ public class infectionGame extends gameType {
             MCMEPVP.resetGame();
         }
         if (zombiescore.getScore() <= 0) {
-            MCMEPVP.logGame("blue", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
+            MCMEPVP.logGame("blue", map, MCMEPVP.PVPGT);
             for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
                 util.debug("player: " + key + " Team: " + value);
                 if (value.equalsIgnoreCase("blue")) {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, true);
+                    MCMEPVP.logJoin(key, map, MCMEPVP.PVPGT, true);
                 } else {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, false);
+                    MCMEPVP.logJoin(key, map, MCMEPVP.PVPGT, false);
                 }
             }
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "The " + ChatColor.BLUE + "Survivors" + MCMEPVP.positivecolor + " win by default!");
@@ -421,15 +417,15 @@ public class infectionGame extends gameType {
             MCMEPVP.resetGame();
         }
         if (m == 0 && s == 0) {
-            MCMEPVP.logGame("blue", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
+            MCMEPVP.logGame("blue", map, MCMEPVP.PVPGT);
             for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
                 util.debug("player: " + key + " Team: " + value);
                 if (value.equalsIgnoreCase("blue")) {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, true);
+                    MCMEPVP.logJoin(key, map, MCMEPVP.PVPGT, true);
                 } else {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, false);
+                    MCMEPVP.logJoin(key, map, MCMEPVP.PVPGT, false);
                 }
             }
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "The " + ChatColor.BLUE + "Survivors"

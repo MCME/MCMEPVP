@@ -8,6 +8,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import co.mcme.pvp.MCMEPVP;
+import co.mcme.pvp.commands.methods.chatCmdMethods;
+import co.mcme.pvp.commands.methods.mapCmdMethods;
+import co.mcme.pvp.commands.methods.staffCmdMethods;
+import co.mcme.pvp.commands.methods.userCmdMethods;
+import co.mcme.pvp.commands.methods.voteCmdMethods;
 import co.mcme.pvp.util.config;
 
 public class pvpCommands implements CommandExecutor {
@@ -64,12 +69,11 @@ public class pvpCommands implements CommandExecutor {
 					if (a[0].equalsIgnoreCase("map")) {
 						if (a.length == 1) {
 							p.sendMessage(prim + "Current Map: " + scd
-									+ MCMEPVP.PVPMap);
+									+ MCMEPVP.CurrentMap.getName());
 							return true;
 						}
-						if (a.length >= 2) {
-							String map = a[1];
-							staffCmdMethods.pvpMap(p, map);
+						if (a.length == 2) {
+							mapCmdMethods.setMap(p, a[1]);
 							return true;
 						} else {
 							p.sendMessage(err + "/pvp map <MapName>");
@@ -144,66 +148,14 @@ public class pvpCommands implements CommandExecutor {
 							return true;
 						}
 					}
-					// DEV COMMANDS
-					if (a[0].equalsIgnoreCase("add")) {
-						if (a.length == 2) {
-							devCmdMethods.pvpAdd(p, a[1]);
-							return true;
-
-						} else {
-							p.sendMessage(err + "/pvp add <NewMapName>");
-							return true;
-						}
-					}
-					if (a[0].equalsIgnoreCase("remove")) {
-						if (a.length == 2) {
-							devCmdMethods.pvpRemove(p, a[1]);
-							return true;
-
-						} else {
-							p.sendMessage(err + "/pvp remove <NewMapName>");
-							return true;
-						}
-					}
-					if (a[0].equalsIgnoreCase("set")) {
-						if (a[1].equalsIgnoreCase("flag")) {
-							if (a.length == 3) {
-								devCmdMethods.pvpSetFlag(p, a[3]);
-								return true;
-							} else {
-								p.sendMessage(err + "/pvp set flag #FlagNumber");
-								return true;
-							}
-						}
-						if (a[1].equalsIgnoreCase("region")) {
-							if (a.length == 3) {
-								devCmdMethods.pvpSetRegion(p, a[3]);
-								return true;
-							} else {
-								p.sendMessage(err
-										+ "/pvp set region <Eriador | Rohan | Gondor | Lothlorien>");
-								return true;
-							}
-						} else {
-							if (a.length == 2) {
-								devCmdMethods.pvpSetSpawn(p, a[1]);
-								return true;
-							} else {
-								p.sendMessage(err
-										+ "/pvp set <red | blue | flag #>");
-								return true;
-							}
-						}
-					}
 					if (a[0].equalsIgnoreCase("debug")) {
-						devCmdMethods.pvpDebug(p);
+						staffCmdMethods.pvpDebug(p);
 						return true;
 					}
 				}
 			}
 			if (c.equalsIgnoreCase("vote")) {
-				if (MCMEPVP.GameStatus == 0 && MCMEPVP.voteMap
-						&& MCMEPVP.canJoin) {
+				if (MCMEPVP.GameStatus == 0 && MCMEPVP.canJoin) {
 					if (a.length == 0) {
 						voteCmdMethods.pvpVoteInfo(p);
 						return true;

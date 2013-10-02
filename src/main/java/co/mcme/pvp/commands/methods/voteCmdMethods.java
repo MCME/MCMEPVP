@@ -1,4 +1,4 @@
-package co.mcme.pvp.commands;
+package co.mcme.pvp.commands.methods;
 
 import java.util.HashSet;
 
@@ -29,14 +29,19 @@ public class voteCmdMethods {
 	public static void pvpVote(Player p, String a) {
 		if (p.hasPermission("mcmepvp.vote")) {
 			if (a.equals("1") || a.equals("2")) {
-				if (hasVoted.contains(p.getName())) {
-					p.sendMessage(err + "You have already voted!");
-					return;
+				if (MCMEPVP.voteMap) {
+					if (hasVoted.contains(p.getName())) {
+						p.sendMessage(err + "You have already voted!");
+						return;
+					} else {
+						hasVoted.add(p.getName());
+						int i = Integer.valueOf(a);
+						CurrentLobby.voteMap(i);
+						p.sendMessage(prim + "You have voted for map " + i +"!");
+						return;
+					}
 				} else {
-					hasVoted.add(p.getName());
-					int i = Integer.valueOf(a);
-					CurrentLobby.voteMap(i);
-					p.sendMessage(prim + "You have voted for map " + i +"!");
+					p.sendMessage(err + "Voting is not enabled!");
 					return;
 				}
 			}

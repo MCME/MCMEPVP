@@ -1,4 +1,4 @@
-package co.mcme.pvp.commands;
+package co.mcme.pvp.commands.methods;
 
 import static co.mcme.pvp.MCMEPVP.GameStatus;
 import static co.mcme.pvp.MCMEPVP.queuePlayer;
@@ -26,7 +26,7 @@ public class userCmdMethods {
 		String lb = ChatColor.DARK_GRAY + " [" + ChatColor.GRAY;
 		String rb = ChatColor.DARK_GRAY + "]";
 		if (p.hasPermission("mcmepvp.user")) {
-			p.sendMessage(ChatColor.DARK_AQUA + "|--------------[Commands]--------------|");
+			p.sendMessage(ChatColor.DARK_AQUA + "|-----------------[Commands]-----------------|");
 			p.sendMessage(ChatColor.GRAY + "/pvp" + lb + "join" + ll + "leave"
 					+ ll + "list" + rb);
 		}
@@ -48,6 +48,15 @@ public class userCmdMethods {
 		if (p.hasPermission("mcmepvp.admin")) {
 			p.sendMessage(ChatColor.GRAY + "/vote" + lb + "on" + ll + "off" + rb);
 			p.sendMessage(ChatColor.GRAY + "/a" + lb + "<YourAdminChatMessage>" + rb);
+		}
+		if (p.hasPermission("mcmepvp.dev")) {
+			p.sendMessage(ChatColor.GRAY + "");
+			p.sendMessage(ChatColor.GRAY + "/map" + lb + "MapName" + rb);
+			p.sendMessage(ChatColor.GRAY + "/map" + lb + "tp" +ll + "tp <team>" + rb);
+			p.sendMessage(ChatColor.GRAY + "/map" + lb + "add <NewMapName>" +ll + "remove <MapName>" + rb);
+			p.sendMessage(ChatColor.GRAY + "/map set" + lb + "red" +ll + "blue" + ll + "spectator" + rb);
+			p.sendMessage(ChatColor.GRAY + "/map set region" + lb + "Eriador" +ll + "Rohan" + ll + "Lothlorien" + rb);
+			p.sendMessage(ChatColor.GRAY + "/map set flag" + lb + "0 - 5" + rb);
 		}
 		return;
 	}

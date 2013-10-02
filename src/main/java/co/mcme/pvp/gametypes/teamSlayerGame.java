@@ -1,5 +1,7 @@
 package co.mcme.pvp.gametypes;
 
+import static co.mcme.pvp.MCMEPVP.CurrentMap;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -29,7 +32,6 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
-import org.bukkit.util.Vector;
 
 import co.mcme.pvp.MCMEPVP;
 import co.mcme.pvp.gameType;
@@ -42,14 +44,16 @@ import co.mcme.pvp.util.textureSwitcher;
 import co.mcme.pvp.util.util;
 
 public class teamSlayerGame extends gameType {
-
+	
+    private String map = CurrentMap.getName();
+    
     private int RedMates = 0;
     private int RedScore = 0;
     private int BlueMates = 0;
     private int BlueScore = 0;
     public Plugin plugin;
     private HashMap<String, String> playing = new HashMap<String, String>();
-    boolean isTharbad = MCMEPVP.PVPMap.equalsIgnoreCase("tharbad");
+    boolean isTharbad = map.equalsIgnoreCase("tharbad");
     ScoreboardManager manager;
     Scoreboard board;
     Team redteam;
@@ -85,7 +89,7 @@ public class teamSlayerGame extends gameType {
         
         //Broadcast
         Bukkit.getServer().broadcastMessage(MCMEPVP.primarycolor + "The next Game starts in a few seconds!");
-        Bukkit.getServer().broadcastMessage(MCMEPVP.primarycolor + "GameType is " + MCMEPVP.highlightcolor + "Team Slayer" + MCMEPVP.primarycolor + " on Map " + MCMEPVP.highlightcolor + MCMEPVP.PVPMap + "!");
+        Bukkit.getServer().broadcastMessage(MCMEPVP.primarycolor + "GameType is " + MCMEPVP.highlightcolor + "Team Slayer" + MCMEPVP.primarycolor + " on Map " + MCMEPVP.highlightcolor + map + "!");
         Bukkit.getServer().broadcastMessage(MCMEPVP.primarycolor + "The first team to " + MCMEPVP.highlightcolor + config.TSLscore + MCMEPVP.primarycolor + " points wins!");
         Bukkit.getServer().broadcastMessage(MCMEPVP.primarycolor + "All Participants will be assigned to a team and teleported to their spawn!");
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Bukkit.getPluginManager().getPlugin("MCMEPVP"), new Runnable() {
@@ -186,8 +190,7 @@ public class teamSlayerGame extends gameType {
         player.setSaturation((float) 20);
         gearGiver.loadout(player, true, isTharbad, true, "warrior", col, "boating", Team);
         playing.put(player.getName(), Team);
-        Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
-        Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY() + 0.5, vec.getZ());
+        Location loc = CurrentMap.getMapMeta().getSpawn(teamUtil.getPlayerTeam(player)).toLocation();
         player.teleport(loc);
     }
 
@@ -209,8 +212,7 @@ public class teamSlayerGame extends gameType {
             if (Team.equals("spectator")){
             	 spectatorUtil.setSpectator(player);
             }
-            Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
-            Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY() + 0.5, vec.getZ());
+            Location loc = CurrentMap.getMapMeta().getSpawn(teamUtil.getPlayerTeam(player)).toLocation();
             player.teleport(loc);
         }
         displayBoard();
@@ -242,8 +244,8 @@ public class teamSlayerGame extends gameType {
                 BlueScore++;
                 event.setDeathMessage(ChatColor.RED + player.getName() + MCMEPVP.primarycolor + " was killed by " + ChatColor.BLUE + player.getKiller().getName());
                 bluescore.setScore(BlueScore);
-                event.getDrops().add(new ItemStack(364, 1));
-                event.getDrops().add(new ItemStack(262, 8));
+                event.getDrops().add(new ItemStack(Material.COOKED_BEEF, 1));
+                event.getDrops().add(new ItemStack(Material.ARROW, 8));
                 col = armorColor.RED;
                 gearGiver.loadout(player, true, isTharbad, true, "warrior", col, "boating", Status);
             }
@@ -251,8 +253,8 @@ public class teamSlayerGame extends gameType {
                 RedScore++;
                 event.setDeathMessage(ChatColor.BLUE + player.getName() + MCMEPVP.primarycolor + " was killed by " + ChatColor.RED + player.getKiller().getName());
                 redscore.setScore(RedScore);
-                event.getDrops().add(new ItemStack(364, 1));
-                event.getDrops().add(new ItemStack(262, 8));
+                event.getDrops().add(new ItemStack(Material.COOKED_BEEF, 1));
+                event.getDrops().add(new ItemStack(Material.ARROW, 8));
                 col = armorColor.BLUE;
                 gearGiver.loadout(player, true, isTharbad, true, "warrior", col, "boating", Status);
             }
@@ -264,8 +266,8 @@ public class teamSlayerGame extends gameType {
                 BlueScore++;
                 event.setDeathMessage(ChatColor.RED + player.getName() + MCMEPVP.primarycolor + " was lost in battle");
                 bluescore.setScore(BlueScore);
-                event.getDrops().add(new ItemStack(364, 1));
-                event.getDrops().add(new ItemStack(262, 8));
+                event.getDrops().add(new ItemStack(Material.COOKED_BEEF, 1));
+                event.getDrops().add(new ItemStack(Material.ARROW, 8));
                 col = armorColor.RED;
                 gearGiver.loadout(player, true, isTharbad, true, "warrior", col, "boating", Status);
             }
@@ -273,8 +275,8 @@ public class teamSlayerGame extends gameType {
                 RedScore++;
                 event.setDeathMessage(ChatColor.BLUE + player.getName() + MCMEPVP.primarycolor + " was lost in battle");
                 redscore.setScore(RedScore);
-                event.getDrops().add(new ItemStack(364, 1));
-                event.getDrops().add(new ItemStack(262, 8));
+                event.getDrops().add(new ItemStack(Material.COOKED_BEEF, 1));
+                event.getDrops().add(new ItemStack(Material.ARROW, 8));
                 col = armorColor.BLUE;
                 gearGiver.loadout(player, true, isTharbad, true, "warrior", col, "boating", Status);
             }
@@ -300,21 +302,17 @@ public class teamSlayerGame extends gameType {
         if (Status.equals("red")) {
             col = armorColor.RED;
             gearGiver.loadout(player, true, isTharbad, true, "warrior", col, "boating", Status);
-            Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
-            Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY() + 0.5, vec.getZ());
+            Location loc = CurrentMap.getMapMeta().getSpawn(teamUtil.getPlayerTeam(player)).toLocation();
             event.setRespawnLocation(loc);
         }
         if (Status.equals("blue")) {
             col = armorColor.BLUE;
             gearGiver.loadout(player, true, isTharbad, true, "warrior", col, "boating", Status);
-            Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
-            Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY() + 0.5, vec.getZ());
+            Location loc = CurrentMap.getMapMeta().getSpawn(teamUtil.getPlayerTeam(player)).toLocation();
             event.setRespawnLocation(loc);
         }
         if (Status.equals("spectator")) {
-            Vector vec = MCMEPVP.Spawns.get(Status);
-            Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
-                    vec.getY() + 0.5, vec.getZ());
+        	Location loc = CurrentMap.getMapMeta().getSpawn(teamUtil.getPlayerTeam(player)).toLocation();
             spectatorUtil.setSpectator(player);
             addSpectatorTeam(player);
             event.setRespawnLocation(loc);
@@ -324,15 +322,15 @@ public class teamSlayerGame extends gameType {
     private void checkGameEnd() {
     	objective.setDisplayName("Score: "+config.TSLscore);
         if (RedMates < 1) {
-            MCMEPVP.logGame("blue", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
+            MCMEPVP.logGame("blue", map, MCMEPVP.PVPGT);
             for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
                 if (value.equalsIgnoreCase("blue")) {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, true);
+                    MCMEPVP.logJoin(key, map, MCMEPVP.PVPGT, true);
                 }
                 if (value.equalsIgnoreCase("red")) {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, false);
+                    MCMEPVP.logJoin(key, map, MCMEPVP.PVPGT, false);
                 }
             }
             Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "Team " + ChatColor.BLUE + "Blue" + ChatColor.GREEN + " wins!");
@@ -340,15 +338,15 @@ public class teamSlayerGame extends gameType {
             MCMEPVP.resetGame();
         }
         if (BlueMates < 1) {
-            MCMEPVP.logGame("red", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
+            MCMEPVP.logGame("red", map, MCMEPVP.PVPGT);
             for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
                 if (value.equalsIgnoreCase("blue")) {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, false);
+                    MCMEPVP.logJoin(key, map, MCMEPVP.PVPGT, false);
                 }
                 if (value.equalsIgnoreCase("red")) {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, true);
+                    MCMEPVP.logJoin(key, map, MCMEPVP.PVPGT, true);
                 }
             }
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Team " + ChatColor.RED + "Red" + MCMEPVP.positivecolor + " wins!");
@@ -356,14 +354,14 @@ public class teamSlayerGame extends gameType {
             MCMEPVP.resetGame();
         }
         if (RedScore == config.TSLscore) {
-            MCMEPVP.logGame("red", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
+            MCMEPVP.logGame("red", map, MCMEPVP.PVPGT);
             for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
                 if (value.equalsIgnoreCase("red")) {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, true);
+                    MCMEPVP.logJoin(key, map, MCMEPVP.PVPGT, true);
                 } else {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, false);
+                    MCMEPVP.logJoin(key, map, MCMEPVP.PVPGT, false);
                 }
             }
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Team " + ChatColor.RED + "Red" + MCMEPVP.positivecolor + " wins "
@@ -371,14 +369,14 @@ public class teamSlayerGame extends gameType {
             MCMEPVP.winFireworks("red");
             MCMEPVP.resetGame();
         } else if (BlueScore == config.TSLscore) {
-            MCMEPVP.logGame("blue", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
+            MCMEPVP.logGame("blue", map, MCMEPVP.PVPGT);
             for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
                 if (value.equalsIgnoreCase("blue")) {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, true);
+                    MCMEPVP.logJoin(key, map, MCMEPVP.PVPGT, true);
                 } else {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, false);
+                    MCMEPVP.logJoin(key, map, MCMEPVP.PVPGT, false);
                 }
             }
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Team " + ChatColor.BLUE + "Blue" + MCMEPVP.positivecolor + " wins "

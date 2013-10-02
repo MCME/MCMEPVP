@@ -104,7 +104,7 @@ public class damageListener implements Listener {
 		if (teamUtil.getPlayerTeam(def).equals("spectator")) {
 			Vector velocity = arrow.getVelocity();
 
-			Vector vec = MCMEPVP.Spawns.get("spectator");
+			Vector vec = MCMEPVP.CurrentMap.getMapMeta().getSpawn("spectator").toVector();
 			Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(),
 					vec.getY() + getRandom(1, 10), vec.getZ());
 

@@ -1,4 +1,4 @@
-package co.mcme.pvp.commands;
+package co.mcme.pvp.commands.methods;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -7,7 +7,11 @@ import org.bukkit.entity.Player;
 import co.mcme.pvp.MCMEPVP;
 import co.mcme.pvp.util.teamUtil;
 
+import static co.mcme.pvp.MCMEPVP.adminChat;
+
 public class chatCmdMethods {
+	
+	static ChatColor err = ChatColor.GRAY;
 	
 	// ----------------//
 	// PUBLIC METHODS
@@ -50,22 +54,46 @@ public class chatCmdMethods {
 	public static void pvpAdminChat(Player p, String[] a) {
 		if (p.hasPermission("mcmepvp.adminchat")) {
 			if (a.length != 0) {
-				String msg = a[0];
-				if (a.length > 1) {
-					for (int i = 1; i < a.length; i++) {
-						msg += " " + a[i];
+				if (a[0].equalsIgnoreCase("!on")) {
+					if (!adminChat.contains(p.getName())) {
+						MCMEPVP.adminChat.add(p.getName());
+						p.sendMessage(ChatColor.GREEN + "Admin chat toggled on!");
+						return;
+					} else {
+						p.sendMessage(err + "Admin chat is already on!");
+						return;
 					}
 				}
-				for (Player currentplayer : Bukkit.getOnlinePlayers()) {
-					if (currentplayer.hasPermission("mcmepvp.adminchat")) {
-						currentplayer.sendMessage(ChatColor.WHITE + "["
-								+ MCMEPVP.admincolor + "A" + ChatColor.WHITE
-								+ "] " + MCMEPVP.admincolor + p.getName()
-								+ ": " + msg);
+				if (a[0].equalsIgnoreCase("!off")) {
+					if (adminChat.contains(p.getName())) {
+						MCMEPVP.adminChat.remove(p.getName());
+						p.sendMessage(ChatColor.RED + "Admin chat toggled off!");
+						return;
+					} else {
+						p.sendMessage(err + "Admin chat is already off!");
+						return;
 					}
+				} else {
+					String msg = a[0];
+					if (a.length > 1) {
+						for (int i = 1; i < a.length; i++) {
+							msg += " " + a[i];
+						}
+					}
+					for (Player currentplayer : Bukkit.getOnlinePlayers()) {
+						if (currentplayer.hasPermission("mcmepvp.adminchat")) {
+							currentplayer.sendMessage(ChatColor.WHITE + "["
+									+ MCMEPVP.admincolor + "A" + ChatColor.WHITE
+									+ "] " + MCMEPVP.admincolor + p.getName()
+									+ ": " + msg);
+						}
+					}
+					return;
 				}
+			} else {
+				p.sendMessage("/a <Your Message>");
+				return;
 			}
-			return;
 		} else {
 			nope(p);
 			return;

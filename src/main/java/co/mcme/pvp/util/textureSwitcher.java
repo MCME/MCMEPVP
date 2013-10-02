@@ -1,7 +1,5 @@
 package co.mcme.pvp.util;
 
-import static co.mcme.pvp.MCMEPVP.PVPMap;
-
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
@@ -21,15 +19,10 @@ public class textureSwitcher {
 			return Texturepack;
 		}
 		if (MCMEPVP.GameStatus == 1) {
-			if(config.contains((PVPMap.toLowerCase() + ".region"))){
-				Region = config.getString(PVPMap.toLowerCase() + ".region");
-				Texturepack = config.getString("textures."+Region.toLowerCase());
-				return Texturepack;
-			}else{
-				Texturepack = config.getString("textures.eriador");
-				return Texturepack;
-			}
-		}else{
+			Region = MCMEPVP.CurrentMap.getMapMeta().getRegion();
+			Texturepack = config.getString("textures."+Region.toLowerCase());
+			return Texturepack;
+		} else {
 			Texturepack = config.getString("textures.eriador");
 			return Texturepack;
 		}
