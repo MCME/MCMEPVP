@@ -2,6 +2,8 @@ package co.mcme.pvp.gametypes;
 
 import co.mcme.pvp.MCMEPVP;
 import co.mcme.pvp.gameType;
+import co.mcme.pvp.stats.PlayerStat;
+import co.mcme.pvp.stats.StatisticManager;
 import co.mcme.pvp.util.armorColor;
 import co.mcme.pvp.util.config;
 import co.mcme.pvp.util.gearGiver;
@@ -9,6 +11,8 @@ import co.mcme.pvp.util.spectatorUtil;
 import co.mcme.pvp.util.teamUtil;
 import co.mcme.pvp.util.textureSwitcher;
 import co.mcme.pvp.util.util;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,8 +64,17 @@ public class teamSlayerGame extends gameType {
     OfflinePlayer dummyblue = Bukkit.getOfflinePlayer(ChatColor.BLUE + "Blue:");
     Score redscore;
     Score bluescore;
+    private static String gameId;
+    private static long startTime = System.currentTimeMillis();
+    private static long endTime;
+    private HashMap<String, PlayerStat> playerStats = new HashMap();
 
     public teamSlayerGame() {
+        try {
+            gameId = MessageDigest.getInstance("MD5").digest(String.valueOf(startTime).getBytes()).toString();
+        } catch (NoSuchAlgorithmException ex) {
+            MCMEPVP.resetGame();
+        }
         MCMEPVP.GameStatus = 1;
         manager = Bukkit.getScoreboardManager();
         board = manager.getNewScoreboard();
@@ -153,6 +166,7 @@ public class teamSlayerGame extends gameType {
             	}
             }
     	}
+        playerStats.put(player.getName(), new PlayerStat(player));
         Color col = armorColor.WHITE;
         switch (Team) {
             case "red":
@@ -225,7 +239,7 @@ public class teamSlayerGame extends gameType {
 
     @Override
     public void onPlayerdie(PlayerDeathEvent event) {
-        MCMEPVP.logKill(event);
+        StatisticManager.storePlayerDeath(event);
         Player player = event.getEntity();
         String Status = teamUtil.getPlayerTeam(player);
         Color col;
@@ -326,62 +340,24 @@ public class teamSlayerGame extends gameType {
     private void checkGameEnd() {
     	objective.setDisplayName("Score: "+config.TSLscore);
         if (RedMates < 1) {
-            MCMEPVP.logGame("blue", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
-            for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                if (value.equalsIgnoreCase("blue")) {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, true);
-                }
-                if (value.equalsIgnoreCase("red")) {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, false);
-                }
-            }
             Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "Team " + ChatColor.BLUE + "Blue" + ChatColor.GREEN + " wins!");
+            endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         }
         if (BlueMates < 1) {
-            MCMEPVP.logGame("red", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
-            for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                if (value.equalsIgnoreCase("blue")) {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, false);
-                }
-                if (value.equalsIgnoreCase("red")) {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, true);
-                }
-            }
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Team " + ChatColor.RED + "Red" + MCMEPVP.positivecolor + " wins!");
+            endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         }
         if (RedScore == config.TSLscore) {
-            MCMEPVP.logGame("red", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
-            for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                if (value.equalsIgnoreCase("red")) {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, true);
-                } else {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, false);
-                }
-            }
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Team " + ChatColor.RED + "Red" + MCMEPVP.positivecolor + " wins "
             +RedScore+":"+BlueScore+"!");
+            endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         } else if (BlueScore == config.TSLscore) {
-            MCMEPVP.logGame("blue", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
-            for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                if (value.equalsIgnoreCase("blue")) {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, true);
-                } else {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, false);
-                }
-            }
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Team " + ChatColor.BLUE + "Blue" + MCMEPVP.positivecolor + " wins "
             +BlueScore+":"+RedScore+"!");
+            endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         }
     }
@@ -481,4 +457,24 @@ public class teamSlayerGame extends gameType {
 		specteam.addPlayer(p);
 		p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY,999999,1));
 	}
+
+    @Override
+    public String getGameId() {
+        return gameId;
+    }
+
+    @Override
+    public HashMap<String, PlayerStat> getPlayerStats() {
+        return playerStats;
+    }
+
+    @Override
+    public Long getStartTime() {
+        return startTime;
+    }
+
+    @Override
+    public Long getEndTime() {
+        return endTime;
+    }
 }

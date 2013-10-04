@@ -31,6 +31,9 @@ sql:
   wintable: pvp_wins
   gametable: pvp_games
   logdelay: 2
+mongo:
+  user: username
+  password: password
 textures:
   eriador: http://mcme.co/texturepacks/eriador/MCME-Eriador-Pack-v1.01.zip
   rohan: http://mcme.co/texturepacks/rohan/MCME-Rohan-Pack-v0.72.zip

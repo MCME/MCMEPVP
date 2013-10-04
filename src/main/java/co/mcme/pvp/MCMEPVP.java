@@ -6,7 +6,6 @@ import static co.mcme.pvp.listeners.flagListener.CarpetFlagMarkers;
 import static co.mcme.pvp.listeners.flagListener.Flags;
 import static co.mcme.pvp.listeners.flagListener.blueFlagCount;
 import static co.mcme.pvp.listeners.flagListener.redFlagCount;
-import static co.mcme.pvp.util.config.LogDelay;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,10 +50,7 @@ import co.mcme.pvp.listeners.statsListener;
 import co.mcme.pvp.listeners.weatherListener;
 import co.mcme.pvp.lobby.lobbyMode;
 import co.mcme.pvp.lobby.lobbyType;
-import co.mcme.pvp.stats.DataManager;
-import co.mcme.pvp.stats.entry.GameEntry;
-import co.mcme.pvp.stats.entry.JoinEntry;
-import co.mcme.pvp.stats.entry.KillEntry;
+import co.mcme.pvp.stats.Database;
 import co.mcme.pvp.util.config;
 import co.mcme.pvp.util.gearGiver;
 import co.mcme.pvp.util.spectatorUtil;
@@ -62,6 +58,9 @@ import co.mcme.pvp.util.teamUtil;
 import co.mcme.pvp.util.textureSwitcher;
 import co.mcme.pvp.util.util;
 import co.mcme.pvp.util.worldUtils;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MCMEPVP extends JavaPlugin {
 
@@ -101,6 +100,7 @@ public class MCMEPVP extends JavaPlugin {
     public static ChatColor admincolor = ChatColor.GOLD;
     public static ChatColor shoutcolor = ChatColor.DARK_GRAY;
     public static Plugin voxel = Bukkit.getServer().getPluginManager().getPlugin("VoxelSniper");
+    private Database mongoDB;
 
     public MCMEPVP() {
         super();
@@ -113,7 +113,6 @@ public class MCMEPVP extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        DataManager.close();
         if(GameStatus == 1){
         	CurrentGame.clearBoard();
         	repairExplosions();
@@ -122,6 +121,11 @@ public class MCMEPVP extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        try {
+            mongoDB = new Database(getServer(), this);
+        } catch (UnknownHostException ex) {
+            getServer().getPluginManager().disablePlugin(this);
+        }
         queue = new LinkedBlockingQueue<Player>();
         //loadLoot();
         this.getConfig().options().copyDefaults(true);
@@ -164,12 +168,6 @@ public class MCMEPVP extends JavaPlugin {
                 }
             }	
         }, co.mcme.pvp.util.config.announceDelay * 20L, co.mcme.pvp.util.config.announceDelay * 20L); 
-        try {
-            getServer().getScheduler().runTaskTimerAsynchronously(this, new DataManager(this), LogDelay * 20, LogDelay * 20);
-        } catch (Exception e) {
-            util.severe("Error initiating MCMEPVP database connection, disabling plugin");
-            pm.disablePlugin(this);
-        }
     }
 
     public static void resetGame() {
@@ -271,39 +269,6 @@ public class MCMEPVP extends JavaPlugin {
         	System.out.print("[MCMEPVP] (Lobby) Clearing lobby!");
         }
         CurrentLobby = new lobbyMode();
-    }
-
-    public static void logKill(PlayerDeathEvent event) {
-    	if (!PVPGT.equals("INF") && !debug) {
-        Player victim = event.getEntity();
-        Player killer;
-        String victimname = victim.getName();
-        String killername = null;
-        KillEntry entry = new KillEntry();
-            if (victim.getKiller() instanceof Player) {
-                killer = victim.getKiller();
-                killername = killer.getName();
-                util.debug("Killer: " + killername + " Victim: " + victimname);
-                util.debug("Kill Sent to logger!");
-            } else if (!(victim.getKiller() instanceof Player)) {
-                killername = "//ENVIRONMENT//";
-                util.debug("Kill Sent to logger!");
-            }
-            entry.setInfo(victimname, killername, PVPMap, PVPGT);
-            DataManager.addKillEntry(entry);
-        }
-    }
-
-    public static void logJoin(String player, String mapname, String gametype, boolean win) {
-    	if(!debug){
-    		DataManager.addJoinEntry(new JoinEntry(player, mapname, gametype, win));
-    	}
-    }
-
-    public static void logGame(String winner, String mapname, String gametype) {
-    	if(!debug){
-    		DataManager.addGameEntry(new GameEntry(winner, mapname, gametype));
-    	}
     }
 
     public static void startGame() {

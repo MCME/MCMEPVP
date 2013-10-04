@@ -1,5 +1,6 @@
 package co.mcme.pvp;
 
+import co.mcme.pvp.stats.PlayerStat;
 import java.util.HashMap;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -70,4 +71,12 @@ public abstract class gameType {
     public abstract boolean allowExplosionLogging();
     
     public abstract boolean allowCustomAttributes();
+    
+    public abstract String getGameId();
+    
+    public abstract Long getStartTime();
+    
+    public abstract Long getEndTime();
+    
+    public abstract HashMap<String, PlayerStat> getPlayerStats();
 }

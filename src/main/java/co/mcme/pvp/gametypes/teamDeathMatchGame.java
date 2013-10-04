@@ -2,12 +2,16 @@ package co.mcme.pvp.gametypes;
 
 import co.mcme.pvp.MCMEPVP;
 import co.mcme.pvp.gameType;
+import co.mcme.pvp.stats.PlayerStat;
+import co.mcme.pvp.stats.StatisticManager;
 import co.mcme.pvp.util.armorColor;
 import co.mcme.pvp.util.gearGiver;
 import co.mcme.pvp.util.spectatorUtil;
 import co.mcme.pvp.util.teamUtil;
 import co.mcme.pvp.util.textureSwitcher;
 import co.mcme.pvp.util.util;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -57,8 +61,17 @@ public class teamDeathMatchGame extends gameType {
     OfflinePlayer dummyblue = Bukkit.getOfflinePlayer(ChatColor.BLUE + "Blue Players:");
     Score redscore;
     Score bluescore;
+    private static String gameId;
+    private static long startTime = System.currentTimeMillis();
+    private static long endTime;
+    private HashMap<String, PlayerStat> playerStats = new HashMap();
 
     public teamDeathMatchGame() {
+        try {
+            gameId = MessageDigest.getInstance("MD5").digest(String.valueOf(startTime).getBytes()).toString();
+        } catch (NoSuchAlgorithmException ex) {
+            MCMEPVP.resetGame();
+        }
         MCMEPVP.GameStatus = 1;
         manager = Bukkit.getScoreboardManager();
         board = manager.getNewScoreboard();
@@ -70,11 +83,11 @@ public class teamDeathMatchGame extends gameType {
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         redscore = objective.getScore(dummyred);
         bluescore = objective.getScore(dummyblue);
-        
+
         specteam = board.registerNewTeam("Spectator Team");
         specteam.setAllowFriendlyFire(false);
         specteam.setCanSeeFriendlyInvisibles(true);
-        
+
         //Broadcast
         Bukkit.getServer().broadcastMessage(MCMEPVP.primarycolor + "The next Game starts in a few seconds!");
         Bukkit.getServer().broadcastMessage(MCMEPVP.primarycolor + "GameType is " + MCMEPVP.highlightcolor + "Team Deathmatch" + MCMEPVP.primarycolor + " on Map " + MCMEPVP.highlightcolor + MCMEPVP.PVPMap + "!");
@@ -116,10 +129,10 @@ public class teamDeathMatchGame extends gameType {
                 Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "The Fight begins!");
                 redscore.setScore(RedMates);
                 bluescore.setScore(BlueMates);
-                
+
                 MCMEPVP.setWeather();
                 displayBoard();
-                
+
                 MCMEPVP.canJoin = true;
             }
         }, 100L);
@@ -132,14 +145,15 @@ public class teamDeathMatchGame extends gameType {
 
     @Override
     public void addTeam(Player player, String Team) {
-    	if (specteam.hasPlayer(player)) {
-    		specteam.removePlayer(player);
-    		if(player.getActivePotionEffects() != null){
-            	for(PotionEffect pe : player.getActivePotionEffects()){
-            		player.removePotionEffect(pe.getType());
-            	}
+        if (specteam.hasPlayer(player)) {
+            specteam.removePlayer(player);
+            if (player.getActivePotionEffects() != null) {
+                for (PotionEffect pe : player.getActivePotionEffects()) {
+                    player.removePotionEffect(pe.getType());
+                }
             }
-    	}
+        }
+        playerStats.put(player.getName(), new PlayerStat(player));
         Color col;
         if (Team.equals("red")) {
             player.sendMessage(MCMEPVP.primarycolor + "You're now in Team " + ChatColor.RED + "RED" + MCMEPVP.primarycolor + "!");
@@ -196,10 +210,10 @@ public class teamDeathMatchGame extends gameType {
 
     @Override
     public void onPlayerdie(PlayerDeathEvent event) {
-        MCMEPVP.logKill(event);
+        StatisticManager.storePlayerDeath(event);
         Player player = event.getEntity();
         String Status = teamUtil.getPlayerTeam(player);
-        
+
         String victim = player.getName();
         String deathMessage = MCMEPVP.primarycolor + " was lost in battle!";
         //TODO Log deaths
@@ -221,16 +235,16 @@ public class teamDeathMatchGame extends gameType {
             blueteam.removePlayer(player);
         }
         if (player.getKiller() instanceof Player) {
-        	Player killerP = player.getKiller();
-        	String killer = player.getKiller().getName(); 
-        	
-        	if (teamUtil.getPlayerTeam(killerP).equals("red")) {
-        		killer = ChatColor.RED + killerP.getName();
-        	}
-        	if (teamUtil.getPlayerTeam(killerP).equals("blue")) {
-        		killer = ChatColor.BLUE + killerP.getName();
-        	}
-        	deathMessage = victim + MCMEPVP.positivecolor + " was killed by " + killer;
+            Player killerP = player.getKiller();
+            String killer = player.getKiller().getName();
+
+            if (teamUtil.getPlayerTeam(killerP).equals("red")) {
+                killer = ChatColor.RED + killerP.getName();
+            }
+            if (teamUtil.getPlayerTeam(killerP).equals("blue")) {
+                killer = ChatColor.BLUE + killerP.getName();
+            }
+            deathMessage = victim + MCMEPVP.positivecolor + " was killed by " + killer;
         }
         event.setDeathMessage(deathMessage);
         teamUtil.setPlayerTeam(event.getEntity(), "spectator");
@@ -272,34 +286,14 @@ public class teamDeathMatchGame extends gameType {
 
     private void checkGameEnd() {
         if (BlueMates <= 0) {
-            MCMEPVP.logGame("red", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
-            for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                util.debug("player: " + key + " Team: " + value);
-                if (value.equalsIgnoreCase("red")) {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, true);
-                } else {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, false);
-                }
-            }
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Team " + ChatColor.RED + "Red" + MCMEPVP.positivecolor + " wins "
                     + RedMates + ":" + BlueMates + "!");
             MCMEPVP.resetGame();
+            endTime = System.currentTimeMillis();
         } else if (RedMates <= 0) {
-            MCMEPVP.logGame("blue", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
-            for (Map.Entry<String, String> entry : MCMEPVP.PlayerStatus.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                util.debug("player: " + key + " Team: " + value);
-                if (value.equalsIgnoreCase("blue")) {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, true);
-                } else {
-                    MCMEPVP.logJoin(key, MCMEPVP.PVPMap, MCMEPVP.PVPGT, false);
-                }
-            }
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Team " + ChatColor.BLUE + "Blue" + MCMEPVP.positivecolor + " wins "
                     + BlueMates + ":" + RedMates + "!");
+            endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         }
     }
@@ -390,14 +384,34 @@ public class teamDeathMatchGame extends gameType {
         return objective;
     }
 
-	@Override
-	public boolean allowCustomAttributes() {
-		return true;
-	}
+    @Override
+    public boolean allowCustomAttributes() {
+        return true;
+    }
 
-	@Override
-	public void addSpectatorTeam(Player p) {
-		specteam.addPlayer(p);
-		p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY,999999,1));
-	}
+    @Override
+    public void addSpectatorTeam(Player p) {
+        specteam.addPlayer(p);
+        p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 999999, 1));
+    }
+
+    @Override
+    public String getGameId() {
+        return gameId;
+    }
+
+    @Override
+    public HashMap<String, PlayerStat> getPlayerStats() {
+        return playerStats;
+    }
+
+    @Override
+    public Long getStartTime() {
+        return startTime;
+    }
+
+    @Override
+    public Long getEndTime() {
+        return endTime;
+    }
 }

@@ -43,6 +43,9 @@ public class config {
     public static String DbUser;
     public static String DbPass;
     public static String DbUrl;
+    //Mongo variables
+    public static String mongoUser;
+    public static String mongoPassword;
     public static int LogDelay;
 
     public static void loadConfiguration() {
@@ -73,6 +76,8 @@ public class config {
         minOnlinePlayers = conf.getInt("lobby.minOnlinePlayers");
         startThreshHold = conf.getDouble("lobby.startThreshHold");
         voteMap = conf.getBoolean("lobby.enableMapVote");
+        mongoUser = conf.getString("mongo.user");
+        mongoPassword = conf.getString("mongo.password");
     }
     
     public void setPVPDefaults() {

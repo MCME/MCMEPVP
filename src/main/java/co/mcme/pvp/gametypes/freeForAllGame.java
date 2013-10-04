@@ -1,13 +1,24 @@
 package co.mcme.pvp.gametypes;
 
+import co.mcme.pvp.MCMEPVP;
 import static co.mcme.pvp.MCMEPVP.extraSpawns;
-
+import co.mcme.pvp.gameType;
+import co.mcme.pvp.stats.PlayerStat;
+import co.mcme.pvp.stats.StatisticManager;
+import co.mcme.pvp.util.armorColor;
+import co.mcme.pvp.util.config;
+import co.mcme.pvp.util.gearGiver;
+import co.mcme.pvp.util.spectatorUtil;
+import co.mcme.pvp.util.teamUtil;
+import co.mcme.pvp.util.textureSwitcher;
+import co.mcme.pvp.util.util;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -35,16 +46,6 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
-import co.mcme.pvp.MCMEPVP;
-import co.mcme.pvp.gameType;
-import co.mcme.pvp.util.armorColor;
-import co.mcme.pvp.util.config;
-import co.mcme.pvp.util.gearGiver;
-import co.mcme.pvp.util.spectatorUtil;
-import co.mcme.pvp.util.teamUtil;
-import co.mcme.pvp.util.textureSwitcher;
-import co.mcme.pvp.util.util;
-
 public class freeForAllGame extends gameType {
 
     boolean isTharbad = MCMEPVP.PVPMap.equalsIgnoreCase("tharbad");
@@ -64,8 +65,17 @@ public class freeForAllGame extends gameType {
             + "Total Kills:");
     Score kills;
     Score timeremaining;
+    private static String gameId;
+    private static long startTime = System.currentTimeMillis();
+    private static long endTime;
+    private HashMap<String, PlayerStat> playerStats = new HashMap();
 
     public freeForAllGame() {
+        try {
+            gameId = MessageDigest.getInstance("MD5").digest(String.valueOf(startTime).getBytes()).toString();
+        } catch (NoSuchAlgorithmException ex) {
+            MCMEPVP.resetGame();
+        }
         MCMEPVP.GameStatus = 1;
         manager = Bukkit.getScoreboardManager();
         board = manager.getNewScoreboard();
@@ -86,7 +96,7 @@ public class freeForAllGame extends gameType {
         reds.setSuffix(ChatColor.WHITE.toString());
         reds.setAllowFriendlyFire(true);
         reds.setCanSeeFriendlyInvisibles(false);
-        
+
         specteam = board.registerNewTeam("Spectator Team");
         specteam.setAllowFriendlyFire(false);
         specteam.setCanSeeFriendlyInvisibles(true);
@@ -145,7 +155,7 @@ public class freeForAllGame extends gameType {
                 objective1.setDisplayName("Time: " + m + ":" + s);
                 kills.setScore(0);
                 updateBoard();
-                
+
                 MCMEPVP.canJoin = true;
             }
         }, 100L);
@@ -191,7 +201,7 @@ public class freeForAllGame extends gameType {
 
     @Override
     public void onPlayerdie(PlayerDeathEvent event) {
-        MCMEPVP.logKill(event);
+        StatisticManager.storePlayerDeath(event);
         Player victim = event.getEntity().getPlayer();
         String team = teamUtil.getPlayerTeam(victim);
         if (victim.getKiller() instanceof Player) {
@@ -224,14 +234,15 @@ public class freeForAllGame extends gameType {
 
     @Override
     public void addTeam(Player p, String Team) {
-    	if (specteam.hasPlayer(p)) {
-    		specteam.removePlayer(p);
-    		if(p.getActivePotionEffects() != null){
-            	for(PotionEffect pe : p.getActivePotionEffects()){
-            		p.removePotionEffect(pe.getType());
-            	}
+        if (specteam.hasPlayer(p)) {
+            specteam.removePlayer(p);
+            if (p.getActivePotionEffects() != null) {
+                for (PotionEffect pe : p.getActivePotionEffects()) {
+                    p.removePotionEffect(pe.getType());
+                }
             }
-    	}
+        }
+        playerStats.put(p.getName(), new PlayerStat(p));
         Color col = armorColor.WHITE;
         teamUtil.setPlayerTeam(p, Team);
         p.getInventory().clear();
@@ -303,13 +314,14 @@ public class freeForAllGame extends gameType {
             Bukkit.broadcastMessage(MCMEPVP.positivecolor + "Winner(s):");
             Bukkit.broadcastMessage(ChatColor.RED + winners);
             Bukkit.broadcastMessage(MCMEPVP.primarycolor + "With: " + MCMEPVP.positivecolor + topscore + MCMEPVP.primarycolor + " kills!");
-            for(OfflinePlayer p : reds.getPlayers()){
-            	if(p.isOnline()){
-            		p.getPlayer().setPlayerListName(p.getName());
-            		p.getPlayer().sendMessage(MCMEPVP.positivecolor + "Your Score:");
-            		p.getPlayer().sendMessage(""+MCMEPVP.positivecolor + objective.getScore(p).getScore() + MCMEPVP.primarycolor + " kills!");
-            	}
+            for (OfflinePlayer p : reds.getPlayers()) {
+                if (p.isOnline()) {
+                    p.getPlayer().setPlayerListName(p.getName());
+                    p.getPlayer().sendMessage(MCMEPVP.positivecolor + "Your Score:");
+                    p.getPlayer().sendMessage("" + MCMEPVP.positivecolor + objective.getScore(p).getScore() + MCMEPVP.primarycolor + " kills!");
+                }
             }
+            endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         }
     }
@@ -331,8 +343,8 @@ public class freeForAllGame extends gameType {
                     } else {
                         objective1.setDisplayName("Time: " + m
                                 + ":" + s);
-                        if(s == 30){
-                        	updateBoard();
+                        if (s == 30) {
+                            updateBoard();
                         }
                     }
                 } else {
@@ -434,13 +446,13 @@ public class freeForAllGame extends gameType {
 
     public void updateBoard() {
         for (Player p : Bukkit.getOnlinePlayers()) {
-        	p.setScoreboard(board);
-        	kills.setScore(killcount);
-        	if(p.getName().length() > 13){
-        		int i = objective.getScore(p).getScore();
-        		String s = p.getName().substring(0, 9);
-        		p.setPlayerListName(ChatColor.RED + s + " " + ChatColor.YELLOW + i);
-        	}
+            p.setScoreboard(board);
+            kills.setScore(killcount);
+            if (p.getName().length() > 13) {
+                int i = objective.getScore(p).getScore();
+                String s = p.getName().substring(0, 9);
+                p.setPlayerListName(ChatColor.RED + s + " " + ChatColor.YELLOW + i);
+            }
         }
     }
 
@@ -500,14 +512,34 @@ public class freeForAllGame extends gameType {
         return objective;
     }
 
-	@Override
-	public boolean allowCustomAttributes() {
-		return false;
-	}
+    @Override
+    public boolean allowCustomAttributes() {
+        return false;
+    }
 
-	@Override
-	public void addSpectatorTeam(Player p) {
-		specteam.addPlayer(p);
-		p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY,999999,1));
-	}
+    @Override
+    public void addSpectatorTeam(Player p) {
+        specteam.addPlayer(p);
+        p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 999999, 1));
+    }
+
+    @Override
+    public String getGameId() {
+        return gameId;
+    }
+
+    @Override
+    public HashMap<String, PlayerStat> getPlayerStats() {
+        return playerStats;
+    }
+
+    @Override
+    public Long getStartTime() {
+        return startTime;
+    }
+
+    @Override
+    public Long getEndTime() {
+        return endTime;
+    }
 }
