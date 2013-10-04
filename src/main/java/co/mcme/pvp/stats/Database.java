@@ -8,7 +8,7 @@ import com.mongodb.MongoClient;
 import java.net.UnknownHostException;
 import org.bukkit.Server;
 
-public class Database {
+public final class Database {
 
     private static MCMEPVP inst;
     private static Server s;
@@ -24,6 +24,7 @@ public class Database {
         mongoClient = new MongoClient("localhost");
         db = mongoClient.getDB("pvp");
         auth = db.authenticate(config.mongoUser, config.mongoPassword.toCharArray());
+        loadCollections();
     }
 
     public void loadCollections() {

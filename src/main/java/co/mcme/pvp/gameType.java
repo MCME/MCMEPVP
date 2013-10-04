@@ -79,4 +79,6 @@ public abstract class gameType {
     public abstract Long getEndTime();
     
     public abstract HashMap<String, PlayerStat> getPlayerStats();
+    
+    public abstract String getWinner();
 }

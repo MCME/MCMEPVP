@@ -68,6 +68,7 @@ public class teamSlayerGame extends gameType {
     private static long startTime = System.currentTimeMillis();
     private static long endTime;
     private HashMap<String, PlayerStat> playerStats = new HashMap();
+    String winner = "";
 
     public teamSlayerGame() {
         try {
@@ -82,15 +83,15 @@ public class teamSlayerGame extends gameType {
         redteam.setPrefix(ChatColor.RED.toString());
         blueteam = board.registerNewTeam("Blue Team");
         blueteam.setPrefix(ChatColor.BLUE.toString());
-        objective = board.registerNewObjective("Score: "+config.TSLscore, "dummy");
+        objective = board.registerNewObjective("Score: " + config.TSLscore, "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         redscore = objective.getScore(dummyred);
         bluescore = objective.getScore(dummyblue);
-        
+
         specteam = board.registerNewTeam("Spectator Team");
         specteam.setAllowFriendlyFire(false);
         specteam.setCanSeeFriendlyInvisibles(true);
-        
+
         //Broadcast
         Bukkit.getServer().broadcastMessage(MCMEPVP.primarycolor + "The next Game starts in a few seconds!");
         Bukkit.getServer().broadcastMessage(MCMEPVP.primarycolor + "GameType is " + MCMEPVP.highlightcolor + "Team Slayer" + MCMEPVP.primarycolor + " on Map " + MCMEPVP.highlightcolor + MCMEPVP.PVPMap + "!");
@@ -102,7 +103,7 @@ public class teamSlayerGame extends gameType {
                 MCMEPVP.queue.drainTo(queued);
                 Collections.shuffle(queued);
                 for (Player p : queued) {
-                	textureSwitcher.switchTP(p);
+                    textureSwitcher.switchTP(p);
                     if (p.isOnline()) {
                         if (BlueMates > RedMates) {
                             addTeam(p, "red");
@@ -127,12 +128,12 @@ public class teamSlayerGame extends gameType {
                 spectatorUtil.startingSpectators();
                 //Broadcast
                 Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "The Fight begins!");
-                
+
                 MCMEPVP.setWeather();
                 redscore.setScore(RedScore);
                 bluescore.setScore(BlueScore);
                 displayBoard();
-                
+
                 MCMEPVP.canJoin = true;
             }
         }, 100L);
@@ -158,14 +159,14 @@ public class teamSlayerGame extends gameType {
 
     @Override
     public void addTeam(Player player, String Team) {
-    	if (specteam.hasPlayer(player)) {
-    		specteam.removePlayer(player);
-    		if(player.getActivePotionEffects() != null){
-            	for(PotionEffect pe : player.getActivePotionEffects()){
-            		player.removePotionEffect(pe.getType());
-            	}
+        if (specteam.hasPlayer(player)) {
+            specteam.removePlayer(player);
+            if (player.getActivePotionEffects() != null) {
+                for (PotionEffect pe : player.getActivePotionEffects()) {
+                    player.removePotionEffect(pe.getType());
+                }
             }
-    	}
+        }
         playerStats.put(player.getName(), new PlayerStat(player));
         Color col = armorColor.WHITE;
         switch (Team) {
@@ -215,8 +216,8 @@ public class teamSlayerGame extends gameType {
                 spectatorUtil.setParticipant(player);
                 BlueMates++;
             }
-            if (Team.equals("spectator")){
-            	 spectatorUtil.setSpectator(player);
+            if (Team.equals("spectator")) {
+                spectatorUtil.setSpectator(player);
             }
             Vector vec = MCMEPVP.Spawns.get(teamUtil.getPlayerTeam(player));
             Location loc = new Location(MCMEPVP.PVPWorld, vec.getX(), vec.getY() + 0.5, vec.getZ());
@@ -338,25 +339,29 @@ public class teamSlayerGame extends gameType {
     }
 
     private void checkGameEnd() {
-    	objective.setDisplayName("Score: "+config.TSLscore);
+        objective.setDisplayName("Score: " + config.TSLscore);
         if (RedMates < 1) {
             Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "Team " + ChatColor.BLUE + "Blue" + ChatColor.GREEN + " wins!");
+            winner = "blue";
             endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         }
         if (BlueMates < 1) {
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Team " + ChatColor.RED + "Red" + MCMEPVP.positivecolor + " wins!");
+            winner = "red";
             endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         }
         if (RedScore == config.TSLscore) {
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Team " + ChatColor.RED + "Red" + MCMEPVP.positivecolor + " wins "
-            +RedScore+":"+BlueScore+"!");
+                    + RedScore + ":" + BlueScore + "!");
+            winner = "red";
             endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         } else if (BlueScore == config.TSLscore) {
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Team " + ChatColor.BLUE + "Blue" + MCMEPVP.positivecolor + " wins "
-            +BlueScore+":"+RedScore+"!");
+                    + BlueScore + ":" + RedScore + "!");
+            winner = "blue";
             endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         }
@@ -421,7 +426,7 @@ public class teamSlayerGame extends gameType {
     public void onPlayerLogin(PlayerLoginEvent event) {
         //Do nothing
     }
-    
+
     @Override
     public boolean allowBlockBreak() {
         return false;
@@ -437,26 +442,26 @@ public class teamSlayerGame extends gameType {
         return false;
     }
 
-	@Override
-	public boolean allowExplosionLogging() {
-		return false;
-	}
+    @Override
+    public boolean allowExplosionLogging() {
+        return false;
+    }
 
     @Override
     public Objective getObjective() {
         return objective;
     }
 
-	@Override
-	public boolean allowCustomAttributes() {
-		return true;
-	}
+    @Override
+    public boolean allowCustomAttributes() {
+        return true;
+    }
 
-	@Override
-	public void addSpectatorTeam(Player p) {
-		specteam.addPlayer(p);
-		p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY,999999,1));
-	}
+    @Override
+    public void addSpectatorTeam(Player p) {
+        specteam.addPlayer(p);
+        p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 999999, 1));
+    }
 
     @Override
     public String getGameId() {
@@ -476,5 +481,10 @@ public class teamSlayerGame extends gameType {
     @Override
     public Long getEndTime() {
         return endTime;
+    }
+
+    @Override
+    public String getWinner() {
+        return winner;
     }
 }

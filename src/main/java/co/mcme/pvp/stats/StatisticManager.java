@@ -2,9 +2,9 @@ package co.mcme.pvp.stats;
 
 import co.mcme.pvp.MCMEPVP;
 import co.mcme.pvp.gameType;
+import co.mcme.pvp.util.util;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
-import java.math.BigDecimal;
 import java.util.HashMap;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -46,7 +46,12 @@ public class StatisticManager {
         HashMap<String, PlayerStat> playerStats = lastGame.getPlayerStats();
         for (PlayerStat ps : playerStats.values()) {
             Player target = ps.getPlayer();
-            boolean won = getPlayerTeam(target).equals(winner);
+            boolean won;
+            if (winner.contains(",")) {
+                won = winner.contains(target.getName());
+            } else {
+                won = getPlayerTeam(target).equals(winner) || target.getName().equals(winner);
+            }
             BasicDBObject query = new BasicDBObject("name", target.getName());
             DBCursor cursor = Database.getPlayerCollection().find(query);
             if (cursor.hasNext()) {
@@ -62,6 +67,7 @@ public class StatisticManager {
                         newgameswon += 1;
                     }
                     int newwinperc = newgameswon / newgamesplayed;
+                    util.info(String.valueOf(newwinperc));
                     BasicDBObject newobj = new BasicDBObject()
                             .append("name", target.getName())
                             .append("kills", newkills)
@@ -70,7 +76,8 @@ public class StatisticManager {
                             .append("games", new BasicDBObject()
                             .append("played", newgamesplayed)
                             .append("won", newgameswon)
-                            .append("winPercentage", round(newwinperc, 2)));
+                            .append("winPercentage", newwinperc));
+                    util.info(newobj.toString());
                     Database.getPlayerCollection().update(prev, newobj);
                 } finally {
                     cursor.close();
@@ -81,6 +88,7 @@ public class StatisticManager {
                 if (won) {
                     gameswon = 1;
                 }
+                util.info(String.valueOf((gameswon / 1)));
                 BasicDBObject newobj = new BasicDBObject()
                         .append("name", target.getName())
                         .append("kills", ps.getKills())
@@ -89,16 +97,11 @@ public class StatisticManager {
                         .append("games", new BasicDBObject()
                         .append("played", 1)
                         .append("won", gameswon)
-                        .append("winPercentage", round(gameswon / 1, 2)));
+                        .append("winPercentage", (gameswon / 1)));
+                util.info(newobj.toString());
                 Database.getPlayerCollection().insert(newobj);
             }
         }
-    }
-
-    public static BigDecimal round(float d, int decimalPlace) {
-        BigDecimal bd = new BigDecimal(Float.toString(d));
-        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
-        return bd;
     }
 
     public static String getPlayerTeam(Player player) {

@@ -68,6 +68,7 @@ public class ringBearerGame extends gameType {
     private static long startTime = System.currentTimeMillis();
     private static long endTime;
     private HashMap<String, PlayerStat> playerStats = new HashMap();
+    String winner = "";
 
     public ringBearerGame() {
         try {
@@ -402,6 +403,8 @@ public class ringBearerGame extends gameType {
                     MCMEPVP.positivecolor + "Team " + ChatColor.BLUE + "Blue"
                     + MCMEPVP.positivecolor + " wins!");
             stopTimer();
+            winner = "blue";
+            endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         }
         if (blueSize <= 0) {
@@ -409,12 +412,15 @@ public class ringBearerGame extends gameType {
                     MCMEPVP.positivecolor + "Team " + ChatColor.RED + "Red"
                     + MCMEPVP.positivecolor + " wins!");
             stopTimer();
+            winner = "red";
+            endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         }
         if (lastMan && lm == 0) {
             Bukkit.getServer().broadcastMessage(
                     MCMEPVP.positivecolor + "Game Over - Stalemate!");
             stopTimer();
+            endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         }
     }
@@ -722,5 +728,10 @@ public class ringBearerGame extends gameType {
     @Override
     public Long getEndTime() {
         return endTime;
+    }
+    
+    @Override
+    public String getWinner() {
+        return winner;
     }
 }

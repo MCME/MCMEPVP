@@ -81,6 +81,7 @@ public class teamConquestGame extends gameType {
     private static long startTime = System.currentTimeMillis();
     private static long endTime;
     private HashMap<String, PlayerStat> playerStats = new HashMap();
+    String winner = "";
 
     public teamConquestGame() {
         try {
@@ -451,6 +452,7 @@ public class teamConquestGame extends gameType {
             Bukkit.getServer().broadcastMessage(
                     MCMEPVP.positivecolor + "Team " + ChatColor.BLUE + "Blue"
                     + MCMEPVP.positivecolor + " wins by " + ChatColor.BLUE + BlueMates + MCMEPVP.positivecolor + " lives!");
+            winner = "blue";
             endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         }
@@ -458,6 +460,7 @@ public class teamConquestGame extends gameType {
             Bukkit.getServer().broadcastMessage(
                     MCMEPVP.positivecolor + "Team " + ChatColor.RED + "Red"
                     + MCMEPVP.positivecolor + " wins by " + ChatColor.RED + RedMates + MCMEPVP.positivecolor + " lives!");
+            winner = "red";
             endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         }
@@ -465,12 +468,14 @@ public class teamConquestGame extends gameType {
             Bukkit.getServer().broadcastMessage(
                     MCMEPVP.positivecolor + "Team " + ChatColor.RED + "Red"
                     + MCMEPVP.positivecolor + " wins!");
+            winner = "red";
             endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         } else if (RedScore <= 0) {
             Bukkit.getServer().broadcastMessage(
                     MCMEPVP.positivecolor + "Team " + ChatColor.BLUE + "Blue"
                     + MCMEPVP.positivecolor + " wins!");
+            winner = "blue";
             endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         }
@@ -604,5 +609,10 @@ public class teamConquestGame extends gameType {
     @Override
     public Long getEndTime() {
         return endTime;
+    }
+
+    @Override
+    public String getWinner() {
+        return winner;
     }
 }

@@ -89,11 +89,17 @@ permissions:
     default: op
 commands:
    pvp:
-      description: PVP
-      usage: /<command> [join|start|map|gt|set|stop|setscore|lock|unlock|forcejoin]
+      description: PVP commands
+      usage: /<command> [Argument(s)] - see '/pvp'
    shout:
       description: Shout a message to Everyone!
       usage: /<command> [msg]
    a:
       description: Chat only for Admins!
       usage: /<command> [msg]
+   vote:
+      description: Vote for the next map!
+      usage: /<command> [int] - see '/vote'
+   map:
+      description: Map setup commands
+      usage: /<command> [Argument(s)] - see '/pvp'

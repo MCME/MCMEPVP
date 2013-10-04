@@ -51,6 +51,7 @@ import co.mcme.pvp.listeners.weatherListener;
 import co.mcme.pvp.lobby.lobbyMode;
 import co.mcme.pvp.lobby.lobbyType;
 import co.mcme.pvp.stats.Database;
+import co.mcme.pvp.stats.StatisticManager;
 import co.mcme.pvp.util.config;
 import co.mcme.pvp.util.gearGiver;
 import co.mcme.pvp.util.spectatorUtil;
@@ -121,17 +122,17 @@ public class MCMEPVP extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        try {
-            mongoDB = new Database(getServer(), this);
-        } catch (UnknownHostException ex) {
-            getServer().getPluginManager().disablePlugin(this);
-        }
         queue = new LinkedBlockingQueue<Player>();
         //loadLoot();
         this.getConfig().options().copyDefaults(true);
         this.saveConfig();
         conf = this.getConfig();
         config = new config();
+        try {
+            mongoDB = new Database(getServer(), this);
+        } catch (UnknownHostException ex) {
+            getServer().getPluginManager().disablePlugin(this);
+        }
         PluginManager pm = getServer().getPluginManager();
         //registering Listeners
         registerEvents();
@@ -173,6 +174,7 @@ public class MCMEPVP extends JavaPlugin {
     public static void resetGame() {
     	canJoin = true;
         if (GameStatus == 1) {
+            StatisticManager.logGame(CurrentGame.getWinner());
             if (PVPGT.equals("INF")) {
                 infectionGame.stopTimer();
                 extraSpawns.clear();

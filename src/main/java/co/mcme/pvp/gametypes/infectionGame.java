@@ -79,6 +79,7 @@ public class infectionGame extends gameType {
     private static long startTime = System.currentTimeMillis();
     private static long endTime;
     private HashMap<String, PlayerStat> playerStats = new HashMap();
+    String winner = "";
 
     public infectionGame() {
         try {
@@ -404,12 +405,14 @@ public class infectionGame extends gameType {
             //MCMEPVP.logGame("red", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "The " + ChatColor.DARK_PURPLE + "Infected"
                     + MCMEPVP.positivecolor + " win with " + ChatColor.DARK_PURPLE + m + "m" + s + "s" + MCMEPVP.positivecolor + " remaining!");
+            winner = "red";
             endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         }
         if (zombiescore.getScore() <= 0) {
             //MCMEPVP.logGame("blue", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "The " + ChatColor.BLUE + "Survivors" + MCMEPVP.positivecolor + " win by default!");
+            winner = "blue";
             endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         }
@@ -417,6 +420,7 @@ public class infectionGame extends gameType {
             //MCMEPVP.logGame("blue", MCMEPVP.PVPMap, MCMEPVP.PVPGT);
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "The " + ChatColor.BLUE + "Survivors"
                     + MCMEPVP.positivecolor + " win with " + ChatColor.BLUE + survivorcount + " survivors" + MCMEPVP.positivecolor + " remaining!");
+            winner = "blue";
             endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         }
@@ -592,5 +596,10 @@ public class infectionGame extends gameType {
     @Override
     public Long getEndTime() {
         return endTime;
+    }
+    
+    @Override
+    public String getWinner() {
+        return winner;
     }
 }

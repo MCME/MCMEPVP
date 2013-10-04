@@ -69,6 +69,7 @@ public class freeForAllGame extends gameType {
     private static long startTime = System.currentTimeMillis();
     private static long endTime;
     private HashMap<String, PlayerStat> playerStats = new HashMap();
+    String winner = "";
 
     public freeForAllGame() {
         try {
@@ -321,6 +322,7 @@ public class freeForAllGame extends gameType {
                     p.getPlayer().sendMessage("" + MCMEPVP.positivecolor + objective.getScore(p).getScore() + MCMEPVP.primarycolor + " kills!");
                 }
             }
+            winner = winners.replaceAll(", ", ",");
             endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         }
@@ -541,5 +543,10 @@ public class freeForAllGame extends gameType {
     @Override
     public Long getEndTime() {
         return endTime;
+    }
+    
+    @Override
+    public String getWinner() {
+        return winner;
     }
 }

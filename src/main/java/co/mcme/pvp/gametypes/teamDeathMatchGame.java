@@ -65,6 +65,7 @@ public class teamDeathMatchGame extends gameType {
     private static long startTime = System.currentTimeMillis();
     private static long endTime;
     private HashMap<String, PlayerStat> playerStats = new HashMap();
+    String winner = "";
 
     public teamDeathMatchGame() {
         try {
@@ -288,11 +289,13 @@ public class teamDeathMatchGame extends gameType {
         if (BlueMates <= 0) {
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Team " + ChatColor.RED + "Red" + MCMEPVP.positivecolor + " wins "
                     + RedMates + ":" + BlueMates + "!");
-            MCMEPVP.resetGame();
+            winner = "red";
             endTime = System.currentTimeMillis();
+            MCMEPVP.resetGame();
         } else if (RedMates <= 0) {
             Bukkit.getServer().broadcastMessage(MCMEPVP.positivecolor + "Team " + ChatColor.BLUE + "Blue" + MCMEPVP.positivecolor + " wins "
                     + BlueMates + ":" + RedMates + "!");
+            winner = "blue";
             endTime = System.currentTimeMillis();
             MCMEPVP.resetGame();
         }
@@ -413,5 +416,10 @@ public class teamDeathMatchGame extends gameType {
     @Override
     public Long getEndTime() {
         return endTime;
+    }
+
+    @Override
+    public String getWinner() {
+        return winner;
     }
 }
