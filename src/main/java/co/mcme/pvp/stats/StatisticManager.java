@@ -5,7 +5,11 @@ import co.mcme.pvp.gameType;
 import co.mcme.pvp.util.util;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import org.bson.types.BasicBSONList;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
@@ -21,14 +25,16 @@ public class StatisticManager {
                 Player killer = event.getEntity().getKiller();
                 HashMap<String, PlayerStat> playerStats = MCMEPVP.CurrentGame.getPlayerStats();
                 if (playerStats.containsKey(victim.getName()) && playerStats.containsKey(killer.getName())) {
-                    playerStats.get(victim.getName()).incrementDeaths(1);
-                    playerStats.get(killer.getName()).incrementKills(1);
+                    playerStats.get(victim.getName()).addDeath(new PvpDeath(victim.getName(), killer.getName(), MCMEPVP.PVPMap, killer.getItemInHand().getType(), MCMEPVP.PVPGT));
+                    playerStats.get(killer.getName()).addKill(new PvpDeath(victim.getName(), killer.getName(), MCMEPVP.PVPMap, killer.getItemInHand().getType(), MCMEPVP.PVPGT));
                 }
             } else {
                 Player victim = event.getEntity();
+                Location loc = victim.getLocation();
+                loc.setY(loc.getY() - 1);
                 HashMap<String, PlayerStat> playerStats = MCMEPVP.CurrentGame.getPlayerStats();
                 if (playerStats.containsKey(victim.getName())) {
-                    playerStats.get(victim.getName()).incrementDeaths(1);
+                    playerStats.get(victim.getName()).addDeath(new PvpDeath(victim.getName(), "", MCMEPVP.PVPMap, loc.getBlock().getType(), MCMEPVP.PVPGT));
                 }
             }
         }
@@ -57,8 +63,16 @@ public class StatisticManager {
             if (cursor.hasNext()) {
                 try {
                     BasicDBObject prev = (BasicDBObject) cursor.next();
-                    int newkills = prev.getInt("kills") + ps.getKills();
-                    int newdeaths = prev.getInt("deaths") + ps.getDeaths();
+                    int newkills = prev.getInt("kills") + ps.getKillCount();
+                    int newdeaths = prev.getInt("deaths") + ps.getDeathCount();
+                    ArrayList<String> newrdeaths = (ArrayList) ((BasicBSONList) prev.get("recentdeaths"));
+                    for (PvpDeath death : ps.getDeaths()) {
+                        newrdeaths.add(death.getKiller() + "|" + death.getWeapon() + "|" + death.getMap() + "|" + death.getGameType());
+                    }
+                    ArrayList<String> newrkills = (ArrayList) ((BasicBSONList) prev.get("recentkills"));
+                    for (PvpDeath kill : ps.getKills()) {
+                        newrkills.add(kill.getVictim() + "|" + kill.getWeapon() + "|" + kill.getMap() + "|" + kill.getGameType());
+                    }
                     double newkd = newkills / newdeaths;
                     BasicDBObject prevgames = (BasicDBObject) prev.get("games");
                     int newgamesplayed = prevgames.getInt("played") + 1;
@@ -66,8 +80,7 @@ public class StatisticManager {
                     if (won) {
                         newgameswon += 1;
                     }
-                    int newwinperc = newgameswon / newgamesplayed;
-                    util.info(String.valueOf(newwinperc));
+                    double newwinperc = newgameswon / newgamesplayed;
                     BasicDBObject newobj = new BasicDBObject()
                             .append("name", target.getName())
                             .append("kills", newkills)
@@ -76,8 +89,9 @@ public class StatisticManager {
                             .append("games", new BasicDBObject()
                             .append("played", newgamesplayed)
                             .append("won", newgameswon)
-                            .append("winPercentage", newwinperc));
-                    util.info(newobj.toString());
+                            .append("winPercentage", newwinperc))
+                            .append("recentkills", newrkills)
+                            .append("recentdeaths", newrdeaths);
                     Database.getPlayerCollection().update(prev, newobj);
                 } finally {
                     cursor.close();
@@ -88,17 +102,25 @@ public class StatisticManager {
                 if (won) {
                     gameswon = 1;
                 }
-                util.info(String.valueOf((gameswon / 1)));
+                ArrayList<String> newrdeaths = new ArrayList();
+                for (PvpDeath death : ps.getDeaths()) {
+                    newrdeaths.add(death.getKiller() + "|" + death.getWeapon() + "|" + death.getMap() + "|" + death.getGameType());
+                }
+                ArrayList<String> newrkills = new ArrayList();
+                for (PvpDeath kill : ps.getKills()) {
+                    newrkills.add(kill.getVictim() + "|" + kill.getWeapon() + "|" + kill.getMap() + "|" + kill.getGameType());
+                }
                 BasicDBObject newobj = new BasicDBObject()
                         .append("name", target.getName())
-                        .append("kills", ps.getKills())
-                        .append("deaths", ps.getDeaths())
-                        .append("kd", ps.getKills() / ps.getDeaths())
+                        .append("kills", ps.getKillCount())
+                        .append("deaths", ps.getDeathCount())
+                        .append("kd", (double) (ps.getKillCount() / ps.getDeathCount()))
                         .append("games", new BasicDBObject()
                         .append("played", 1)
                         .append("won", gameswon)
-                        .append("winPercentage", (gameswon / 1)));
-                util.info(newobj.toString());
+                        .append("winPercentage", (double) (gameswon / 1)))
+                        .append("recentkills", newrkills)
+                        .append("recentdeaths", newrdeaths);
                 Database.getPlayerCollection().insert(newobj);
             }
         }
@@ -122,5 +144,13 @@ public class StatisticManager {
 //        played: 359,
 //        won: 175,
 //        winPercentage: 0.48
-//    }
+//    },
+//    recentkills: [
+//        "victim|weapon|map|gametype",
+//        "victim|weapon|map|gametype"
+//    ],
+//    recentdeaths: [
+//        "killer|weapon|map|gametype",
+//        "killer|weapon|map|gametype"
+//    ]
 //}
