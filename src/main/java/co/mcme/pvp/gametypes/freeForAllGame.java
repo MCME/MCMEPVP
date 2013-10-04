@@ -169,12 +169,6 @@ public class freeForAllGame extends gameType {
     }
 
     @Override
-    @Deprecated
-    public void onPlayerLogin(PlayerLoginEvent event) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
     public void onPlayerleaveServer(PlayerQuitEvent event) {
         Player p = event.getPlayer();
         reds.removePlayer(p);

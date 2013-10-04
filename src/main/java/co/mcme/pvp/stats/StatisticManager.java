@@ -6,7 +6,6 @@ import co.mcme.pvp.util.util;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import org.bson.types.BasicBSONList;
 import org.bukkit.Location;
@@ -18,7 +17,7 @@ public class StatisticManager {
     static HashMap<String, String> lastStatus;
     static gameType lastGame;
 
-    public static void storePlayerDeath(PlayerDeathEvent event) {
+    public static boolean storePlayerDeath(PlayerDeathEvent event) {
         if (!MCMEPVP.debug) {
             if (event.getEntity().getKiller() instanceof Player) {
                 Player victim = event.getEntity();
@@ -34,10 +33,12 @@ public class StatisticManager {
                 loc.setY(loc.getY() - 1);
                 HashMap<String, PlayerStat> playerStats = MCMEPVP.CurrentGame.getPlayerStats();
                 if (playerStats.containsKey(victim.getName())) {
-                    playerStats.get(victim.getName()).addDeath(new PvpDeath(victim.getName(), "", MCMEPVP.PVPMap, loc.getBlock().getType(), MCMEPVP.PVPGT));
+                    playerStats.get(victim.getName()).addDeath(new PvpDeath(victim.getName(), "$$", MCMEPVP.PVPMap, loc.getBlock().getType(), MCMEPVP.PVPGT));
                 }
+
             }
         }
+        return true;
     }
 
     public static void logGame(String winner) {
@@ -110,6 +111,7 @@ public class StatisticManager {
                 for (PvpDeath kill : ps.getKills()) {
                     newrkills.add(kill.getVictim() + "|" + kill.getWeapon() + "|" + kill.getMap() + "|" + kill.getGameType());
                 }
+                util.info(String.valueOf(ps.getDeathCount()));
                 BasicDBObject newobj = new BasicDBObject()
                         .append("name", target.getName())
                         .append("kills", ps.getKillCount())

@@ -632,12 +632,6 @@ public class ringBearerGame extends gameType {
     }
 
     @Override
-    @Deprecated
-    public void onPlayerLogin(PlayerLoginEvent event) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
     public int team1count() {
         // TODO Auto-generated method stub
         return 0;

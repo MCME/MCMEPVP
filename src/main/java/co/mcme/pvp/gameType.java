@@ -21,9 +21,6 @@ public abstract class gameType {
 
     public abstract void claimLootSign(Sign sign);
 
-    @Deprecated
-    public abstract void onPlayerLogin(PlayerLoginEvent event);
-
     public abstract void onPlayerleaveServer(PlayerQuitEvent event);
 
     public abstract void onPlayerJoin(PlayerJoinEvent event);

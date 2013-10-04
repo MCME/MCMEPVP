@@ -550,11 +550,6 @@ public class teamConquestGame extends gameType {
     }
 
     @Override
-    public void onPlayerLogin(PlayerLoginEvent event) {
-        // Do nothing
-    }
-
-    @Override
     public boolean allowBlockBreak() {
         return false;
     }
