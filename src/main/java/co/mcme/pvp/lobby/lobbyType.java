@@ -10,29 +10,29 @@ public abstract class lobbyType {
     public lobbyType() {
         //TODO: Code on Game Start
     }
-    
+
     public abstract void autoRun();
 
     public abstract void onPlayerJoin(PlayerJoinEvent event);
-    
+
     public abstract void onPlayerleaveServer(PlayerQuitEvent event);
 
     public abstract void setTeam(Player player, String Team);
-    
+
     public abstract void setMapVote();
-    
+
     public abstract void voteMap(Integer i);
-    
+
     public abstract String randomMap();
-    
+
     public abstract boolean checkFlags(String map);
-    
+
     public abstract String randomGameType();
-    
+
     public abstract void gameScore();
-    
+
     public abstract void autoRunTimer();
-    
+
     public abstract void stopLobby();
 
     public abstract void onRespawn(PlayerRespawnEvent event);
@@ -41,6 +41,5 @@ public abstract class lobbyType {
 
     public abstract void displayBoard();
 
-	public abstract void getVoteMaps(Player p);
-	
+    public abstract void getVoteMaps(Player p);
 }

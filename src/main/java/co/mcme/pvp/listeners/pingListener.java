@@ -19,7 +19,7 @@ public class pingListener implements Listener {
         } else {
             status = ChatColor.GREEN + "OPEN";
             if (MCMEPVP.debug) {
-            	status = ChatColor.GOLD + "OPEN BETA TESTING";
+                status = ChatColor.GOLD + "OPEN BETA TESTING";
             }
             maxp = 130;
         }

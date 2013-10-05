@@ -1,39 +1,11 @@
 package co.mcme.pvp;
 
-import static co.mcme.pvp.gametypes.ringBearerGame.ringBearers;
-import static co.mcme.pvp.listeners.flagListener.BlockFlagMarkers;
-import static co.mcme.pvp.listeners.flagListener.CarpetFlagMarkers;
-import static co.mcme.pvp.listeners.flagListener.Flags;
-import static co.mcme.pvp.listeners.flagListener.blueFlagCount;
-import static co.mcme.pvp.listeners.flagListener.redFlagCount;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.configuration.Configuration;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.util.Vector;
-
 import co.mcme.pvp.commands.pvpCmds;
 import co.mcme.pvp.commands.voteCmdMethods;
 import co.mcme.pvp.gametypes.freeForAllGame;
 import co.mcme.pvp.gametypes.infectionGame;
 import co.mcme.pvp.gametypes.ringBearerGame;
+import static co.mcme.pvp.gametypes.ringBearerGame.ringBearers;
 import co.mcme.pvp.gametypes.teamConquestGame;
 import co.mcme.pvp.gametypes.teamDeathMatchGame;
 import co.mcme.pvp.gametypes.teamSlayerGame;
@@ -41,6 +13,11 @@ import co.mcme.pvp.listeners.blockListener;
 import co.mcme.pvp.listeners.chatListener;
 import co.mcme.pvp.listeners.damageListener;
 import co.mcme.pvp.listeners.flagListener;
+import static co.mcme.pvp.listeners.flagListener.BlockFlagMarkers;
+import static co.mcme.pvp.listeners.flagListener.CarpetFlagMarkers;
+import static co.mcme.pvp.listeners.flagListener.Flags;
+import static co.mcme.pvp.listeners.flagListener.blueFlagCount;
+import static co.mcme.pvp.listeners.flagListener.redFlagCount;
 import co.mcme.pvp.listeners.horseListener;
 import co.mcme.pvp.listeners.magicItemListener;
 import co.mcme.pvp.listeners.pingListener;
@@ -60,6 +37,25 @@ import co.mcme.pvp.util.textureSwitcher;
 import co.mcme.pvp.util.util;
 import co.mcme.pvp.util.worldUtils;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.util.Vector;
 
 public class MCMEPVP extends JavaPlugin {
 
@@ -85,7 +81,7 @@ public class MCMEPVP extends JavaPlugin {
     public static boolean locked = true;
     public static boolean debug = false;
     public static boolean horseMode = false;
-    public static boolean autorun =false;
+    public static boolean autorun = false;
     public static int minOnlinePlayers = 0;
     public static float startThreshHold = 0;
     public static List<String> loot;
@@ -101,26 +97,22 @@ public class MCMEPVP extends JavaPlugin {
     public static Plugin voxel = Bukkit.getServer().getPluginManager().getPlugin("VoxelSniper");
     private Database mongoDB;
 
-    public MCMEPVP() {
-        super();
-        instance = this;
-    }
-
     public static Plugin inst() {
         return instance;
     }
 
     @Override
     public void onDisable() {
-        if(GameStatus == 1){
-        	CurrentGame.clearBoard();
-        	repairExplosions();
+        if (GameStatus == 1) {
+            CurrentGame.clearBoard();
+            repairExplosions();
         }
     }
 
     @Override
     public void onEnable() {
-        queue = new LinkedBlockingQueue<Player>();
+        instance = this;
+        queue = new LinkedBlockingQueue<>();
         //loadLoot();
         this.getConfig().options().copyDefaults(true);
         this.saveConfig();
@@ -134,60 +126,61 @@ public class MCMEPVP extends JavaPlugin {
         PluginManager pm = getServer().getPluginManager();
         //registering Listeners
         registerEvents();
-        PlayerStatus = new HashMap<String, String>();
-        
+        PlayerStatus = new HashMap<>();
+
         config.setPVPDefaults();
-        
+
         if (autorun) {
-        	System.out.print("[MCMEPVP] (Lobby) Auto-lobby: " + autorun);
-        	System.out.print("[MCMEPVP] (Lobby) Min online players: " + minOnlinePlayers);
-        	System.out.print("[MCMEPVP] (Lobby) StartThreshHold: " + startThreshHold);
-        	System.out.print("[MCMEPVP] (Lobby) Map Voting: " + voteMap);
+            System.out.print("[MCMEPVP] (Lobby) Auto-lobby: " + autorun);
+            System.out.print("[MCMEPVP] (Lobby) Min online players: " + minOnlinePlayers);
+            System.out.print("[MCMEPVP] (Lobby) StartThreshHold: " + startThreshHold);
+            System.out.print("[MCMEPVP] (Lobby) Map Voting: " + voteMap);
         }
-        
+
         resetGame();
         getCommand("pvp").setExecutor(new pvpCmds(this));
         getCommand("shout").setExecutor(new pvpCmds(this));
         getCommand("a").setExecutor(new pvpCmds(this));
         getCommand("vote").setExecutor(new pvpCmds(this));
-        
+
         getServer().getScheduler().runTask(this, new Runnable() {
-			@Override
-			public void run() {
-				autoUnlock();
-				
-			}
+            @Override
+            public void run() {
+                autoUnlock();
+
+            }
         });
-        
+
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-        	public void run() {
+            @Override
+            public void run() {
                 util.debug("Players reminded of stats!");
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     p.sendMessage(primarycolor + "Don't forget to check your stats at " + highlightcolor + "mcme.co/pvp/stats/" + p.getName());
                 }
-            }	
-        }, co.mcme.pvp.util.config.announceDelay * 20L, co.mcme.pvp.util.config.announceDelay * 20L); 
+            }
+        }, co.mcme.pvp.util.config.announceDelay * 20L, co.mcme.pvp.util.config.announceDelay * 20L);
     }
 
     public static void resetGame() {
-    	canJoin = true;
+        canJoin = true;
         if (GameStatus == 1) {
             StatisticManager.logGame(CurrentGame.getWinner());
             if (PVPGT.equals("INF")) {
                 infectionGame.stopTimer();
                 extraSpawns.clear();
             }
-            if(PVPGT.equals("FFA")) {
-            	freeForAllGame.stopTimer();
+            if (PVPGT.equals("FFA")) {
+                freeForAllGame.stopTimer();
                 extraSpawns.clear();
             }
-            if(PVPGT.equals("RBR")){
-            	ringBearerGame.stopTimer();
+            if (PVPGT.equals("RBR")) {
+                ringBearerGame.stopTimer();
             }
             repairExplosions();
             CurrentGame.clearBoard();
         }
-        ArrayList<EntityType> removing = new ArrayList<EntityType>();
+        ArrayList<EntityType> removing = new ArrayList<>();
         removing.add(EntityType.ARROW);
         removing.add(EntityType.DROPPED_ITEM);
         removing.add(EntityType.HORSE);
@@ -195,16 +188,16 @@ public class MCMEPVP extends JavaPlugin {
         util.debug("Removed " + removed + " entities from the world.");
         Participants = 0;
         GameStatus = 0;
-        
+
         horseMode = false;
         setWeather();
-        
-        PlayerStatus = new HashMap<String, String>();
-        
+
+        PlayerStatus = new HashMap<>();
+
         for (Player currentplayer : Bukkit.getOnlinePlayers()) {
-        	currentplayer.setPlayerListName(currentplayer.getName());
-        	if(currentplayer.isInsideVehicle()){
-            	currentplayer.getVehicle().remove();
+            currentplayer.setPlayerListName(currentplayer.getName());
+            if (currentplayer.isInsideVehicle()) {
+                currentplayer.getVehicle().remove();
             }
             teamUtil.setPlayerTeam(currentplayer, "spectator");
             currentplayer.getInventory().clear();
@@ -213,27 +206,28 @@ public class MCMEPVP extends JavaPlugin {
             statsListener.stripStats(currentplayer);
             textureSwitcher.switchTP(currentplayer);
             spectatorUtil.showAll(currentplayer);
-            if(currentplayer.getActivePotionEffects() != null){
-            	for(PotionEffect pe : currentplayer.getActivePotionEffects()){
-            		currentplayer.removePotionEffect(pe.getType());
-            	}
+            if (currentplayer.getActivePotionEffects() != null) {
+                for (PotionEffect pe : currentplayer.getActivePotionEffects()) {
+                    currentplayer.removePotionEffect(pe.getType());
+                }
             }
-            if(currentplayer.isInsideVehicle()){
-            	currentplayer.getVehicle().eject();
+            if (currentplayer.isInsideVehicle()) {
+                currentplayer.getVehicle().eject();
             }
         }
-        
+
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(
-        		Bukkit.getPluginManager().getPlugin("MCMEPVP"), new Runnable() {
-        			public void run() {
-        				for (Player currentplayer : Bukkit.getOnlinePlayers()) {
-        					currentplayer.teleport(Spawn);
-                        }
-        			}
-        	}, 20L);
-        
+                Bukkit.getPluginManager().getPlugin("MCMEPVP"), new Runnable() {
+            @Override
+            public void run() {
+                for (Player currentplayer : Bukkit.getOnlinePlayers()) {
+                    currentplayer.teleport(Spawn);
+                }
+            }
+        }, 20L);
+
         if (!statsListener.playerStats.isEmpty()) {
-        	statsListener.playerStats.clear();
+            statsListener.playerStats.clear();
         }
         if (PVPGT.equals("TCQ")) {
             Flags.clear();
@@ -263,27 +257,27 @@ public class MCMEPVP extends JavaPlugin {
             ringBearers.clear();
         }
         Bukkit.getServer().getPluginManager().enablePlugin(voxel);
-        
+
         if (CurrentLobby != null) {
-        	CurrentLobby.stopLobby();
-        	System.out.print("[MCMEPVP] (Lobby) Clearing lobby!");
+            CurrentLobby.stopLobby();
+            System.out.print("[MCMEPVP] (Lobby) Clearing lobby!");
         }
         CurrentLobby = new lobbyMode();
     }
 
     public static void startGame() {
-    	CurrentLobby.clearBoard();
-    	CurrentLobby.stopLobby();
-    	
-    	if (!voteCmdMethods.hasVoted.isEmpty()) {
-    		voteCmdMethods.hasVoted.clear();
-    		System.out.print("[MCMEPVP] HasVotedList cleared!");
-    	}
-    	
-    	canJoin = false;
-        Spawns = new HashMap<String, Vector>();
-        FlagHash = new HashMap<Integer, Vector>();
-        extraSpawns = new HashMap<Integer, Vector>();
+        CurrentLobby.clearBoard();
+        CurrentLobby.stopLobby();
+
+        if (!voteCmdMethods.hasVoted.isEmpty()) {
+            voteCmdMethods.hasVoted.clear();
+            System.out.print("[MCMEPVP] HasVotedList cleared!");
+        }
+
+        canJoin = false;
+        Spawns = new HashMap<>();
+        FlagHash = new HashMap<>();
+        extraSpawns = new HashMap<>();
         loadSpawns();
         if (PVPGT.equals("TDM")) {
             CurrentGame = new teamDeathMatchGame();
@@ -306,8 +300,8 @@ public class MCMEPVP extends JavaPlugin {
             CurrentGame = new freeForAllGame();
             extraSpawns();
         }
-        if(CurrentGame.allowExplosionLogging()){
-        	exploadables();
+        if (CurrentGame.allowExplosionLogging()) {
+            exploadables();
         }
         Bukkit.getServer().getPluginManager().disablePlugin(voxel);
     }
@@ -331,8 +325,8 @@ public class MCMEPVP extends JavaPlugin {
     }
 
     private static void extraSpawns() {
-    	extraSpawns.put(0, instance.getConfig().getVector(PVPMap.toLowerCase() + ".blue"));
-    	extraSpawns.put(1, instance.getConfig().getVector(PVPMap.toLowerCase() + ".red"));
+        extraSpawns.put(0, instance.getConfig().getVector(PVPMap.toLowerCase() + ".blue"));
+        extraSpawns.put(1, instance.getConfig().getVector(PVPMap.toLowerCase() + ".red"));
         int i = 0;
         int t = 2;
         while (i >= 0 && i <= 5) {
@@ -347,59 +341,59 @@ public class MCMEPVP extends JavaPlugin {
                 Block bz1 = w.getBlockAt(loc1);
 
                 if (bz.getTypeId() == 0 && bz1.getTypeId() == 0) {
-                	extraSpawns.put(t, loc.toVector());
+                    extraSpawns.put(t, loc.toVector());
                     t++;
                 }
             }
             i++;
         }
     }
-    
-    private static void autoUnlock(){
-    	for (Player p : Bukkit.getOnlinePlayers()) {
-    		if (!p.hasPermission("mcmepvp.admin")) {
-    			locked = false;
-    			break;
-    		}
-    	}
+
+    private static void autoUnlock() {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (!p.hasPermission("mcmepvp.admin")) {
+                locked = false;
+                break;
+            }
+        }
     }
-    
-    public static void setWeather(){
-    	if (GameStatus == 1) {
-    		int i = gearGiver.getRandom(0, 2);
-    		if (i == 2) {
-    			if (PVPMap.equalsIgnoreCase("HelmsDeep")) {
-            		PVPWorld.setTime(15000);
-            		PVPWorld.setStorm(true);
-            		PVPWorld.setThundering(true);
-            	}
-    		}
-    	} else {
-    		PVPWorld.setStorm(false);
-    		PVPWorld.setThundering(false);
-    	}
+
+    public static void setWeather() {
+        if (GameStatus == 1) {
+            int i = gearGiver.getRandom(0, 2);
+            if (i == 2) {
+                if (PVPMap.equalsIgnoreCase("HelmsDeep")) {
+                    PVPWorld.setTime(15000);
+                    PVPWorld.setStorm(true);
+                    PVPWorld.setThundering(true);
+                }
+            }
+        } else {
+            PVPWorld.setStorm(false);
+            PVPWorld.setThundering(false);
+        }
     }
-    
-    private static void exploadables(){
-    	blockListener.explodeableList.add(44);
-    	blockListener.explodeableList.add(45);
-    	blockListener.explodeableList.add(108);
-    	blockListener.explodeableList.add(113);
-    	//TODO load custom exploadable blocks from config on a per-map basis!
+
+    private static void exploadables() {
+        blockListener.explodeableList.add(44);
+        blockListener.explodeableList.add(45);
+        blockListener.explodeableList.add(108);
+        blockListener.explodeableList.add(113);
+        //TODO load custom exploadable blocks from config on a per-map basis!
     }
-    
-    private static void repairExplosions(){
-    	if(CurrentGame.allowExplosionLogging() && !blockListener.explodedBlocks.isEmpty()){
-    		for(Location l : blockListener.explodedBlocks.keySet()){
-    			List<Integer> block = blockListener.explodedBlocks.get(l);
-    			int type = block.get(0);
-    			byte data = block.get(1).byteValue();
-    			l.getBlock().setTypeId(type);
-    			l.getBlock().setData(data);
-    		}
-    		blockListener.explodedBlocks.clear();
-    		blockListener.explodeableList.clear();
-    	}
+
+    private static void repairExplosions() {
+        if (CurrentGame.allowExplosionLogging() && !blockListener.explodedBlocks.isEmpty()) {
+            for (Location l : blockListener.explodedBlocks.keySet()) {
+                List<Integer> block = blockListener.explodedBlocks.get(l);
+                int type = block.get(0);
+                byte data = block.get(1).byteValue();
+                l.getBlock().setTypeId(type);
+                l.getBlock().setData(data);
+            }
+            blockListener.explodedBlocks.clear();
+            blockListener.explodeableList.clear();
+        }
     }
 
     private void registerEvents() {
@@ -418,7 +412,7 @@ public class MCMEPVP extends JavaPlugin {
 
     public static void queuePlayer(Player player) {
         if (!teamUtil.isOnTeam(player)) {
-        	statsListener.stripStats(player);
+            statsListener.stripStats(player);
             if (GameStatus == 1) {
                 CurrentGame.addPlayerDuringGame(player);
                 return;
@@ -429,12 +423,12 @@ public class MCMEPVP extends JavaPlugin {
                 queue.add(player);
                 Participants++;
                 if (GameStatus == 0) {
-                	CurrentLobby.setTeam(player, "participant");
+                    CurrentLobby.setTeam(player, "participant");
                 }
                 teamUtil.setPlayerTeam(player, "participant");
                 player.sendMessage(positivecolor + "You are participating! Wait for the next Game to start!");
-                if(MCMEPVP.GameStatus==0){
-                	player.teleport(MCMEPVP.Spawn);
+                if (MCMEPVP.GameStatus == 0) {
+                    player.teleport(MCMEPVP.Spawn);
                 }
                 util.notifyAdmin(player.getName(), 1, null);
             }
@@ -446,7 +440,7 @@ public class MCMEPVP extends JavaPlugin {
             queue.remove(player);
             Participants--;
             if (GameStatus == 0) {
-            	CurrentLobby.setTeam(player, "participant");
+                CurrentLobby.setTeam(player, "participant");
             }
             teamUtil.setPlayerTeam(player, "spectator");
             player.sendMessage(negativecolor + "You are no longer participating!");
@@ -455,8 +449,8 @@ public class MCMEPVP extends JavaPlugin {
             util.debug("Player `" + player.getName() + "` was not queued, but attempted to unqueue!");
         }
     }
-    
-    public static boolean isQueued(Player player){
+
+    public static boolean isQueued(Player player) {
         return queue.contains(player);
     }
 

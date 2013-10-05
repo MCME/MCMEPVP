@@ -27,7 +27,7 @@ public class Spawn {
     public String getSpawnOwner() {
         return team;
     }
-    
+
     public void setSpawnOwner(String newteam) {
         team = newteam;
     }

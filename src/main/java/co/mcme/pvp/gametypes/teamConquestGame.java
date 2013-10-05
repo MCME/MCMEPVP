@@ -1,16 +1,26 @@
 package co.mcme.pvp.gametypes;
 
+import co.mcme.pvp.MCMEPVP;
 import static co.mcme.pvp.MCMEPVP.FlagHash;
+import co.mcme.pvp.gameType;
 import static co.mcme.pvp.listeners.flagListener.BlockFlagMarkers;
 import static co.mcme.pvp.listeners.flagListener.blueFlagCount;
 import static co.mcme.pvp.listeners.flagListener.redFlagCount;
-
+import co.mcme.pvp.stats.PlayerStat;
+import co.mcme.pvp.stats.StatisticManager;
+import co.mcme.pvp.util.armorColor;
+import co.mcme.pvp.util.config;
+import co.mcme.pvp.util.gearGiver;
+import co.mcme.pvp.util.spectatorUtil;
+import co.mcme.pvp.util.teamUtil;
+import co.mcme.pvp.util.textureSwitcher;
+import co.mcme.pvp.util.util;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -26,7 +36,6 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
@@ -40,20 +49,6 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
-
-import co.mcme.pvp.MCMEPVP;
-import co.mcme.pvp.gameType;
-import co.mcme.pvp.stats.PlayerStat;
-import co.mcme.pvp.stats.StatisticManager;
-import co.mcme.pvp.util.armorColor;
-import co.mcme.pvp.util.config;
-import co.mcme.pvp.util.gearGiver;
-import co.mcme.pvp.util.spectatorUtil;
-import co.mcme.pvp.util.teamUtil;
-import co.mcme.pvp.util.textureSwitcher;
-import co.mcme.pvp.util.util;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class teamConquestGame extends gameType {
 

@@ -24,19 +24,19 @@ public class PlayerStat {
     public int getDeathCount() {
         return deaths.size();
     }
-    
+
     public void addDeath(PvpDeath death) {
         deaths.add(death);
     }
-    
+
     public void addKill(PvpDeath kill) {
         kills.add(kill);
     }
-    
+
     public ArrayList<PvpDeath> getDeaths() {
         return deaths;
     }
-    
+
     public ArrayList<PvpDeath> getKills() {
         return kills;
     }

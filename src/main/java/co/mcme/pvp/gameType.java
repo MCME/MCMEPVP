@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.scoreboard.Objective;
@@ -30,7 +29,7 @@ public abstract class gameType {
     public abstract void onPlayerdie(PlayerDeathEvent event);
 
     public abstract void addTeam(Player player, String Team);
-    
+
     public abstract void addSpectatorTeam(Player player);
 
     public abstract void onPlayerhit(EntityDamageByEntityEvent event);
@@ -48,7 +47,7 @@ public abstract class gameType {
     public abstract String team2();
 
     public abstract Scoreboard getBoard();
-    
+
     public abstract Objective getObjective();
 
     public abstract void clearBoard();
@@ -58,24 +57,24 @@ public abstract class gameType {
     public abstract HashMap<?, ?> getPlaying();
 
     public abstract boolean isJoinable();
-    
+
     public abstract boolean allowBlockBreak();
-    
+
     public abstract boolean allowBlockPlace();
-    
+
     public abstract boolean allowContainerIteraction();
-    
+
     public abstract boolean allowExplosionLogging();
-    
+
     public abstract boolean allowCustomAttributes();
-    
+
     public abstract String getGameId();
-    
+
     public abstract Long getStartTime();
-    
+
     public abstract Long getEndTime();
-    
+
     public abstract HashMap<String, PlayerStat> getPlayerStats();
-    
+
     public abstract String getWinner();
 }

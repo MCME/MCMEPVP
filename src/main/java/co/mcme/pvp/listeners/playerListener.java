@@ -1,8 +1,11 @@
 package co.mcme.pvp.listeners;
 
+import co.mcme.pvp.MCMEPVP;
 import static co.mcme.pvp.MCMEPVP.PVPGT;
 import static co.mcme.pvp.gametypes.ringBearerGame.ringBearers;
-
+import co.mcme.pvp.util.spectatorUtil;
+import co.mcme.pvp.util.teamUtil;
+import co.mcme.pvp.util.textureSwitcher;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -19,11 +22,6 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
-
-import co.mcme.pvp.MCMEPVP;
-import co.mcme.pvp.util.spectatorUtil;
-import co.mcme.pvp.util.teamUtil;
-import co.mcme.pvp.util.textureSwitcher;
 
 public class playerListener implements Listener {
 
@@ -44,8 +42,8 @@ public class playerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     void onPlayerJoin(PlayerJoinEvent event) {
-        if (event.getPlayer().hasPermission("mcmepvp.admin")){
-            if (MCMEPVP.debug){
+        if (event.getPlayer().hasPermission("mcmepvp.admin")) {
+            if (MCMEPVP.debug) {
                 event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENDERDRAGON_GROWL, 1, 1);
                 event.getPlayer().sendMessage(MCMEPVP.highlightcolor + "Debug mode is enabled!");
                 event.getPlayer().sendMessage(MCMEPVP.highlightcolor + "Stats are not being recorded!");
@@ -55,7 +53,7 @@ public class playerListener implements Listener {
             event.getPlayer().teleport(MCMEPVP.Spawn);
             textureSwitcher.switchTP(event.getPlayer());
             spectatorUtil.showAll(event.getPlayer());
-            
+
             MCMEPVP.CurrentLobby.onPlayerJoin(event);
         } else {
             MCMEPVP.CurrentGame.onPlayerJoin(event);
@@ -65,9 +63,9 @@ public class playerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void zanBlock(PlayerJoinEvent event) {
-    	event.getPlayer().sendMessage("§3 §6 §3 §6 §3 §6 §e");
+        event.getPlayer().sendMessage("§3 §6 §3 §6 §3 §6 §e");
     }
-    
+
     @EventHandler(priority = EventPriority.HIGH)
     public void inventory(InventoryCloseEvent event) {
         if (PVPGT.equals("RBR") && (ringBearers.size() > 0)) {
@@ -89,32 +87,32 @@ public class playerListener implements Listener {
             }
         }
     }
-    
+
     @EventHandler(priority = EventPriority.HIGH)
     public void itemPickup(PlayerPickupItemEvent event) {
-        if(teamUtil.getPlayerTeam(event.getPlayer()).equals("red")
-        		|| teamUtil.getPlayerTeam(event.getPlayer()).equals("blue")
-        		|| event.getPlayer().getGameMode().equals(GameMode.CREATIVE)){
-        	event.setCancelled(false);
-        }else{
-        	event.setCancelled(true);
-        } 
+        if (teamUtil.getPlayerTeam(event.getPlayer()).equals("red")
+                || teamUtil.getPlayerTeam(event.getPlayer()).equals("blue")
+                || event.getPlayer().getGameMode().equals(GameMode.CREATIVE)) {
+            event.setCancelled(false);
+        } else {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     void onPlayerLeave(PlayerQuitEvent event) {
         if (MCMEPVP.GameStatus == 0) {
             MCMEPVP.unQueuePlayer(event.getPlayer());
-            
+
             MCMEPVP.CurrentLobby.onPlayerleaveServer(event);
         } else {
             MCMEPVP.CurrentGame.onPlayerleaveServer(event);
         }
     }
-    
+
     @EventHandler(priority = EventPriority.HIGH)
-    void onGamemodeChange(PlayerGameModeChangeEvent event){
-        if (teamUtil.getPlayerTeam(event.getPlayer()).equalsIgnoreCase("spectator")){
+    void onGamemodeChange(PlayerGameModeChangeEvent event) {
+        if (teamUtil.getPlayerTeam(event.getPlayer()).equalsIgnoreCase("spectator")) {
             event.getPlayer().setAllowFlight(true);
         }
     }

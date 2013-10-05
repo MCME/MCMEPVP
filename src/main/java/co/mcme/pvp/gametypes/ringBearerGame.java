@@ -1,10 +1,18 @@
 package co.mcme.pvp.gametypes;
 
+import co.mcme.pvp.MCMEPVP;
+import co.mcme.pvp.gameType;
+import co.mcme.pvp.stats.PlayerStat;
+import co.mcme.pvp.stats.StatisticManager;
+import co.mcme.pvp.util.armorColor;
+import co.mcme.pvp.util.gearGiver;
+import co.mcme.pvp.util.spectatorUtil;
+import co.mcme.pvp.util.teamUtil;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -16,7 +24,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
@@ -29,17 +36,6 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
-
-import co.mcme.pvp.MCMEPVP;
-import co.mcme.pvp.gameType;
-import co.mcme.pvp.stats.PlayerStat;
-import co.mcme.pvp.stats.StatisticManager;
-import co.mcme.pvp.util.armorColor;
-import co.mcme.pvp.util.gearGiver;
-import co.mcme.pvp.util.spectatorUtil;
-import co.mcme.pvp.util.teamUtil;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class ringBearerGame extends gameType {
 
@@ -723,7 +719,7 @@ public class ringBearerGame extends gameType {
     public Long getEndTime() {
         return endTime;
     }
-    
+
     @Override
     public String getWinner() {
         return winner;
