@@ -413,6 +413,7 @@ public class ringBearerGame extends gameType {
 							+ MCMEPVP.positivecolor + " wins!");
 			stopTimer();
 			MCMEPVP.winFireworks("blue");
+			ringBearers.clear();
 			MCMEPVP.resetGame();
 		}
 		if (blueSize <= 0) {
@@ -435,12 +436,14 @@ public class ringBearerGame extends gameType {
 							+ MCMEPVP.positivecolor + " wins!");
 			stopTimer();
 			MCMEPVP.winFireworks("red");
+			ringBearers.clear();
 			MCMEPVP.resetGame();
 		}
 		if (lastMan && lm == 0) {
 			Bukkit.getServer().broadcastMessage(
 					MCMEPVP.positivecolor + "Game Over - Stalemate!");
 			stopTimer();
+			ringBearers.clear();
 			MCMEPVP.resetGame();
 		}
 	}

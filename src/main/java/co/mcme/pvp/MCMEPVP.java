@@ -198,6 +198,7 @@ public class MCMEPVP extends JavaPlugin {
                 extraSpawns.clear();
             }
             if(PVPGT.equals("RBR")){
+            	ringBearers.clear();
             	ringBearerGame.stopTimer();
             }
             repairExplosions();
@@ -274,9 +275,6 @@ public class MCMEPVP extends JavaPlugin {
                 }
                 CarpetFlagMarkers.clear();
             }
-        }
-        if (PVPGT.equals("RBR")) {
-            ringBearers.clear();
         }
         Bukkit.getServer().getPluginManager().enablePlugin(voxel);
         
@@ -376,8 +374,10 @@ public class MCMEPVP extends JavaPlugin {
 		pvpMapMeta meta = CurrentMap.getMapMeta();
 		int i = 0;
 		for (Spawn s : meta.getSpawns().values()) {
-			extraSpawns.put(i, s.toVector());
-			i++;
+			if (!s.getSpawnOwner().equals("spectator")) {
+				extraSpawns.put(i, s.toVector());
+				i++;
+			}
 		}
 		for (Vector v : meta.getFlags().values()) {
 			extraSpawns.put(i, v);

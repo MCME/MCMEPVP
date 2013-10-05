@@ -98,7 +98,7 @@ public class statsListener implements Listener{
 						}
 					}
 					// Armor
-					if(event.getCursor().getType().equals(Material.ENDER_PEARL)){
+					if(event.getCursor().getType().equals(Material.EYE_OF_ENDER)){
 						if((event.getSlot()>9 && event.getSlot()<17) && !event.getSlotType().equals(SlotType.QUICKBAR)){
 							Player p = (Player) event.getWhoClicked();
 							
@@ -140,16 +140,13 @@ public class statsListener implements Listener{
 				if(event.getPlayer().getInventory().contains(Material.EYE_OF_ENDER)){
 					event.getPlayer().getInventory().remove(Material.EYE_OF_ENDER);
 				}
-				if(event.getPlayer().getInventory().contains(Material.SLIME_BALL)){
-					event.getPlayer().getInventory().remove(Material.SLIME_BALL);
-				}
 			}
 		}
 	}
 	
 	@EventHandler
 	public void dropItem(PlayerDropItemEvent event){
-		if(event.getItemDrop().getType().equals(Material.ENDER_PEARL)
+		if(event.getItemDrop().getType().equals(Material.EYE_OF_ENDER)
 				|| event.getItemDrop().getType().equals(Material.EYE_OF_ENDER)){
 			event.setCancelled(true);
 		}
@@ -162,11 +159,11 @@ public class statsListener implements Listener{
 		Inventory stats = p.getServer().createInventory(p, (18), ChatColor.GOLD+"PVP Attributes");
 		
 		stats.setItem(0, itemUtils.nameItem(new ItemStack(Material.IRON_SWORD), "Increases sword damage", "Reduces bow damage", ChatColor.DARK_PURPLE));
-		stats.setItem(4, itemUtils.nameItem(new ItemStack(Material.ENDER_PEARL), "Sword vs Bow", "none", ChatColor.DARK_AQUA));
+		stats.setItem(4, itemUtils.nameItem(new ItemStack(Material.EYE_OF_ENDER), "Sword vs Bow", "none", ChatColor.DARK_AQUA));
 		stats.setItem(8, itemUtils.nameItem(new ItemStack(Material.BOW), "Increases bow damage", "Reduces sword damage", ChatColor.DARK_PURPLE));
 		
 		stats.setItem(9, itemUtils.nameItem(new ItemStack(Material.LEATHER_BOOTS), "Increases sprint speed", "Reduces armor strength", ChatColor.DARK_PURPLE));
-		stats.setItem(13, itemUtils.nameItem(new ItemStack(Material.ENDER_PEARL), "Speed vs Armor", "none", ChatColor.DARK_AQUA));
+		stats.setItem(13, itemUtils.nameItem(new ItemStack(Material.EYE_OF_ENDER), "Speed vs Armor", "none", ChatColor.DARK_AQUA));
 		stats.setItem(17, itemUtils.nameItem(new ItemStack(Material.IRON_CHESTPLATE), "Increases armor strength", "Reduces sprint speed", ChatColor.DARK_PURPLE));
 
 		p.openInventory(stats);	

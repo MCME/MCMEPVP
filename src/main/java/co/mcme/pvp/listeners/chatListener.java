@@ -50,7 +50,6 @@ public class chatListener implements Listener {
                 if (receiverStatus.equals("spectator") || receiverStatus.equals("participant") || receiverStatus.equals("fighter") || receiverStatus.equals(senderTeam)) {
                     p.sendMessage(label + event.getPlayer().getName() + ": " + ChatColor.WHITE + event.getMessage());
                 }
-                System.out.print(MCMEPVP.pref + event.getPlayer().getName() + MCMEPVP.suff + event.getMessage());
             }
         }
     }
