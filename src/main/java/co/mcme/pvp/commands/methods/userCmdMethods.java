@@ -64,7 +64,7 @@ public class userCmdMethods {
 	// JOIN
 	public static void pvpJoin(Player p) {
 		if (p.hasPermission("mcmepvp.join")) {
-			if (MCMEPVP.canJoin) {
+			if (MCMEPVP.loadingLock) {
 				queuePlayer(p);
 				return;
 			} else {
@@ -81,7 +81,7 @@ public class userCmdMethods {
 	// LEAVE
 	public static void pvpLeave(Player p) {
 		if (p.hasPermission("mcmepvp.leave")) {
-			if (MCMEPVP.canJoin) {
+			if (MCMEPVP.loadingLock) {
 				if (!teamUtil.isOnTeam(p) && GameStatus == 0) {
 					unQueuePlayer(p);
 					return;

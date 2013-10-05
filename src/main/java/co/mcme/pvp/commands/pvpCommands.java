@@ -155,7 +155,7 @@ public class pvpCommands implements CommandExecutor {
 				}
 			}
 			if (c.equalsIgnoreCase("vote")) {
-				if (MCMEPVP.GameStatus == 0 && MCMEPVP.canJoin) {
+				if (MCMEPVP.GameStatus == 0 && MCMEPVP.loadingLock) {
 					if (a.length == 0) {
 						voteCmdMethods.pvpVoteInfo(p);
 						return true;

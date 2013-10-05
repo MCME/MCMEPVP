@@ -192,7 +192,7 @@ public class teamConquestGame extends gameType {
                 bluescore.setScore(BlueScore);
                 redscore.setScore(RedScore);
                 
-                MCMEPVP.canJoin = true;
+                MCMEPVP.loadingLock = true;
             }
         }, 100L);
     }

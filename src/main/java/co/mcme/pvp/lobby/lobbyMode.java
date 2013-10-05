@@ -95,7 +95,7 @@ public class lobbyMode extends lobbyType {
 									p.setScoreboard(board);
 								}
 								displayBoard();
-								MCMEPVP.canJoin= true; 
+								MCMEPVP.loadingLock = true;
 								if (MCMEPVP.autorun) {
 									if (voteMap) {
 										setMapVote();

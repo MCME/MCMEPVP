@@ -129,7 +129,7 @@ public class teamSlayerGame extends gameType {
                 bluescore.setScore(BlueScore);
                 displayBoard();
                 
-                MCMEPVP.canJoin = true;
+                MCMEPVP.loadingLock = true;
             }
         }, 100L);
     }

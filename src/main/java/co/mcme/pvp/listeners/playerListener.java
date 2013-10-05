@@ -52,11 +52,13 @@ public class playerListener implements Listener {
             }
         }
         if (MCMEPVP.GameStatus == 0) {
-            event.getPlayer().teleport(MCMEPVP.Spawn);
-            textureSwitcher.switchTP(event.getPlayer());
-            spectatorUtil.showAll(event.getPlayer());
-            
-            MCMEPVP.CurrentLobby.onPlayerJoin(event);
+            if (MCMEPVP.loadingLock) {
+                event.getPlayer().teleport(MCMEPVP.Spawn);
+                textureSwitcher.switchTP(event.getPlayer());
+                spectatorUtil.showAll(event.getPlayer());
+
+                MCMEPVP.CurrentLobby.onPlayerJoin(event);
+            }
         } else {
             MCMEPVP.CurrentGame.onPlayerJoin(event);
             textureSwitcher.switchTP(event.getPlayer());
@@ -104,9 +106,11 @@ public class playerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     void onPlayerLeave(PlayerQuitEvent event) {
         if (MCMEPVP.GameStatus == 0) {
-            MCMEPVP.unQueuePlayer(event.getPlayer());
-            
-            MCMEPVP.CurrentLobby.onPlayerleaveServer(event);
+            if (MCMEPVP.loadingLock) {
+                MCMEPVP.unQueuePlayer(event.getPlayer());
+
+                MCMEPVP.CurrentLobby.onPlayerleaveServer(event);
+            }
         } else {
             MCMEPVP.CurrentGame.onPlayerleaveServer(event);
         }

@@ -95,7 +95,7 @@ public class MCMEPVP extends JavaPlugin {
     public static List<String> Maps;
     public static List<String> GameTypes;
     private static Plugin instance;
-    public static boolean canJoin = true;
+    public static boolean loadingLock = false;
     public static boolean voteMap = false;
     public static boolean locked = true;
     public static boolean gameDebug = false;
@@ -187,7 +187,7 @@ public class MCMEPVP extends JavaPlugin {
     }
 
     public static void resetGame() {
-    	canJoin = false;
+    	loadingLock = false;
         if (GameStatus == 1) {
             if (PVPGT.equals("INF")) {
                 infectionGame.stopTimer();
@@ -338,7 +338,7 @@ public class MCMEPVP extends JavaPlugin {
     		System.out.print("[MCMEPVP] HasVotedList cleared!");
     	}
     	
-    	canJoin = false;
+    	loadingLock = false;
         extraSpawns = new HashMap<Integer, Vector>();
         
         if (PVPGT.equals("TDM")) {

@@ -141,7 +141,7 @@ public class freeForAllGame extends gameType {
                         MCMEPVP.positivecolor
                         + "The Fight begins!");
                 
-                MCMEPVP.canJoin = true;
+                MCMEPVP.loadingLock = true;
             }
         }, 100L);
         m--;

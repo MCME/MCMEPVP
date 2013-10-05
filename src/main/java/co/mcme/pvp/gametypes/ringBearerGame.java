@@ -109,7 +109,7 @@ public class ringBearerGame extends gameType {
 								spectatorUtil.startingSpectators();
 								displayBoard();
 
-								MCMEPVP.canJoin = true;
+								MCMEPVP.loadingLock = true;
 							}
 
 						}, 100L);

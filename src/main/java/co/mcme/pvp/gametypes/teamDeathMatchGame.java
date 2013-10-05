@@ -129,7 +129,7 @@ public class teamDeathMatchGame extends gameType {
                 MCMEPVP.setWeather();
                 displayBoard();
                 
-                MCMEPVP.canJoin = true;
+                MCMEPVP.loadingLock = true;
             }
         }, 100L);
     }

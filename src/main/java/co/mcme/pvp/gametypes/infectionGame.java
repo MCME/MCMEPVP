@@ -160,7 +160,7 @@ public class infectionGame extends gameType {
                 m--;
                 objective.setDisplayName("Time: " + m + ":" + s);
                 
-                MCMEPVP.canJoin = true;
+                MCMEPVP.loadingLock = true;
             }
         }, 100L);
         CountdownTimer();
