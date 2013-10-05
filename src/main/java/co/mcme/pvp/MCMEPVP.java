@@ -375,11 +375,14 @@ public class MCMEPVP extends JavaPlugin {
 		int i = 0;
 		for (Spawn s : meta.getSpawns().values()) {
 			if (!s.getSpawnOwner().equals("spectator")) {
-				extraSpawns.put(i, s.toVector());
+                Vector v = s.toVector();
+                v.setY(v.getY() + 0.3);
+				extraSpawns.put(i, v);
 				i++;
 			}
 		}
 		for (Vector v : meta.getFlags().values()) {
+            v.setY(v.getY() + 2.3);
 			extraSpawns.put(i, v);
 			i++;
 		}
