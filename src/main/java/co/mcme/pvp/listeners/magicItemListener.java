@@ -29,7 +29,9 @@ public class magicItemListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void oneRing(PlayerInteractEvent event) {
-		if (MCMEPVP.GameStatus == 1) {
+		if (MCMEPVP.GameStatus == 1
+                && (MCMEPVP.PVPGT.equals("RBR")
+                || MCMEPVP.PVPGT.equals("FFA"))) {
 			if ((event.hasItem())
 					&& (event.getItem().getType().equals(Material.GOLD_NUGGET))) {
 				if (MCMEPVP.PVPGT.equals("RBR")
@@ -60,14 +62,14 @@ public class magicItemListener implements Listener {
 					sugarEffects(event);
 				}
 			}
-			if (event.hasItem()
-					&& event.getItem().getType().equals(Material.GHAST_TEAR)) {
-				if (!(event.getPlayer()
-						.hasPotionEffect(PotionEffectType.REGENERATION))
-						&& (((event.getAction().equals(Action.RIGHT_CLICK_AIR)) || (event
-								.getAction().equals(Action.RIGHT_CLICK_BLOCK))))) {
+            if (event.hasItem()
+                    && event.getItem().getType().equals(Material.GHAST_TEAR)) {
+                if (!(event.getPlayer()
+                        .hasPotionEffect(PotionEffectType.REGENERATION))
+                        && (((event.getAction().equals(Action.RIGHT_CLICK_AIR)) || (event
+                        .getAction().equals(Action.RIGHT_CLICK_BLOCK))))) {
 					event.setCancelled(true);
-					pipeEffects(event);
+                    pipeEffects(event);
 				}
 			}
 			if (event.hasItem()
@@ -107,7 +109,7 @@ public class magicItemListener implements Listener {
 	}
 
 	private void oneRingEffects(PlayerInteractEvent event) {
-		Player p = (Player) event.getPlayer();
+		Player p = event.getPlayer();
 		PlayerInventory i = p.getInventory();
 		ItemStack is = i.getItemInHand();	
 		int amnt = is.getAmount()-1;
@@ -116,8 +118,7 @@ public class magicItemListener implements Listener {
 		}else{
 			i.remove(is);
 		}
-		p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 300,
-				0));
+		p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 300, 0));
 		p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 300, 0));
 		p.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 300, 2));
 		i.setBoots(new ItemStack(Material.AIR));
@@ -138,7 +139,7 @@ public class magicItemListener implements Listener {
 	}
 
 	private void sugarEffects(PlayerInteractEvent event) {
-		Player p = (Player) event.getPlayer();
+		Player p = event.getPlayer();
 		ItemStack is = p.getInventory().getItemInHand();	
 		int amnt = is.getAmount()-1;
 		if(amnt>0){
@@ -152,23 +153,21 @@ public class magicItemListener implements Listener {
 	}
 
 	private void pipeEffects(PlayerInteractEvent event) {
-		Player p = (Player) event.getPlayer();
+		Player p = event.getPlayer();
 		ItemStack is = p.getInventory().getItemInHand();	
 		int amnt = is.getAmount()-1;
 		if(amnt>0){
 			is.setAmount(amnt);
 		}else{
 			p.getInventory().remove(is);
-		}
-		Location l = p.getTargetBlock(null, 2).getLocation();
-		p.playEffect(l, Effect.SMOKE, null);
-		p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 500,
-				0));
-		p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 500, 0));
+        }
+
+        p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 240, 0));
+        p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 240, 0));
 	}
 
 	private void starEffects(PlayerInteractEvent event) {
-		Player p = (Player) event.getPlayer();
+		Player p = event.getPlayer();
 		ItemStack is = p.getInventory().getItemInHand();	
 		int amnt = is.getAmount()-1;
 		if(amnt>0){
@@ -183,7 +182,7 @@ public class magicItemListener implements Listener {
 	}
 
 	private void fishEffects(PlayerInteractEvent event) {
-		Player p = (Player) event.getPlayer();
+		Player p = event.getPlayer();
 		ItemStack is = p.getInventory().getItemInHand();	
 		int amnt = is.getAmount()-1;
 		if(amnt>0){
@@ -197,7 +196,7 @@ public class magicItemListener implements Listener {
 	}
 	
 	private void cookieEffects(PlayerInteractEvent event) {
-		Player p = (Player) event.getPlayer();
+		Player p = event.getPlayer();
 		ItemStack is = p.getInventory().getItemInHand();	
 		int amnt = is.getAmount()-1;
 		if(amnt>0){
