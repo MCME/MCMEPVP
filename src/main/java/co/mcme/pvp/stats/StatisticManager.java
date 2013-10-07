@@ -17,7 +17,7 @@ public class StatisticManager {
     static HashMap<String, String> lastStatus;
     static gameType lastGame;
 
-    public static boolean storePlayerDeath(PlayerDeathEvent event) {
+    public static void storePlayerDeath(PlayerDeathEvent event) {
         if (!MCMEPVP.debug) {
             if (event.getEntity().getKiller() instanceof Player) {
                 Player victim = event.getEntity();
@@ -35,10 +35,8 @@ public class StatisticManager {
                 if (playerStats.containsKey(victim.getName())) {
                     playerStats.get(victim.getName()).addDeath(new PvpDeath(victim.getName(), "$$", MCMEPVP.PVPMap, loc.getBlock().getType(), MCMEPVP.PVPGT));
                 }
-
             }
         }
-        return true;
     }
 
     public static void logGame(String winner) {

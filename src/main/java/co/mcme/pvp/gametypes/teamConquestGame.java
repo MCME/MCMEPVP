@@ -315,7 +315,6 @@ public class teamConquestGame extends gameType {
 
     @Override
     public void onPlayerdie(PlayerDeathEvent event) {
-        StatisticManager.storePlayerDeath(event);
         Player player = event.getEntity();
         String Status = teamUtil.getPlayerTeam(player);
         Color col;
@@ -325,6 +324,7 @@ public class teamConquestGame extends gameType {
                         + player.getName() + " was tired watching this fight!");
             }
             if (Status.equals("red")) {
+                StatisticManager.storePlayerDeath(event);
                 RedScore--;
                 if (blueFlagCount > redFlagCount) {
                     int flagModifier = blueFlagCount - redFlagCount;
@@ -341,6 +341,7 @@ public class teamConquestGame extends gameType {
                         col, "boating", Status);
             }
             if (Status.equals("blue")) {
+                StatisticManager.storePlayerDeath(event);
                 BlueScore--;
                 if (redFlagCount > blueFlagCount) {
                     int flagModifier = redFlagCount - blueFlagCount;
@@ -362,6 +363,7 @@ public class teamConquestGame extends gameType {
                         + player.getName() + " was tired watching this fight!");
             }
             if (Status.equals("red")) {
+                StatisticManager.storePlayerDeath(event);
                 RedScore--;
                 if (blueFlagCount > redFlagCount) {
                     int flagModifier = blueFlagCount - redFlagCount;
@@ -377,6 +379,7 @@ public class teamConquestGame extends gameType {
                         col, "boating", Status);
             }
             if (Status.equals("blue")) {
+                StatisticManager.storePlayerDeath(event);
                 BlueScore--;
                 if (redFlagCount > blueFlagCount) {
                     int flagModifier = redFlagCount - blueFlagCount;

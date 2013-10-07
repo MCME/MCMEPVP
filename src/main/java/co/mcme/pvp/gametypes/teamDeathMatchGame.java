@@ -211,7 +211,6 @@ public class teamDeathMatchGame extends gameType {
 
     @Override
     public void onPlayerdie(PlayerDeathEvent event) {
-        StatisticManager.storePlayerDeath(event);
         Player player = event.getEntity();
         String Status = teamUtil.getPlayerTeam(player);
 
@@ -222,6 +221,7 @@ public class teamDeathMatchGame extends gameType {
             event.setDeathMessage(MCMEPVP.primarycolor + "Spectator " + player.getName() + " was tired watching this fight!");
         }
         if (Status.equals("red")) {
+            StatisticManager.storePlayerDeath(event);
             RedMates--;
             redscore.setScore(RedMates);
             victim = ChatColor.RED + player.getName();
@@ -229,6 +229,7 @@ public class teamDeathMatchGame extends gameType {
             redteam.removePlayer(player);
         }
         if (Status.equals("blue")) {
+            StatisticManager.storePlayerDeath(event);
             BlueMates--;
             bluescore.setScore(BlueMates);
             victim = ChatColor.BLUE + player.getName();

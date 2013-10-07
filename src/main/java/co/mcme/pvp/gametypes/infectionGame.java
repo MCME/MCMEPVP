@@ -302,7 +302,6 @@ public class infectionGame extends gameType {
 
     @Override
     public void onPlayerdie(PlayerDeathEvent event) {
-        StatisticManager.storePlayerDeath(event);
         Player p = event.getEntity();
         World w = p.getWorld();
         Location l = p.getLocation();
@@ -313,6 +312,7 @@ public class infectionGame extends gameType {
                         + p.getName() + " was tired watching this fight!");
             }
             if (Status.equals("blue")) {
+                StatisticManager.storePlayerDeath(event);
                 event.setDeathMessage(ChatColor.BLUE + p.getName()
                         + MCMEPVP.primarycolor + " was infected by "
                         + ChatColor.RED + p.getKiller().getName());
@@ -321,6 +321,7 @@ public class infectionGame extends gameType {
                 event.getDrops().add(new ItemStack(364, 1));
                 event.getDrops().add(new ItemStack(262, 8));
             } else if (Status.equals("red")) {
+                StatisticManager.storePlayerDeath(event);
                 event.setDeathMessage(ChatColor.RED + p.getName()
                         + MCMEPVP.primarycolor + " was killed by "
                         + ChatColor.BLUE + p.getKiller().getName());
@@ -337,6 +338,7 @@ public class infectionGame extends gameType {
                         + p.getName() + " was tired watching this fight!");
             }
             if (Status.equals("blue")) {
+                StatisticManager.storePlayerDeath(event);
                 event.setDeathMessage(ChatColor.BLUE + p.getName()
                         + MCMEPVP.primarycolor + " was lost in battle!");
                 event.getDrops().add(new ItemStack(364, 1));
@@ -344,6 +346,7 @@ public class infectionGame extends gameType {
                 survivorteam.removePlayer(p);
                 zombieteam.addPlayer(p);
             } else if (Status.equals("red")) {
+                StatisticManager.storePlayerDeath(event);
                 event.setDeathMessage(ChatColor.RED + p.getName()
                         + MCMEPVP.primarycolor + " was lost in battle!");
                 event.getDrops().add(new ItemStack(367, 2));

@@ -240,7 +240,6 @@ public class teamSlayerGame extends gameType {
 
     @Override
     public void onPlayerdie(PlayerDeathEvent event) {
-        StatisticManager.storePlayerDeath(event);
         Player player = event.getEntity();
         String Status = teamUtil.getPlayerTeam(player);
         Color col;
@@ -249,6 +248,7 @@ public class teamSlayerGame extends gameType {
                 event.setDeathMessage(MCMEPVP.primarycolor + "Spectator " + player.getName() + " was tired watching this fight!");
             }
             if (Status.equals("red")) {
+                StatisticManager.storePlayerDeath(event);
                 BlueScore++;
                 event.setDeathMessage(ChatColor.RED + player.getName() + MCMEPVP.primarycolor + " was killed by " + ChatColor.BLUE + player.getKiller().getName());
                 bluescore.setScore(BlueScore);
@@ -258,6 +258,7 @@ public class teamSlayerGame extends gameType {
                 gearGiver.loadout(player, true, isTharbad, true, "warrior", col, "boating", Status);
             }
             if (Status.equals("blue")) {
+                StatisticManager.storePlayerDeath(event);
                 RedScore++;
                 event.setDeathMessage(ChatColor.BLUE + player.getName() + MCMEPVP.primarycolor + " was killed by " + ChatColor.RED + player.getKiller().getName());
                 redscore.setScore(RedScore);
@@ -271,6 +272,7 @@ public class teamSlayerGame extends gameType {
                 event.setDeathMessage(MCMEPVP.primarycolor + "Spectator " + player.getName() + " was tired watching this fight!");
             }
             if (Status.equals("red")) {
+                StatisticManager.storePlayerDeath(event);
                 BlueScore++;
                 event.setDeathMessage(ChatColor.RED + player.getName() + MCMEPVP.primarycolor + " was lost in battle");
                 bluescore.setScore(BlueScore);
@@ -280,6 +282,7 @@ public class teamSlayerGame extends gameType {
                 gearGiver.loadout(player, true, isTharbad, true, "warrior", col, "boating", Status);
             }
             if (Status.equals("blue")) {
+                StatisticManager.storePlayerDeath(event);
                 RedScore++;
                 event.setDeathMessage(ChatColor.BLUE + player.getName() + MCMEPVP.primarycolor + " was lost in battle");
                 redscore.setScore(RedScore);

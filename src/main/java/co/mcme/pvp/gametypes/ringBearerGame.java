@@ -265,7 +265,6 @@ public class ringBearerGame extends gameType {
 
     @Override
     public void onPlayerdie(PlayerDeathEvent event) {
-        StatisticManager.storePlayerDeath(event);
         Player victim = event.getEntity();
         String team = teamUtil.getPlayerTeam(victim);
 
@@ -273,6 +272,7 @@ public class ringBearerGame extends gameType {
             event.setDeathMessage(MCMEPVP.primarycolor + "Spectator "
                     + victim.getName() + " was tired watching this fight!");
         } else {
+            StatisticManager.storePlayerDeath(event);
             if (ringBearers.containsKey(victim)) {
                 String s = ringBearers.get(victim);
                 ChatColor msg = ChatColor.WHITE;

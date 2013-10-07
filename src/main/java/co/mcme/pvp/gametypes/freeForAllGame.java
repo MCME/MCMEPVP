@@ -196,7 +196,6 @@ public class freeForAllGame extends gameType {
 
     @Override
     public void onPlayerdie(PlayerDeathEvent event) {
-        StatisticManager.storePlayerDeath(event);
         Player victim = event.getEntity().getPlayer();
         String team = teamUtil.getPlayerTeam(victim);
         if (victim.getKiller() instanceof Player) {
@@ -204,6 +203,7 @@ public class freeForAllGame extends gameType {
                 event.setDeathMessage(MCMEPVP.primarycolor + "Spectator "
                         + victim.getName() + " was tired watching this fight!");
             } else {
+                StatisticManager.storePlayerDeath(event);
                 killcount++;
                 updateBoard();
                 Player killer = event.getEntity().getKiller();
@@ -221,6 +221,7 @@ public class freeForAllGame extends gameType {
                 event.setDeathMessage(MCMEPVP.primarycolor + "Spectator "
                         + victim.getName() + " was tired watching this fight!");
             } else {
+                StatisticManager.storePlayerDeath(event);
                 event.setDeathMessage(ChatColor.RED + victim.getName()
                         + MCMEPVP.primarycolor + " died to the elements!");
             }
