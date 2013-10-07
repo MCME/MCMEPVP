@@ -5,7 +5,9 @@ import co.mcme.pvp.gameType;
 import co.mcme.pvp.util.util;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
+import java.util.ArrayList;
 import java.util.HashMap;
+import org.bson.types.BasicBSONList;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -64,6 +66,14 @@ public class StatisticManager {
                     BasicDBObject prev = (BasicDBObject) cursor.next();
                     int newkills = prev.getInt("kills") + ps.getKillCount();
                     int newdeaths = prev.getInt("deaths") + ps.getDeathCount();
+                    ArrayList<String> newrdeaths = (ArrayList) ((BasicBSONList) prev.get("recentdeaths"));
+                    for (PvpDeath death : ps.getDeaths()) {
+                        newrdeaths.add(death.getKiller() + "|" + death.getWeapon() + "|" + death.getMap() + "|" + death.getGameType());
+                    }
+                    ArrayList<String> newrkills = (ArrayList) ((BasicBSONList) prev.get("recentkills"));
+                    for (PvpDeath kill : ps.getKills()) {
+                        newrkills.add(kill.getVictim() + "|" + kill.getWeapon() + "|" + kill.getMap() + "|" + kill.getGameType());
+                    }
                     double newkd = newkills / newdeaths;
                     BasicDBObject prevgames = (BasicDBObject) prev.get("games");
                     int newgamesplayed = prevgames.getInt("played") + 1;
@@ -80,7 +90,9 @@ public class StatisticManager {
                             .append("games", new BasicDBObject()
                             .append("played", newgamesplayed)
                             .append("won", newgameswon)
-                            .append("winPercentage", newwinperc));
+                            .append("winPercentage", newwinperc))
+                            .append("recentkills", newrkills)
+                            .append("recentdeaths", newrdeaths);
                     Database.getPlayerCollection().update(prev, newobj);
                 } finally {
                     cursor.close();
@@ -91,6 +103,14 @@ public class StatisticManager {
                 if (won) {
                     gameswon = 1;
                 }
+                ArrayList<String> newrdeaths = new ArrayList();
+                for (PvpDeath death : ps.getDeaths()) {
+                    newrdeaths.add(death.getKiller() + "|" + death.getWeapon() + "|" + death.getMap() + "|" + death.getGameType());
+                }
+                ArrayList<String> newrkills = new ArrayList();
+                for (PvpDeath kill : ps.getKills()) {
+                    newrkills.add(kill.getVictim() + "|" + kill.getWeapon() + "|" + kill.getMap() + "|" + kill.getGameType());
+                }
                 util.info(String.valueOf(ps.getDeathCount()));
                 BasicDBObject newobj = new BasicDBObject()
                         .append("name", target.getName())
@@ -100,7 +120,9 @@ public class StatisticManager {
                         .append("games", new BasicDBObject()
                         .append("played", 1)
                         .append("won", gameswon)
-                        .append("winPercentage", (double) (gameswon / 1)));
+                        .append("winPercentage", (double) (gameswon / 1)))
+                        .append("recentkills", newrkills)
+                        .append("recentdeaths", newrdeaths);
                 Database.getPlayerCollection().insert(newobj);
             }
         }
@@ -130,19 +152,7 @@ public class StatisticManager {
 //        "victim|weapon|map|gametype"
 //    ],
 //    recentdeaths: [
-//        {
-//            "killer" : "person1",
-//            "weapon" : "IRON_SWORD",
-//            "map" : "Tharbad",
-//            "gametype" : "TDM",
-//            "time" : 1383523263475
-//        },
-//        {
-//            "killer" : "person2",
-//            "weapon" : "IRON_SWORD",
-//            "map" : "Tharbad",
-//            "gametype" : "TDM",
-//            "time" : 1383523287545
-//        }
+//        "killer|weapon|map|gametype",
+//        "killer|weapon|map|gametype"
 //    ]
 //}

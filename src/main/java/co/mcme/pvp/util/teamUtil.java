@@ -1,3 +1,7 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package co.mcme.pvp.util;
 
 import org.bukkit.entity.Player;
@@ -5,6 +9,10 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import co.mcme.pvp.MCMEPVP;
 
+/**
+ *
+ * @author meggawatts
+ */
 public class teamUtil {
 
     public static void setPlayerTeam(Player player, String status) {
@@ -48,4 +56,5 @@ public class teamUtil {
         }
         return check;
     }
+    
 }

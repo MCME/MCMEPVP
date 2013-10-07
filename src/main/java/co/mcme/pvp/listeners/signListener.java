@@ -1,7 +1,5 @@
 package co.mcme.pvp.listeners;
 
-import co.mcme.pvp.MCMEPVP;
-import co.mcme.pvp.util.gearGiver;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
@@ -13,10 +11,13 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.Plugin;
 
+import co.mcme.pvp.MCMEPVP;
+import co.mcme.pvp.util.gearGiver;
+
 public class signListener implements Listener {
 
     // @EventHandler(priority = EventPriority.NORMAL)
-    public void onSignChange(SignChangeEvent event) {
+	public void onSignChange(SignChangeEvent event) {
         Player player = event.getPlayer();
         Sign s = (Sign) event.getBlock();
         String[] lines = s.getLines();

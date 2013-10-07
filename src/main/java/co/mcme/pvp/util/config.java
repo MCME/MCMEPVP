@@ -1,12 +1,13 @@
 package co.mcme.pvp.util;
 
-import co.mcme.pvp.MCMEPVP;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.util.Vector;
+
+import co.mcme.pvp.MCMEPVP;
 
 public class config {
 
@@ -78,20 +79,20 @@ public class config {
         mongoUser = conf.getString("mongo.user");
         mongoPassword = conf.getString("mongo.password");
     }
-
+    
     public void setPVPDefaults() {
-        MCMEPVP.Maps = config.Maps;
-        MCMEPVP.GameTypes = config.GameTypes;
-        MCMEPVP.PVPMap = config.PVPMap;
-        MCMEPVP.PVPGT = config.PVPGT;
-        MCMEPVP.PVPWorld = config.PVPWorld;
-        MCMEPVP.Spawn = config.Spawn;
-
-        MCMEPVP.autorun = config.autorun;
-        MCMEPVP.minOnlinePlayers = config.minOnlinePlayers;
-        MCMEPVP.startThreshHold = (float) config.startThreshHold;
-        MCMEPVP.voteMap = config.voteMap;
-
-        System.out.print("[MCMEPVP] Defaults loaded from config!");
+    	MCMEPVP.Maps = config.Maps;
+    	MCMEPVP.GameTypes = config.GameTypes;
+    	MCMEPVP.PVPMap = config.PVPMap;
+    	MCMEPVP.PVPGT = config.PVPGT;
+    	MCMEPVP.PVPWorld = config.PVPWorld;
+    	MCMEPVP.Spawn = config.Spawn;
+    	
+    	MCMEPVP.autorun = config.autorun;
+    	MCMEPVP.minOnlinePlayers = config.minOnlinePlayers;
+    	MCMEPVP.startThreshHold = (float) config.startThreshHold;
+    	MCMEPVP.voteMap = config.voteMap;
+    	
+    	System.out.print("[MCMEPVP] Defaults loaded from config!");
     }
 }
