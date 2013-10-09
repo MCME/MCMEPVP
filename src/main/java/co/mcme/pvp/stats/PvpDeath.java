@@ -32,7 +32,7 @@ public class PvpDeath {
 
     public String getWeapon() {
         if (w.equals(Material.AIR)) {
-            return "HAND";
+            return "FIST";
         } else {
             return w.toString();
         }
