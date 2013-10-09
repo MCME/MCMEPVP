@@ -64,14 +64,6 @@ public class StatisticManager {
                     BasicDBObject prev = (BasicDBObject) cursor.next();
                     int newkills = prev.getInt("kills") + ps.getKillCount();
                     int newdeaths = prev.getInt("deaths") + ps.getDeathCount();
-                    ArrayList<String> newrdeaths = (ArrayList) ((BasicBSONList) prev.get("recentdeaths"));
-                    for (PvpDeath death : ps.getDeaths()) {
-                        newrdeaths.add(death.getKiller() + "|" + death.getWeapon() + "|" + death.getMap() + "|" + death.getGameType());
-                    }
-                    ArrayList<String> newrkills = (ArrayList) ((BasicBSONList) prev.get("recentkills"));
-                    for (PvpDeath kill : ps.getKills()) {
-                        newrkills.add(kill.getVictim() + "|" + kill.getWeapon() + "|" + kill.getMap() + "|" + kill.getGameType());
-                    }
                     double newkd = newkills / newdeaths;
                     BasicDBObject prevgames = (BasicDBObject) prev.get("games");
                     int newgamesplayed = prevgames.getInt("played") + 1;
@@ -88,9 +80,7 @@ public class StatisticManager {
                             .append("games", new BasicDBObject()
                             .append("played", newgamesplayed)
                             .append("won", newgameswon)
-                            .append("winPercentage", newwinperc))
-                            .append("recentkills", newrkills)
-                            .append("recentdeaths", newrdeaths);
+                            .append("winPercentage", newwinperc));
                     Database.getPlayerCollection().update(prev, newobj);
                 } finally {
                     cursor.close();
@@ -101,14 +91,6 @@ public class StatisticManager {
                 if (won) {
                     gameswon = 1;
                 }
-                ArrayList<String> newrdeaths = new ArrayList();
-                for (PvpDeath death : ps.getDeaths()) {
-                    newrdeaths.add(death.getKiller() + "|" + death.getWeapon() + "|" + death.getMap() + "|" + death.getGameType());
-                }
-                ArrayList<String> newrkills = new ArrayList();
-                for (PvpDeath kill : ps.getKills()) {
-                    newrkills.add(kill.getVictim() + "|" + kill.getWeapon() + "|" + kill.getMap() + "|" + kill.getGameType());
-                }
                 util.info(String.valueOf(ps.getDeathCount()));
                 BasicDBObject newobj = new BasicDBObject()
                         .append("name", target.getName())
@@ -118,9 +100,7 @@ public class StatisticManager {
                         .append("games", new BasicDBObject()
                         .append("played", 1)
                         .append("won", gameswon)
-                        .append("winPercentage", (double) (gameswon / 1)))
-                        .append("recentkills", newrkills)
-                        .append("recentdeaths", newrdeaths);
+                        .append("winPercentage", (double) (gameswon / 1)));
                 Database.getPlayerCollection().insert(newobj);
             }
         }
@@ -134,23 +114,49 @@ public class StatisticManager {
         return status;
     }
 }
-// What a player json file looks like
-//{
-//    name: "meggawatts",
-//    kills: 1508,
-//    deaths: 1013,
-//    kd: 1.49,
-//    games: {
-//        played: 359,
-//        won: 175,
-//        winPercentage: 0.48
-//    },
-//    recentkills: [
-//        "victim|weapon|map|gametype",
-//        "victim|weapon|map|gametype"
-//    ],
-//    recentdeaths: [
-//        "killer|weapon|map|gametype",
-//        "killer|weapon|map|gametype"
-//    ]
-//}
+/* What a player json file looks like
+{
+    "_id": "524edaf5e4b09c0e543f9b5f",
+    "name": "derpington",
+    "kills": 0,
+    "deaths": 1,
+    "kd": 0,
+    "games": {
+        "played": 1,
+        "won": 0,
+        "winPercentage": 0
+    },
+    "recentkills": [
+        {
+            "victim": "person",
+            "weapon": "IRON_SWORD",
+            "map": "Tharbad",
+            "gametype": "TDM",
+            "gameid": "570ce9a24d2ebbc169c871f31cb762a2"
+        },
+        {
+            "victim": "person2",
+            "weapon": "FIST",
+            "map": "Tharbad",
+            "gametype": "TSL",
+            "gameid": "d504009dddec926fd4895687fec28b1d"
+        }
+    ],
+    "recentdeaths": [
+        {
+            "killer": "person",
+            "weapon": "IRON_SWORD",
+            "map": "Tharbad",
+            "gametype": "TDM",
+            "gameid": "570ce9a24d2ebbc169c871f31cb762a2"
+        },
+        {
+            "killer": "person2",
+            "weapon": "FIST",
+            "map": "Tharbad",
+            "gametype": "TSL",
+            "gameid": "d504009dddec926fd4895687fec28b1d"
+        }
+    ]
+}
+*/
